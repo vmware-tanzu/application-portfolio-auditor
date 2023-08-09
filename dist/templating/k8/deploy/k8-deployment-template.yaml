@@ -1,0 +1,37 @@
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-report-${REPORT_TAG}-deployment
+spec:
+  selector:
+    matchLabels:
+      app: audit-report-${REPORT_TAG}-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: audit-report-${REPORT_TAG}-app
+    spec:
+      containers:
+      - name: audit-report-${REPORT_TAG}
+        image: ${IMG_NAME}
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-report-${REPORT_TAG}-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: audit-report-${REPORT_TAG}-app
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30001

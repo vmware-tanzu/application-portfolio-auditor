@@ -1,0 +1,64 @@
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+- hosts: auditor-ubuntu
+  vars:
+    auditor_extracted_dir: /opt/auditor
+    auditor_copy_dest: /opt/auditor/application-portfolio-auditor.zip
+
+  tasks:
+  
+  - name: Install required APT dependencies
+    become: true
+    apt:
+      name:
+        - zip
+        - unzip
+
+  - name: Create {{ auditor_extracted_dir }} directory
+    become: true
+    file: path={{ auditor_extracted_dir }} state=directory owner=vagrant group=vagrant
+
+  - name: Copy the latest "Application Portfolio Auditor" distribution
+    become: true
+    copy: src={{ auditor_local_zip }} dest={{ auditor_copy_dest }} owner="vagrant" group="vagrant" mode="0644"
+    register: auditor_copy
+
+  - name: Unpack "Application Portfolio Auditor"
+    when: auditor_copy.changed
+    become: true
+    unarchive: src={{ auditor_copy_dest }} dest={{ auditor_extracted_dir }} copy=no owner=vagrant group=vagrant
+
+  - name: Setup with provided utility script 'setup_ubuntu.sh'
+    when: auditor_copy.changed
+    become: true
+    ansible.builtin.shell: ./util/01__setup/setup_ubuntu.sh > /opt/auditor/auditor-setup.log 2>&1 
+    args:
+      chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor"
+    register: auditor_setup
+
+  - name: Reboot the machine to apply all changes
+    when: auditor_setup.changed
+    become: true
+    reboot:
+      reboot_timeout: 240
+
+  - name: Run "Application Portfolio Auditor" for a test report
+    ansible.builtin.shell: ./audit -a -z
+    args:
+      chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor"
+    register: auditor_run
+
+  - name: Find and copy the report
+    when: auditor_run.changed
+    become: true
+    ansible.builtin.command: 'find . -type f -name *.zip -exec cp \{\} /tmp/report.zip \;'
+    args:
+      chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor/reports"
+
+  - name: Retrieve the resulting report locally
+    when: auditor_run.changed
+    become: true
+    ansible.builtin.fetch:
+      src: "/tmp/report.zip"
+      dest: /tmp/report_ubuntu.zip
+      flat: yes

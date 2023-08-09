@@ -1,0 +1,46 @@
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# Configuration for the CentOS VM
+host_name = 'auditor-centos'
+
+# CentOS Stream 9 - https://app.vagrantup.com/boxomatic/boxes/centos-stream-9
+host_box_name = "boxomatic/centos-stream-9"
+host_box_version = "20230424.0.1"
+
+host_cpu = 4
+host_ram = 4096
+host_disksize = '30GB'
+host_ip = '192.168.11.100'
+
+ansible_playbook_auditor_local_distribution_zip = ENV['DIST_ZIP']
+ansible_playbook = 'ansible-auditor-centos.yml'
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box_check_update = false
+  config.ssh.insert_key = false
+  config.ssh.forward_agent = true
+
+  config.vagrant.plugins = ['vagrant-vbguest']
+  config.vbguest.installer_options = { allow_kernel_upgrade: true }
+
+  config.vm.define 'auditor-centos', primary: false do |host|
+    host.vm.box = host_box_name
+    host.vm.box_version = host_box_version
+    host.disksize.size = host_disksize
+    host.vm.hostname = host_name
+    host.vm.network "private_network", ip: host_ip
+
+    host.vm.provision "ansible" do |ansible|
+      ansible.playbook = ansible_playbook
+      ansible.extra_vars = { auditor_local_zip: ansible_playbook_auditor_local_distribution_zip }
+    end
+  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = host_ram
+    v.cpus = host_cpu
+  end  
+
+end

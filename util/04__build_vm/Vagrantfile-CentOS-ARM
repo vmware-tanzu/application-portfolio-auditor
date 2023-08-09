@@ -1,0 +1,39 @@
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# Configuration for the CentOS VM (ARM)
+host_name = 'auditor-centos'
+
+# Ubuntu 22.04.1 LTS - aarch64
+host_box_name = "bandit145/centos_stream9_arm"
+host_box_version = "20230331212624"
+
+host_cpu = 4
+host_ram = 4096
+
+ansible_playbook_auditor_local_distribution_zip = ENV['DIST_ZIP']
+ansible_playbook = 'ansible-auditor-centos.yml'
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box_check_update = false
+
+  config.vm.define 'auditor-centos', primary: false do |host|
+    host.vm.box = host_box_name
+    host.vm.box_version = host_box_version
+    host.vm.hostname = host_name
+
+    host.vm.provision "ansible" do |ansible|
+      ansible.playbook = ansible_playbook
+      ansible.extra_vars = { auditor_local_zip: ansible_playbook_auditor_local_distribution_zip }
+    end
+  end
+
+  config.vm.provider :vmware_desktop do |vmware|
+    # Has to be true
+    vmware.gui = true
+    vmware.cpus = host_cpu
+    vmware.memory = host_ram
+    vmware.vmx["ethernet0.virtualdev"] = "vmxnet3"    
+  end
+end

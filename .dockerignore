@@ -1,0 +1,13 @@
+.DS_Store
+apps/
+bin/
+dist/containerized
+docs/
+reports/
+util/00__release
+util/02__update
+util/03__validate
+util/04__build_vm
+util/05__build_docker
+tmp/
+work-in-progress

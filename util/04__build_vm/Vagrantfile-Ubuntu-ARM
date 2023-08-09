@@ -1,0 +1,39 @@
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# Configuration for the Ubuntu VM (ARM)
+host_name = 'auditor-ubuntu'
+
+# Ubuntu 22.04.1 LTS - aarch64 - https://app.vagrantup.com/hajowieland/boxes/ubuntu-jammy-arm
+host_box_name = "hajowieland/ubuntu-jammy-arm"
+host_box_version = "1.0.0"
+
+host_cpu = 4
+host_ram = 4096
+
+ansible_playbook_auditor_local_distribution_zip = ENV['DIST_ZIP']
+ansible_playbook = 'ansible-auditor-ubuntu.yml'
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box_check_update = false
+
+  config.vm.define 'auditor-ubuntu', primary: false do |host|
+    host.vm.box = host_box_name
+    host.vm.box_version = host_box_version
+    host.vm.hostname = host_name
+
+    host.vm.provision "ansible" do |ansible|
+      ansible.playbook = ansible_playbook
+      ansible.extra_vars = { auditor_local_zip: ansible_playbook_auditor_local_distribution_zip }
+    end
+  end
+
+  config.vm.provider :vmware_desktop do |vmware|
+    # Has to be true
+    vmware.gui = true
+    vmware.cpus = host_cpu
+    vmware.memory = host_ram
+    vmware.vmx["ethernet0.virtualdev"] = "vmxnet3"    
+  end
+end

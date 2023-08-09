@@ -1,0 +1,29 @@
+Apache
+BEA
+Bitronix Software
+BouncyCastle.org
+Codehaus
+Eclipse.org
+Eugene Kuleshov
+FasterXML
+France Telecom R&D
+Google
+Granite Data Services
+IBM
+JBoss
+JoSQL
+Joda.org
+MetaStuff Ltd.
+MockEjb.org
+Noelios Technologies
+OpenSymphony
+Oracle
+ScalAgent D.T.
+Sun
+VASCO Data Security
+aspectj.org
+gentlyWEB.com
+http://fasterxml.com
+jdom.org
+org.hibernate
+relaxng.sourceforge.net

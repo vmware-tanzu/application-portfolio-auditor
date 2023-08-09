@@ -1,0 +1,4 @@
+Library,Vulnerability,Severity,Installed Version,Fixed Version,Description
+{{- range .Matches}}
+____{{.Artifact.Name}} ({{.Artifact.Type}})____,____{{.Vulnerability.ID}}____,____{{.Vulnerability.Severity}}____,____{{.Artifact.Version}}____,____{{.Vulnerability.Fix.Versions}}____,____{{.Vulnerability.Description}}____
+{{- end}}

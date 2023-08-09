@@ -1,0 +1,655 @@
+#!/usr/bin/env bash
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# ----- Please adjust
+# set -x
+
+# ------ Do not modify
+set -eu
+
+# shellcheck disable=SC2155
+export ARCH="$(uname -m)"
+
+export LANG="en_US.utf8"
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
+export TIMESTAMP CURRENT_DIR REPORTS_DIR
+TIMESTAMP=$(date +%Y_%m_%d__%H_%M_%S)
+
+pushd "$(dirname "${0}")" &>/dev/null
+CURRENT_DIR=$(pwd)
+popd &>/dev/null
+
+export APP_DIR_IN=${CURRENT_DIR}/apps
+export DIST_DIR=${CURRENT_DIR}/dist
+export INSTALL_DIR=${CURRENT_DIR}/bin
+export REPORTING_DIR=${CURRENT_DIR}/reports
+
+# shellcheck disable=SC1091
+source "${CURRENT_DIR}/_shared_functions.sh"
+
+# Import tool version numbers
+# shellcheck disable=SC1091
+source "${CURRENT_DIR}/_versions.sh"
+
+function usage() {
+
+	echo -e "${B}Usage:${N}"
+
+	printf "    %s [setup|check|download|package|run] <options>\n\n" "$(basename "$0")"
+	printf "    %s setup              Download and install all required pre-requisites\n" "$(basename "$0")"
+	printf "    %s check              Check available updates for all used components and analysis tools\n" "$(basename "$0")"
+	printf "    %s download           Download, prepare and update all used components and analysis tools\n" "$(basename "$0")"
+	printf "    %s package            Package all scripts, used components and analysis tools into a portable zip distribution\n" "$(basename "$0")"
+	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
+
+	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
+	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [-x | --wamt] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
+	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [-l | --languages] [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
+	echo -e "    [-r | --reports] [-z | --zip] [-k | --k8] [--cf] [-t | --timestamp] [-b | --debug] [-v | --version] [-h | --help]"
+	echo -e ""
+	echo -e "    ${B}Select applications${N}  ---------------------------------------------------------------------------------------------"
+	echo -e "        ${B}-d${N}, ${B}--import-dir${N} <dir>         Import and analyze apps in <dir> (sub-folder of 'apps')"
+	echo -e "        ${B}-g${N}, ${B}--app-group${N} <name>         Analyze only the apps in the group <name> (sub-folder of 'apps')"
+	echo -e ""
+	echo -e "    ${B}Choose tools to use${N}  ---------------------------------------------------------------------------------------------"
+	echo -e "        ${B}General${N}     ${B}-a${N}, ${B}--all${N}                      Run all available tools (${B}-pxwoflsm${N})"
+	echo -e ""
+	echo -e "        ${B}Cloud${N}       ${B}-c${N}, ${B}--csa${N}                      Decompile and run the CSA analysis"
+	echo -e "                    ${B}-w${N}, ${B}--windup${N}                   Run the Windup analysis"
+	echo -e "                        ${B}--include-packages${N} <file>   File containing Java packages to include in Windup analysis"
+	echo -e "                        ${B}--exclude-packages${N} <file>   File containing Java packages to exclude from Windup analysis"
+	echo -e "                    ${B}-x${N}, ${B}--wamt${N}                     Run the IBM WebSphere Application Server Migration Toolkit analysis"
+	echo -e ""
+	echo -e "        ${B}Security${N}    ${B}-o${N}, ${B}--owasp${N}                    Run the OWASP Dependency-Check analysis"
+	echo -e "                    ${B}-f${N}, ${B}--fsb${N}                      Decompile and run the FindSecBugs analysis"
+	echo -e "                    ${B}-n${N}, ${B}--slscan${N}                   Decompile and run the SAST-Scan analysis"
+	echo -e "                    ${B}-i${N}, ${B}--insider${N}                  Decompile and run the Insider analysis"
+	echo -e "                    ${B}-e${N}, ${B}--grype${N}                    Run the Syft and Grype analysis"
+	echo -e "                    ${B}-y${N}, ${B}--trivy${N}                    Run the Trivy analysis"
+	echo -e ""
+	echo -e "        ${B}Languages${N}   ${B}-l${N}, ${B}--languages${N}                Decompile and run the Linguist and CLOC analysis"
+	echo -e ""
+	echo -e "        ${B}Licensing${N}   ${B}-s${N}, ${B}--scancode${N}                 Decompile and run the ScanCode analysis"
+	echo -e ""
+	echo -e "        ${B}Quality${N}     ${B}-p${N}, ${B}--pmd${N}                      Decompile and run the PMD Code analysis"
+	echo -e "                    ${B}-m${N}, ${B}--mai${N}                      Decompile and run the Microsoft Application Inspector analysis"
+	echo -e ""
+	echo -e "    ${B}Configure generated reports${N}  -------------------------------------------------------------------------------------"
+	echo -e "        ${B}-z${N}, ${B}--zip${N}                      Zip the generated reports"
+	echo -e "        ${B}-k${N}, ${B}--k8${N}                       Package the generated reports for kubernetes deployment"
+	echo -e "        ${B}--cf${N}                           Package the generated reports for cloud foundry deployment"
+	echo -e "        ${B}-r${N}, ${B}--reports${N}                  Re-generate the HTML reports"
+	echo -e "        ${B}-t${N} <timestamp>                 Set a timestamp for the analysis (e.g. ${TIMESTAMP})"
+	echo -e ""
+	echo -e "    ${B}Advanced options${N}  ------------------------------------------------------------------------------------------------"
+	echo -e "        ${B}--pre-analysis${N}                 Run a pre-configuration analysis"
+	echo -e "        ${B}--package-discovery${N}            Run the Windup package discovery. Used to configure a Windup analysis"
+	echo -e "        ${B}-b${N}, ${B}--debug${N}                    Enable debug mode"
+	echo -e "        ${B}-v${N}, ${B}--version${N}                  Display the version numbers"
+	echo -e "        ${B}-h${N}, ${B}--help${N}                     Show this help message"
+	exit 2
+}
+
+GETOPT_COMMAND=""
+
+export HAS_INTERNET_CONNECTION="false"
+set +e
+if [[ -n "$(command -v ping)" ]]; then
+	if ping -q -c 1 -W 1 dns.google.com >/dev/null 2>&1; then
+		HAS_INTERNET_CONNECTION="true"
+	fi
+fi
+set -e
+
+export IS_MAC="false"
+export IS_LINUX="false"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	IS_MAC="true"
+else
+	IS_LINUX="true"
+fi
+
+SHELL_USED=$(ps -p $$ | tail -1 | awk '{ print $4 }' | cut -d "-" -f 2 | tail -1)
+if [[ "${SHELL_USED}" != "bash" ]]; then
+	export LOG_FILE=/dev/null
+	if [[ "$(uname -s)" == "Darwin" ]]; then
+		log_console_error "Shell in use is not Bash ('${SHELL_USED}'). Please switch to Bash v4+ for example on MacOS:
+	$ brew install bash
+	$ sudo bash -c 'echo /usr/local/Cellar/bash/5.1.18/bin/bash >> /etc/shells'
+	$ sudo chsh -s /usr/local/Cellar/bash/5.1.18/bin/bash ${USER}"
+	else
+		log_console_error "Shell in use is not Bash ('${SHELL_USED}'). Please switch to Bash v4+."
+	fi
+	exit 2
+fi
+
+if [[ "${IS_MAC}" == "true" ]]; then
+	if [[ -n "$(command -v brew)" ]]; then
+		GETOPT_COMMAND=$(find "$(brew --cellar)/gnu-getopt" -maxdepth 3 -mindepth 3 -iname "getopt" -type f -exec echo {} \;)
+	else
+		GETOPT_COMMAND=/usr/local/opt/gnu-getopt/bin/getopt
+	fi
+	if [ ! -f "${GETOPT_COMMAND}" ]; then
+		export LOG_FILE=/dev/null
+		log_console_error "'gnu-getopt' not found. Please make sure it is installed for example on MacOS:
+	$ brew install gnu-getopt"
+		exit 2
+	fi
+else
+	GETOPT_COMMAND=getopt
+fi
+
+printf "${ORANGE}%s" ''
+if ! params="$(
+	"${GETOPT_COMMAND}" \
+		-o hbd:apwfnxog:reylsmivt:ckz \
+		-l setup,help,debug,pre-analysis,package-discovery,windup,wamt,fsb,slscan,insider,grype,trivy,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
+		--name "$(basename "${0}")" \
+		-- \
+		"${@}"
+)"; then
+	echo -e "${N}"
+	usage
+fi
+printf "${N}%s" ''
+
+eval set -- "${params}"
+unset params
+
+export UNPACK_SOURCE="false"
+export DECOMPILE_SOURCE="false"
+export CSA_ACTIVE="false"
+export WAMT_ACTIVE="false"
+export PRE_ANALYSIS_ACTIVE="false"
+export WINDUP_PACKAGE_DISCOVERY_ACTIVE="false"
+export WINDUP_ACTIVE="false"
+export OWASP_ACTIVE="false"
+export FSB_ACTIVE="false"
+export SLSCAN_ACTIVE="false"
+export INSIDER_ACTIVE="false"
+export GRYPE_ACTIVE="false"
+export TRIVY_ACTIVE="false"
+export REPORT_ACTIVE="false"
+export LANGUAGES_ACTIVE="false"
+export SCANCODE_ACTIVE="false"
+export PMD_ACTIVE="false"
+export MAI_ACTIVE="false"
+export VERSION_ACTIVE="false"
+export USAGE_ACTIVE="false"
+export PACKAGE_CF="false"
+export PACKAGE_K8="false"
+export PACKAGE_ZIP="false"
+
+export WINDUP_INCLUDE_PACKAGES_FILE=""
+export WINDUP_EXCLUDE_PACKAGES_FILE=""
+export TARGET_GROUP=""
+export IMPORT_DIR=""
+export DEBUG=""
+export TIMESTAMP_SET="false"
+
+while true; do
+	case "${1}" in
+	-c | --csa)
+		CSA_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	--pre-analysis)
+		PRE_ANALYSIS_ACTIVE="true"
+		WINDUP_PACKAGE_DISCOVERY_ACTIVE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	--package-discovery)
+		WINDUP_PACKAGE_DISCOVERY_ACTIVE="true"
+		shift
+		;;
+	-w | --windup)
+		WINDUP_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		shift
+		;;
+	--include-packages)
+		WINDUP_INCLUDE_PACKAGES_FILE="${2}"
+		shift 2
+		;;
+	--exclude-packages)
+		WINDUP_EXCLUDE_PACKAGES_FILE="${2}"
+		shift 2
+		;;
+	-x | --wamt)
+		WAMT_ACTIVE="true"
+		shift
+		;;
+	-f | --fsb)
+		FSB_ACTIVE="true"
+		shift
+		;;
+	-n | --slscan)
+		SLSCAN_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	-i | --insider)
+		INSIDER_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	-e | --grype)
+		GRYPE_ACTIVE="true"
+		shift
+		;;
+	-y | --trivy)
+		TRIVY_ACTIVE="true"
+		shift
+		;;
+	-o | --owasp)
+		OWASP_ACTIVE="true"
+		shift
+		;;
+	-a | --all)
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		CSA_ACTIVE="true"
+		WINDUP_PACKAGE_DISCOVERY_ACTIVE="true"
+		WINDUP_ACTIVE="true"
+		WAMT_ACTIVE="true"
+		OWASP_ACTIVE="true"
+		FSB_ACTIVE="true"
+		SCANCODE_ACTIVE="true"
+		PMD_ACTIVE="true"
+		LANGUAGES_ACTIVE="true"
+		MAI_ACTIVE="true"
+		SLSCAN_ACTIVE="true"
+		INSIDER_ACTIVE="true"
+		GRYPE_ACTIVE="true"
+		TRIVY_ACTIVE="true"
+		shift
+		;;
+	-r | --reports | --report)
+		REPORT_ACTIVE="true"
+		shift
+		;;
+	-l | --languages)
+		LANGUAGES_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	-s | --scancode)
+		SCANCODE_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	-p | --pmd)
+		PMD_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	-m | --mai)
+		MAI_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	-t)
+		TIMESTAMP="${2}"
+		TIMESTAMP_SET="true"
+		shift 2
+		;;
+	-g | --app-group)
+		TARGET_GROUP="${2}"
+		shift 2
+		;;
+	-d | --import-dir)
+		IMPORT_DIR="${2}"
+		shift 2
+		;;
+	-b | --debug)
+		DEBUG="true"
+		shift
+		;;
+	-z | --zip)
+		PACKAGE_ZIP="true"
+		shift
+		;;
+	--cf)
+		PACKAGE_CF="true"
+		shift
+		;;
+	-k | --k8)
+		PACKAGE_K8="true"
+		shift
+		;;
+	-v | --version)
+		VERSION_ACTIVE="true"
+		break
+		;;
+	-h | --help)
+		USAGE_ACTIVE="true"
+		break
+		;;
+	--)
+		shift
+		break
+		;;
+	*)
+		USAGE_ACTIVE="true"
+		break
+		;;
+	esac
+done
+
+if [[ "${USAGE_ACTIVE}" == "true" ]]; then
+	usage
+	exit
+
+elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
+	# Display all current versions in use
+	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N}"
+	echo -e "-> CSA v.${CSA_VERSION}"
+	echo -e "-> Windup v.${WINDUP_VERSION}"
+	echo -e "-> WAMT v.${WAMT_VERSION}"
+	echo -e "-> Linguist v.${LINGUIST_VERSION}"
+	echo -e "-> CLOC v.${CLOC_VERSION}"
+	echo -e "-> Scancode v.${SCANCODE_VERSION}"
+	echo -e "-> PMD v.${PMD_VERSION}"
+	echo -e "-> Microsoft Application Inspector v.${MAI_VERSION}"
+	echo -e "-> OWASP Dependency-Check v.${OWASP_DC_VERSION}"
+	echo -e "-> Find Security Bug v.${FSB_VERSION}"
+	echo -e "-> SAST-Scan (slscan) v.${SLSCAN_VERSION}"
+	echo -e "-> Insider v.${INSIDER_VERSION}"
+	echo -e "-> Grype v.${GRYPE_VERSION}"
+	echo -e "-> Syft v.${SYFT_VERSION}"
+	echo -e "-> Trivy v.${TRIVY_VERSION}"
+	exit
+
+elif [[ ! $# -eq 0 && -n "${1}" &&  "${1}" != "run" ]]; then
+	# Check which utility subscript should be executed
+	SHORT_SCRIPTS=()
+	export RUN_LOG=/dev/null
+	export TIMELINE_LOG=/dev/null
+	export LOG_FILE=/dev/null
+
+	case "${1}" in
+	setup)
+		if [[ "${IS_MAC}" == "true" ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_macos.sh' 'util/01__setup/download_and_update_tools.sh')
+		elif [[ -e "/etc/centos-release" || -e "/etc/redhat-release" ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_centos.sh' 'util/01__setup/download_and_update_tools.sh')
+		elif [[ -e "/etc/lsb-release" && $(grep -q 'Ubuntu' '/etc/lsb-release') ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_ubuntu.sh' 'util/01__setup/download_and_update_tools.sh')
+		else
+			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS"
+			exit 1
+		fi
+		;;
+	check| check_updates| check_update| check_versions| check_version)
+		SHORT_SCRIPTS+=('util/02__update/check_latest_versions.sh')
+		;;
+	update| upgrade| download)
+		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh')
+		;;
+	package| dist| distribution| release)
+		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh' 'util/00__release/bundle_scripts.sh')
+		;;
+	*)
+		log_console_error "Unsupported 'Application Portfolio Auditor' command ('${1}') - Supported ones: 'setup', 'check', 'update', 'package', 'run'"
+		exit	
+		;;
+	esac
+
+	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N} (${1} - ${ARCH} - ${CONTAINER_ENGINE})\n"
+
+	for SCRIPT in "${SHORT_SCRIPTS[@]}"; do
+		log_tool_start "${SCRIPT}"
+		echo -e ""
+		# shellcheck source=/dev/null
+		exec "${SCRIPT}" 2>&1 | tee -a "${RUN_LOG}"
+		if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit; fi
+		echo -e ""
+		log_tool_end "${SCRIPT}"
+	done
+	exit
+fi
+
+# Check if an analysis tool has been selected
+if [[ "${REPORT_ACTIVE}" == "false" &&
+	"${CSA_ACTIVE}" == "false" &&
+	"${PRE_ANALYSIS_ACTIVE}" == "false" &&
+	"${WINDUP_PACKAGE_DISCOVERY_ACTIVE}" == "false" &&
+	"${WINDUP_ACTIVE}" == "false" &&
+	"${WAMT_ACTIVE}" == "false" &&
+	"${OWASP_ACTIVE}" == "false" &&
+	"${FSB_ACTIVE}" == "false" &&
+	"${SLSCAN_ACTIVE}" == "false" &&
+	"${INSIDER_ACTIVE}" == "false" &&
+	"${GRYPE_ACTIVE}" == "false" &&
+	"${TRIVY_ACTIVE}" == "false" &&
+	"${LANGUAGES_ACTIVE}" == "false" &&
+	"${SCANCODE_ACTIVE}" == "false" &&
+	"${PMD_ACTIVE}" == "false" &&
+	"${MAI_ACTIVE}" == "false" ]]; then
+	echo -e "${ORANGE}No active tool - please select at least one!${N}"
+	echo ""
+	usage
+fi
+
+# Check validity of the passed timestamp
+if [[ ! $TIMESTAMP =~ ^[0-9]{4}_[0-1][0-9]_[0-3][0-9]__[0-2][0-9]_[0-5][0-9]_[0-9]{2}$ ]]; then
+	echo -e "${ORANGE}Invalid timestamp used! It should look like: $(date +%Y_%m_%d__%H_%M_%S)${N}"
+	exit 2
+fi
+
+# Interactive selection of the report to re-generate
+if [[ "${REPORT_ACTIVE}" == "true" ]] && [[ "${TIMESTAMP_SET}" == "false" ]]; then
+
+	if [[ ! -d "${REPORTING_DIR}" ]]; then
+		echo -e "${ORANGE}No existing report directory.${N}"
+		exit 2
+	fi
+
+	if [ ! "$(ls -A "${REPORTING_DIR}")" ]; then
+		echo -e "${ORANGE}No existing report to be re-generated.${N}"
+		exit 2
+	fi
+
+	# shellcheck disable=SC2207
+	REPORTS=($(
+		cd "${REPORTING_DIR}"
+		find -- * -mindepth 0 -maxdepth 0 -type d -regex '^[2-9][0-9][0-9][0-9]_[0-1][0-9]_[0-3][0-9]__[0-2][0-9]_[0-5][0-9]_[0-9][0-9]__.*$' | grep -E -v '^.*_K8$' | grep -E -v '^.*_CF$' | sort
+	))
+
+	if [ ${#REPORTS[@]} -eq 0 ]; then
+		echo -e "${ORANGE}No existing report to be re-generated.${N}"
+		exit 2
+	fi
+
+	echo -e "No existing report has been set. Please select the report you want to re-generate:"
+	INTIAL_COLUMNS=${COLUMNS}
+	COLUMNS=1
+	select REPORT in "${REPORTS[@]}"; do
+		if [[ -z ${REPORT} ]]; then
+			echo "Please chose a valid entry."
+		else
+			TIMESTAMP=$(echo "${REPORT}" | cut -c 1-20)
+			TIMESTAMP_SET="true"
+			TARGET_GROUP=$(echo "${REPORT}" | cut -c 23-)
+			echo -e "You have chosen the report '${GREEN}${REPORT}${N}' (TIMESTAMP: ${TIMESTAMP} - GROUP: ${TARGET_GROUP})"
+			break
+		fi
+	done
+	COLUMNS=${INTIAL_COLUMNS}
+fi
+
+[[ "${DEBUG}" == "true" ]] && set -x
+
+# Directory containing all generated reports
+REPORTS_DIR=${REPORTING_DIR}/${TIMESTAMP}
+
+if [[ -n "${IMPORT_DIR}" ]]; then
+	TARGET_GROUP=$(basename "${IMPORT_DIR}")
+fi
+
+# Include name of the app group if single group is selected
+if [[ "${TARGET_GROUP}" != "" ]]; then
+	REPORTS_DIR=${REPORTS_DIR}__${TARGET_GROUP}
+fi
+
+mkdir -p "${REPORTS_DIR}"
+
+# Logging
+export RUN_LOG=${REPORTS_DIR}/run.log
+export TIMELINE_LOG=${REPORTS_DIR}/98__timeline.log
+export LOG_FILE=${RUN_LOG}
+
+if [[ -f "${TIMELINE_LOG}" ]]; then
+	TIMELINE_LOG="/dev/null"
+fi
+
+log_console "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N} (${ARCH} - ${CONTAINER_ENGINE})"
+
+SCRIPTS=(
+	# Check prerequisites for running the tools
+	00__check_prereqs.sh
+
+	# Unpack all tools from 'dist' to 'bin'
+	00__unpack_all_tools.sh
+
+	# Verify additional prerequisites on unpacked tools
+	00__verify_prereqs.sh
+
+	# Identify apps, generate execution plans and warnings
+	00__weave_execution_plan.sh
+)
+
+# Unpack with Fernflower
+[[ "${DECOMPILE_SOURCE}" == "true" ]] && { SCRIPTS+=(01__fernflower_decompile.sh); }
+
+# Unpack source code
+[[ "${UNPACK_SOURCE}" == "true" ]] && { SCRIPTS+=(01__unpack_sources.sh); }
+
+# Cloud Suitability Analyzer
+[[ "${CSA_ACTIVE}" == "true" ]] && {
+	if [[ "${ARCH}" != "x86_64" && "${IS_LINUX}" == "true" ]]; then
+		# Disable CSA if architecture not "amd64" on Linux
+		log_warning "-> CSA v.${CSA_VERSION} is not supported on Linux ARM64. It will be skipped."
+		CSA_ACTIVE="false"
+	else
+		log_console "-> CSA v.${CSA_VERSION}"
+		SCRIPTS+=(02__csa__01__analysis.sh 02__csa__02__extract.sh)
+	fi
+}
+
+# Windup
+[[ "${WINDUP_PACKAGE_DISCOVERY_ACTIVE}" == "true" || "${WINDUP_ACTIVE}" == "true" ]] && { log_console "-> WINDUP v.${WINDUP_VERSION}"; }
+
+# Windup - Package Discovery
+[[ "${WINDUP_PACKAGE_DISCOVERY_ACTIVE}" == "true" ]] && { SCRIPTS+=(03__windup__01__package_discovery.sh); }
+
+# Windup - Analysis
+[[ "${WINDUP_ACTIVE}" == "true" ]] && { SCRIPTS+=(03__windup__02__analysis.sh 03__windup__03__extract.sh); }
+
+# IBM WebSphere Application Migration Toolkit
+[[ "${WAMT_ACTIVE}" == "true" ]] && {
+	log_console "-> WAMT v.${WAMT_VERSION}"
+	SCRIPTS+=(04__wamt__01__analysis.sh 04__wamt__02__extract.sh)
+}
+
+# Open Web Application Security Project - Dependency Check
+[[ "${OWASP_ACTIVE}" == "true" ]] && {
+	log_console "-> OWASP Dependency-Check v.${OWASP_DC_VERSION}"
+	SCRIPTS+=(05__owasp_dc__01__analysis.sh 05__owasp_dc__02__extract.sh)
+}
+
+# Scancode analysis
+[[ "${SCANCODE_ACTIVE}" == "true" ]] && {
+	log_console "-> Scancode v.${SCANCODE_VERSION}"
+	SCRIPTS+=(06__scancode__01__analysis.sh 06__scancode__02__extract.sh)
+}
+
+# PMD code analysis
+[[ "${PMD_ACTIVE}" == "true" ]] && {
+	log_console "-> PMD v.${PMD_VERSION}"
+	SCRIPTS+=(07__pmd__01__analysis.sh 07__pmd__02__extract.sh)
+}
+
+# Linguist code analysis
+[[ "${LANGUAGES_ACTIVE}" == "true" ]] && {
+	log_console "-> Linguist v.${LINGUIST_VERSION}"
+	log_console "-> CLOC v.${CLOC_VERSION}"
+	SCRIPTS+=(08__linguist_and_cloc__01__analysis.sh 08__linguist_and_cloc__02__extract.sh)
+}
+
+# FindSecBugs (SpotBugs engine) code analysis
+[[ "${FSB_ACTIVE}" == "true" ]] && {
+	log_console "-> Find Security Bug v.${FSB_VERSION}"
+	SCRIPTS+=(09__findsecbugs__01__analysis.sh 09__findsecbugs__02__extract.sh)
+}
+
+# Microsoft Application Inspector analysis
+[[ "${MAI_ACTIVE}" == "true" ]] && {
+	log_console "-> Microsoft Application Inspector v.${MAI_VERSION}"
+	SCRIPTS+=(10__mai__analysis.sh 10__mai__extract.sh)
+}
+
+# SAST-Scan (slscan) code analysis
+[[ "${SLSCAN_ACTIVE}" == "true" ]] && {
+	if [[ "${ARCH}" != "x86_64" ]]; then
+		# Disable SLSCAN if architecture not "amd64"
+		log_warning "-> SAST-Scan (slscan) v.${SLSCAN_VERSION} is not supported on ARM64. It will be skipped."
+		SLSCAN_ACTIVE="false"
+	else
+		log_console "-> SAST-Scan (slscan) v.${SLSCAN_VERSION}"
+		SCRIPTS+=(11__slscan__analysis.sh 11__slscan__extract.sh)
+	fi
+}
+
+# Insider code analysis
+[[ "${INSIDER_ACTIVE}" == "true" ]] && {
+	if [[ "${ARCH}" != "x86_64" && "${IS_LINUX}" == "true" ]]; then
+		# Disable Insider if architecture not "amd64" on Linux
+		log_warning "-> Insider v.${INSIDER_VERSION} is not supported on Linux ARM64. It will be skipped."
+		INSIDER_ACTIVE="false"
+	else
+		log_console "-> Insider v.${INSIDER_VERSION}"
+		SCRIPTS+=(12__insider__analysis.sh 12__insider__extract.sh)
+	fi
+}
+
+# Grype analysis
+[[ "${GRYPE_ACTIVE}" == "true" ]] && {
+	log_console "-> Grype v.${GRYPE_VERSION}"
+	log_console "-> Syft v.${SYFT_VERSION}"
+	SCRIPTS+=(13__grype__analysis.sh 13__grype__extract.sh)
+}
+
+# Trivy analysis
+[[ "${TRIVY_ACTIVE}" == "true" ]] && {
+	log_console "-> Trivy v.${TRIVY_VERSION}"
+	SCRIPTS+=(14__trivy__analysis.sh 14__trivy__extract.sh)
+}
+
+# Re-extract all results
+# { SCRIPTS+=(02__csa__02__extract.sh 03__windup__03__extract.sh 04__wamt__02__extract.sh 05__owasp_dc__02__extract.sh 06__scancode__02__extract.sh 07__pmd__02__extract.sh 08__linguist_and_cloc__02__extract.sh 09__findsecbugs__02__extract.sh 10__mai__extract.sh 11__slscan__extract.sh 12__insider__extract.sh 13__grype__analysis.sh 14__trivy__analysis.sh); }
+
+# Generates and package summary report with links
+[[ "${PRE_ANALYSIS_ACTIVE}" == "false" ]] && { SCRIPTS+=(97__generate_reports.sh 98__generate_timeline.sh 99__package_reports.sh); }
+
+log_console ""
+
+for SCRIPT in "${SCRIPTS[@]}"; do
+	log_tool_start "${SCRIPT}"
+	# shellcheck source=/dev/null
+	source "${SCRIPT}" 2>&1 | tee -a "${RUN_LOG}"
+	if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit; fi
+	log_tool_end "${SCRIPT}"
+done

@@ -1,0 +1,145 @@
+/* Core */
+body {
+  font-family: 'metropolislight', Fallback, sans-serif;
+}
+
+h3,
+h5 {
+  font-family: 'metropolismedium', Fallback, sans-serif;
+}
+
+text-bold {
+  font-family: 'metropolisbold', Fallback, sans-serif;
+}
+
+.bd-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1071;
+}
+
+.vmware-logo {
+  height: 20px;
+  padding-bottom: 2px;
+}
+
+.navbar {
+  background: #354350 !important;
+}
+
+div#content.bd-masthead {
+  background: #f2f2f2 !important;
+}
+
+.m-0 {
+  margin: auto !important;
+}
+
+.tab-nav-link,
+.report-link {
+  color: hsl(198, 100%, 32%);
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: #354350 !important;
+}
+
+.list-unstyled {
+  margin-bottom: 0px;
+}
+
+.filter-white {
+  filter: brightness(0) saturate(100%) invert(100%) brightness(100%);
+}
+
+.footer-container {
+  padding-top: 75px;
+  padding-bottom: 50px;
+  background-color: var(--white);
+}
+
+.footer-component:before {
+  content: "";
+  position: absolute;
+  margin-top: -18px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 6px;
+  background-image: linear-gradient(to right, #6fbe2e 19%, #00bbd6 43%, #0f61a9 57%, #5a39a0 81%);
+}
+
+.footer-links-wrapper {
+  padding: 0 59px;
+}
+
+.footer-disclaimer {
+  font-size: 0.75rem;
+}
+
+.footer-links, .footer-disclaimer {
+  display: flex;
+  justify-content: space-around;
+}
+
+.footer-links-generated {
+  display: flex;
+  text-align: center;
+}
+
+.col-lg-12 {
+  flex: 0 0 100%;
+  max-width: 1280px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.bg-light {
+  background-color: #f2f2f2 !important;
+}
+
+/* Fonts - Metropolis */
+@font-face {
+  font-family: 'metropolislight';
+  src: url('../../static/fonts/Metropolis-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'metropolismedium';
+  src: url('../../static/fonts/Metropolis-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'metropolisbold';
+  src: url('../../static/fonts/Metropolis-SemiBold.ttf') format('truetype');
+}
+
+/* Fonts - Bootstrap Icons */
+@font-face {
+  font-display: block;
+  font-family: "bootstrap-icons";
+  src: url("../../static/fonts/bootstrap-icons.woff2") format("woff2"),
+  url("../../static/fonts/bootstrap-icons.woff") format("woff");
+}
+
+.bi::before,
+[class^="bi-"]::before,
+[class*=" bi-"]::before {
+  display: inline-block;
+  font-family: bootstrap-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bi-github::before { content: "\f3ed"; }
+.bi-info-circle-fill::before { content: "\f430"; }
+.bi-chevron-down::before { content: "\f282"; }
+.bi-speedometer::before { content: "\f57f"; }
+.bi-translate::before { content: "\f658"; }

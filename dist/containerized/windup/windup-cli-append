@@ -1,0 +1,16 @@
+# Copyright 2019-2023 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+## "Application Portfolio Auditor" - Modified to set Xms and Xmx
+MAX_MEMORY=4g
+# Uncomment for remote visualvm access
+# WINDUP_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.rmi.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost"
+WINDUP_OPTS="-Xms$MAX_MEMORY -Xmx$MAX_MEMORY $WINDUP_OPTS"
+
+## "Application Portfolio Auditor" - Modified to be able to copy generated files from in-memory cache to output directory (important performance improvement)
+exec 3>&1
+"$JAVACMD" $MODULES "${WINDUP_DEBUG_ARGS[@]}" $WINDUP_OPTS -Dforge.standalone=true -Dforge.home="${WINDUP_HOME}" -Dwindup.home="${WINDUP_HOME}" -cp "${WINDUP_HOME}"/lib/'*' $WINDUP_MAIN_CLASS "${QUOTED_ARGS[@]}" "${ADDONS_DIR[@]}" >&3
+if [ -d "/cache" ] && [ -d "/out" ]; then
+    cd /cache
+    cp -Rf . /out
+    rm -Rf /cache
+fi
