@@ -15,11 +15,9 @@ set -eu
 INCLUDE_FILES=("${WINDUP_INCLUDE_PACKAGES_FILE}" "${CURRENT_DIR}/conf/Windup/include.packages")
 # List of files containing a list of plain Java packages to EXCLUDE
 EXCLUDE_FILES=("${WINDUP_EXCLUDE_PACKAGES_FILE}" "${CURRENT_DIR}/conf/Windup/exclude.packages" "${CURRENT_DIR}/conf/Windup/exclude_JDK.packages")
-#EXCLUDE_FILES=("${WINDUP_EXCLUDE_PACKAGES_FILE}" "${CURRENT_DIR}/conf/Windup/exclude.packages")
 
 ## Windup analysis targets
-#TARGET="cloud-readiness openjdk resteasy eap6 eap7 linux jakarta-ee java-ee"
-TARGET="cloud-readiness openjdk resteasy eap6 eap7 linux java-ee"
+TARGET="cloud-readiness openjdk resteasy eap6 eap7 linux jakarta-ee java-ee"
 
 # ------ Do not modify
 VERSION=${WINDUP_VERSION}
@@ -89,11 +87,8 @@ function analyze() {
 
 		log_console_info "INCLUDE: ${INCLUDE_PACKAGES[*]:-none}"
 		log_console_info "EXCLUDE: ${EXCLUDE_PACKAGES[*]:-none}"
-		#log_console_info "${WINDUP_CLI}" "${ARGS[@]}"
 
 		set +e
-		# Remote visualvm access
-		#(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -p 9010:9010 -v "${APP_DIR_IN_TMP}:/${GROUP}:ro" -v "${APP_DIR_OUT}:/out:delegated" -v "tmpfs:/cache:delegated" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR_IN_TMP}:/${GROUP}:ro" -v "${APP_DIR_OUT}:/out:delegated" -v "tmpfs:/cache:delegated" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 
 		# Hack to fix the issue with files created with root user
