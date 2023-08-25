@@ -160,10 +160,10 @@ if __name__ == '__main__':
         (check_github, 'jeremylong/DependencyCheck', r'.*/tag/v(.+)', 'OWASP DC', OWASP_DC_VERSION, None),
         (check_github, 'find-sec-bugs/find-sec-bugs', r'.*/tag/version-(.+)', 'Find Security Bugs', FSB_VERSION, None),
         ## Scancode: The lastest version is not finding any license / copyright
-        (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, '32.0.4'),
+        (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, '32.0.6'),
         (check_github, 'AlDanial/cloc', r'.*/tag/v(.+)', 'CLOC', CLOC_VERSION, None),
-        ## Windup: Versions from 6.2.x have an updated but broken UI
-        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.0'),
+        ## Windup: Versions from 6.2.x do not allow multiple targets
+        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.1'),
         (check_github, 'vmware-tanzu/cloud-suitability-analyzer', r'.*/tag/v(.+)', 'CSA', CSA_VERSION, None),
         (check_github, 'microsoft/ApplicationInspector', r'.*/tag/v(.+)', 'MAI', MAI_VERSION, None),
         (check_github, 'github/linguist', r'.*/tag/v(.+)', 'Linguist', LINGUIST_VERSION, None),
