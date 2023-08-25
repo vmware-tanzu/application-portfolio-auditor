@@ -640,6 +640,7 @@ function generate_trivy_html() {
 		['ibmcloud']='IBM'
 		['intel']=Intel
 		['jenkins']='Jenkins'
+		['jfrog.com']='JFrog'
 		['jolokia.org']=Jolokia
 		['jvn.jp']='JVN'
 		['kb.cert.org']='CERT/CC'
@@ -675,6 +676,7 @@ function generate_trivy_html() {
 
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_6=(
+		['secpod.org']='SecPod'
 		['securityfocus']='BugTraq'
 		['securitytracker']='Security Tracker'
 		['siemens']=Siemens
@@ -684,15 +686,17 @@ function generate_trivy_html() {
 		['spring.io']='Spring'
 		['springsource']='Spring'
 		['sun.com']='Sun'
-		['tenable']=Tenable
 	)
 
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_7=(
+		['suse.com']='Suse'
+		['tenable']=Tenable
 		['trustwave']='Trustwave'
 		['twitter']=Twitter
 		['ubuntu']=Ubuntu
 		['us-cert.gov']='CISA Gov'
+		['vuldb.com']=VulDB
 		['vmware']=VMware
 		['zerodayinitiative']='Zero Day'
 	)
@@ -729,7 +733,7 @@ function generate_trivy_html() {
 		TRIVY_REPORT="${TRIVY_DIR}/${APP}.html"
 		TRIVY_CSV="${TRIVY_DIR}/${APP}_trivy.csv"
 		TRIVY_TMP="${TRIVY_DIR}/${APP}_trivy.tmp"
-		sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; ' "${TRIVY_CSV}" >"${TRIVY_TMP}"
+		sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}"| tr -s ' ' >"${TRIVY_TMP}"
 
 		if [[ "${IS_MAC}" == "true" ]]; then
 			sed -i '' -e "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
