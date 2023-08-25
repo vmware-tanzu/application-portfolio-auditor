@@ -46,7 +46,7 @@ export TRIVY_VERSION='0.44.0'
 
 # Other
 export MUSTACHE_VERSION="3.0.2"
-export NGINX_VERSION="1.25.1"
+export NGINX_VERSION="1.25.2"
 export NIST_MIRROR_VERSION="1.6.0"
 export D3_VERSION="7.8.5"
 export JQUERY_VERSION="3.7.0"
