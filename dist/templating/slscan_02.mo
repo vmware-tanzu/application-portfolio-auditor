@@ -129,9 +129,6 @@
           } else if (d.value.startsWith("Security Audit for Infrastructure")) {
             latestDataHref="./"+app_name+"/source-yaml-report.html";
 
-          //} else if (d.value.startsWith("Security Audit for Infrastructure")) {
-          //  latestDataHref="./"+app_name+"/source-dockerfile-report.html";
-
           } else if (d.value.startsWith("Secrets Audit")) {
             latestDataHref="./"+app_name+"/credscan-report.html";
 
