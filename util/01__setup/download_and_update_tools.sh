@@ -678,6 +678,7 @@ if [ -d "${DIST_BOOTSTRAP}" ]; then
 else
 	BOOTSTRAP_ZIP="${DIST_STATIC}/bootstrap-${BOOTSTRAP_VERSION}-dist.zip"
 
+	mkdir -p "${DIST_STATIC}"
 	# Delete previous folder and distributions
 	find "${SCRIPT_PATH}/../../dist/templating/static" -type d -iname 'bootstrap-*-dist' -exec rm -rf {} \;
 	find "${SCRIPT_PATH}/../../dist/templating/static" -type f -iname 'bootstrap-*-dist.zip' ! -name bootstrap-${BOOTSTRAP_VERSION}-dist.zip -delete
