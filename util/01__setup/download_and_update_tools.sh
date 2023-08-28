@@ -699,6 +699,7 @@ if [ -f "${DIST_BOOTSTRAP_ICONS}" ]; then
 	echo "[INFO] 'Bootstrap Icons' (${BOOTSTRAP_ICONS_VERSION}) is already available"
 else
 	BOOTSTRAP_ICONS_ZIP="${DIST_STATIC}/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip"
+	mkdir -p "${DIST_STATIC}/css" "${DIST_STATIC}/fonts"
 	find "${SCRIPT_PATH}/../../dist/templating/static/css" -type f -iname 'bootstrap-icons-*.css' -delete
 	find "${SCRIPT_PATH}/../../dist/templating/static/fonts" -type f -iname 'bootstrap-icons.*' -delete
 	simple_check_and_download "Bootstrap Icons" "templating/static/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip" "https://github.com/twbs/icons/releases/download/v${BOOTSTRAP_ICONS_VERSION}/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip" "${BOOTSTRAP_ICONS_VERSION}"
@@ -714,6 +715,7 @@ fi
 # Images, Logos, Favicon, Fonts, Scripts
 ##############################################################################################################
 
+mkdir -p "${DIST_STATIC}/img/"
 simple_check_and_download "Favicon - VMware" "templating/static/img/favicon.ico" 'https://www.vmware.com/favicon.ico' "latest"
 
 simple_check_and_download "Logo - CSA" "templating/static/img/csa.svg" 'https://raw.githubusercontent.com/vmware-tanzu/cloud-suitability-analyzer/master/csa-app/frontend/src/assets/csa-icon.svg' "latest"
@@ -722,7 +724,6 @@ simple_check_and_download "Logo - FSB" "templating/static/img/fsb.png" 'https://
 if [ -f "${DIST_STATIC}/img/github.svg" ]; then
 	echo "[INFO] 'Logo - GitHub' (latest) is already available"
 else
-	mkdir -p "${DIST_STATIC}/img/"
 	simple_check_and_download "Logo - GitHub" "templating/static/img/github-mark.zip" 'https://github.githubassets.com/images/modules/logos_page/github-mark.zip' "latest"
 	pushd "${DIST_STATIC}/img/" &>/dev/null
 	unzip github-mark.zip &>/dev/null
