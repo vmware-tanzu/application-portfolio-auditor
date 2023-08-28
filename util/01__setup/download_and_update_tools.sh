@@ -74,6 +74,11 @@ function simple_check_and_download() {
 	fi
 }
 
+function remove_container_image() {
+  NAME="${1}"
+  ${CONTAINER_ENGINE} images -a | grep "${NAME}" | awk '{print $3}' | xargs "${CONTAINER_ENGINE}" rmi --force
+}
+
 function download_container_image() {
 	NAME="${1}"
 	VERSION="${2}"
@@ -87,7 +92,7 @@ function download_container_image() {
 		# Delete previous versions
 		IMAGE_INAME=$(echo "${LOCAL_IMG}" | rev | cut -d '_' -f 2- | rev | sed 's/$/_*.img/')
 		find "${DIST_DIR}" -type f -iname "${IMAGE_INAME}" -delete
-		${CONTAINER_ENGINE} images -a | grep "${REPO}" | awk '{print $3}' | xargs ${CONTAINER_ENGINE} rmi --force
+		remove_container_image "${REPO}"
 		${CONTAINER_ENGINE} pull --platform "${PLATFORM}" "${REPO}:${VERSION}"
 		${CONTAINER_ENGINE} image save "${REPO}:${VERSION}" | gzip >"${DIST_DIR}/${LOCAL_IMG}"
 	fi
@@ -401,7 +406,7 @@ else
 
 	exec 6>/dev/null
 	# Remove existing and build Scancode container image
-	${CONTAINER_ENGINE} images -a | grep "scancode-toolkit" | awk '{print $3}' | xargs ${CONTAINER_ENGINE} rmi --force
+	remove_container_image "scancode-toolkit"
 
 	mkdir -p "${DIST_DIR}/containerized/scancode-toolkit"
 
@@ -623,7 +628,7 @@ DIST_TRIVY="${DIST_DIR}/oci__trivy_${TRIVY_VERSION}.img"
 if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	# Remove current image to force an update of the cache
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__trivy_*.img' -delete
-	${CONTAINER_ENGINE} images -a | grep 'trivy' | awk '{print $3}' | xargs ${CONTAINER_ENGINE} rmi --force
+	remove_container_image "trivy"
 fi
 if [ -f "${DIST_TRIVY}" ]; then
 	echo "[INFO] 'Trivy' (${DIST_TRIVY}) is already available"
