@@ -623,7 +623,7 @@ DIST_TRIVY="${DIST_DIR}/oci__trivy_${TRIVY_VERSION}.img"
 if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	# Remove current image to force an update of the cache
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__trivy_*.img' -delete
-	${CONTAINER_ENGINE} rmi -f $(${CONTAINER_ENGINE} images 'trivy' -a -q)
+	${CONTAINER_ENGINE} images -a | grep 'trivy' | awk '{print $3}' | xargs ${CONTAINER_ENGINE} rmi --force
 fi
 if [ -f "${DIST_TRIVY}" ]; then
 	echo "[INFO] 'Trivy' (${DIST_TRIVY}) is already available"
