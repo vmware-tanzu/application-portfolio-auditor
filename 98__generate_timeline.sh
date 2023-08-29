@@ -52,7 +52,7 @@ function main() {
 	export TIMELINE_JSON="${REPORTS_DIR}/98__timeline.json"
 	export TIMELINE_JSON_TMP="${REPORTS_DIR}/timeline.json.tmp"
 
-	if [[ -f "${TIMELINE_LOG}" ]] && [[ ! -f "${INFO_REPORT}" ]]; then
+	if [[ -f "${TIMELINE_LOG}" ]]; then
 
 		# Get the first group
 		APP_GROUP=$(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d -print -quit)

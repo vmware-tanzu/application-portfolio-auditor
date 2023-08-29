@@ -153,8 +153,16 @@ if [[ "${SKIP_TARGET_GROUP_ANALYSIS}" == "false" ]]; then
 			ARE_PREREQUISITES_MET=false
 		fi
 	else
-		log_console_error "Specified application group ('${TARGET_GROUP}') not found. Please use the import option or organize your applications as described in README.md."
-		ARE_PREREQUISITES_MET=false
+		if [[ -f "${REPORTS_DIR}/list__${TARGET_GROUP}__all_apps.csv" ]]; then
+			log_console_warning "Applications do not exist locally. Creating mock application group structure under '${SELECTED_APP_DIR_IN}'"
+			mkdir -p "${SELECTED_APP_DIR_IN}"
+			while read -r APP; do
+				touch "${SELECTED_APP_DIR_IN}/${APP}"
+			done < <(cut -d ',' -f 1 "${REPORTS_DIR}/list__${TARGET_GROUP}__all_apps.csv")
+		else
+			log_console_error "Specified application group ('${TARGET_GROUP}') not found. Please use the import option or organize your applications as described in README.md."
+			ARE_PREREQUISITES_MET=false
+		fi
 	fi
 fi
 
