@@ -7,7 +7,10 @@
 ##############################################################################################################
 
 # Java version used for Bagger and Fernflower
-export JAVA_VERSION='17'
+export JAVA_VERSION='20'
+
+# Gradle version for Fernflower
+export GRADLE_VERSION='8.3'
 
 # Current version of Application Portfolio Auditor
 export TOOL_VERSION='2.0.0'

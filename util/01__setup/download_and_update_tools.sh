@@ -183,7 +183,14 @@ else
 	#git checkout HEAD -- plugins/java-decompiler/engine/
 	cd plugins/java-decompiler/engine
 
-	# Build Fernflower
+	# Build Fernflower using the configured $JAVA_VERSION
+	if [[ "${IS_MAC}" == "true" ]]; then
+	  SED="sed -i ''"
+	else
+	  SED="sed -i"
+	fi
+	${SED} " s/targetCompatibility '.*'/targetCompatibility '${JAVA_VERSION}'/" build.gradle
+  ${SED} " s/distributionUrl=.*/distributionUrl=https\\\:\/\/services.gradle.org\/distributions\/gradle-${GRADLE_VERSION}-bin.zip/" gradle/wrapper/gradle-wrapper.properties
 	GRADLE_OPTS="-Dorg.gradle.daemon=false" ./gradlew assemble
 	popd &>/dev/null
 
