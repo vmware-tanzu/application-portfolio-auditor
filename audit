@@ -465,7 +465,7 @@ if [[ "${REPORT_ACTIVE}" == "true" ]] && [[ "${TIMESTAMP_SET}" == "false" ]]; th
 	# shellcheck disable=SC2207
 	REPORTS=($(
 		cd "${REPORTING_DIR}"
-		find -- * -mindepth 0 -maxdepth 0 -type d -regex '^[2-9][0-9][0-9][0-9]_[0-1][0-9]_[0-3][0-9]__[0-2][0-9]_[0-5][0-9]_[0-9][0-9]__.*$' | grep -E -v '^.*_K8$' | grep -E -v '^.*_CF$' | sort
+		find -- * -mindepth 0 -maxdepth 0 -type d -regex '^[2-9][0-9][0-9][0-9]_[0-1][0-9]_[0-3][0-9]__[0-2][0-9]_[0-5][0-9]_[0-9][0-9]__.*$' 2>/dev/null | grep -E -v '^.*_K8$' | grep -E -v '^.*_CF$' | sort
 	))
 
 	if [ ${#REPORTS[@]} -eq 0 ]; then

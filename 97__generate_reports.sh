@@ -733,7 +733,7 @@ function generate_trivy_html() {
 		TRIVY_REPORT="${TRIVY_DIR}/${APP}.html"
 		TRIVY_CSV="${TRIVY_DIR}/${APP}_trivy.csv"
 		TRIVY_TMP="${TRIVY_DIR}/${APP}_trivy.tmp"
-		sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}"| tr -s ' ' >"${TRIVY_TMP}"
+		sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}" | tr -s ' ' >"${TRIVY_TMP}"
 
 		if [[ "${IS_MAC}" == "true" ]]; then
 			sed -i '' -e "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
