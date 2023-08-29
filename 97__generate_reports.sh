@@ -643,11 +643,11 @@ function generate_trivy_html() {
 		['jfrog.com']='JFrog'
 		['jolokia.org']=Jolokia
 		['jvn.jp']='JVN'
-		['kb.cert.org']='CERT/CC'
 	)
 
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_4=(
+		['kb.cert.org']='CERT/CC'
 		['lunasec']=LunaSec
 		['mageia']='Mageia'
 		['mandriva']='Mandriva'
@@ -657,11 +657,11 @@ function generate_trivy_html() {
 		['mitre']=MITRE
 		['netapp']=NetApp
 		['nist']=NIST
-		['nu11secur1ty']='Nu11Secur1ty'
 	)
 
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_5=(
+		['nu11secur1ty']='Nu11Secur1ty'
 		['openjdk']='OpenJDK'
 		['opensuse']=Suse
 		['openwall']=Openwall
@@ -670,12 +670,13 @@ function generate_trivy_html() {
 		['pivotal.io']='Pivotal'
 		['praetorian']='Praetorian'
 		['redhat']='Red Hat'
-		['seclists']=SecLists
-		['secunia']='Secunia'
+		['rockylinux']='Rocky Linux'
 	)
 
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_6=(
+		['seclists']=SecLists
+		['secunia']='Secunia'
 		['secpod.org']='SecPod'
 		['securityfocus']='BugTraq'
 		['securitytracker']='Security Tracker'
@@ -684,12 +685,12 @@ function generate_trivy_html() {
 		['snyk.io']=Snyk
 		['sonicwall']=SonicWall
 		['spring.io']='Spring'
-		['springsource']='Spring'
-		['sun.com']='Sun'
 	)
 
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_7=(
+		['springsource']='Spring'
+		['sun.com']='Sun'
 		['suse.com']='Suse'
 		['tenable']=Tenable
 		['trustwave']='Trustwave'
