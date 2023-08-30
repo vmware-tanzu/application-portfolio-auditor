@@ -492,7 +492,12 @@ fi
 # 08 CLOC
 ##############################################################################################################
 log_tool_info "08 - CLOC v${CLOC_VERSION}"
-simple_check_and_download "CLOC" "cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
+if [ -f "${DIST_DIR}/cloc-${CLOC_VERSION}.tar.gz" ]; then
+	echo "[INFO] 'CLOC' (${CLOC_VERSION}) is already available"
+else
+	find "${DIST_DIR}" -type f -iname 'cloc-*.tar.gz' -exec rm -rf {} \;
+	simple_check_and_download "CLOC" "cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
+fi
 
 ##############################################################################################################
 # 09 FindSecBugs
