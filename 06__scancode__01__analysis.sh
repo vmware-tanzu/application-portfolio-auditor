@@ -53,22 +53,11 @@ function cleanup_html() {
 	TARGET_FILE=${1}
 	DIR_OUT=${2}
 	if [ -f "${OUTPUT_REPORT}" ] && [ -f "${TARGET_FILE}" ]; then
-		REGEX="s|${DIR_OUT}/|./|g"
+		stream_edit "s|${DIR_OUT}/|./|g" "${TARGET_FILE}"
 		# Cleaning up 'help.html'
-		REGEX2="s|js/jquery.js|jquery.min.js|g"
-		REGEX3="s|js/bootstrap.min.js|bootstrap.min.js|g"
-		REGEX4='s|class="btn btn-default" id="menu-toggle"|class="btn btn-default"|g'
-		if [[ "${IS_MAC}" == "true" ]]; then
-			sed -i '' -e "${REGEX}" "${TARGET_FILE}"
-			sed -i '' -e "${REGEX2}" "${TARGET_FILE}"
-			sed -i '' -e "${REGEX3}" "${TARGET_FILE}"
-			sed -i '' -e "${REGEX4}" "${TARGET_FILE}"
-		else
-			sed -i -e "${REGEX}" "${TARGET_FILE}"
-			sed -i -e "${REGEX2}" "${TARGET_FILE}"
-			sed -i -e "${REGEX3}" "${TARGET_FILE}"
-			sed -i -e "${REGEX4}" "${TARGET_FILE}"
-		fi
+		stream_edit "s|js/jquery.js|jquery.min.js|g" "${TARGET_FILE}"
+		stream_edit "s|js/bootstrap.min.js|bootstrap.min.js|g" "${TARGET_FILE}"
+		stream_edit 's|class="btn btn-default" id="menu-toggle"|class="btn btn-default"|g' "${TARGET_FILE}"
 	fi
 }
 

@@ -53,7 +53,7 @@ function generate_csv() {
 
 function main() {
 
-	# Extract results only if an SLSCAN directory is present 
+	# Extract results only if an SLSCAN directory is present
 	if [[ -n $(find "${REPORTS_DIR}" -mindepth 1 -maxdepth 1 -type d -iname "${STEP}"'__SLSCAN*') ]]; then
 		for_each_group generate_csv
 	elif [[ "${ARCH}" == "arm64" ]]; then

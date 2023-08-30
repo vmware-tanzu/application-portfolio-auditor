@@ -50,11 +50,7 @@ function check_missing_apps() {
 	# Cleanup
 	rm -f "${RESULT_SHELL_FILE}" "${MISSING_FILE}"
 
-	if [[ "${IS_MAC}" == "true" ]]; then
-		sed -i'' -e 's/_SRC\.jar//g' "${RESULT_FILE}"
-	else
-		sed -e 's/_SRC\.jar//g' "${RESULT_FILE}"
-	fi
+	stream_edit 's/_SRC\.jar//g' "${RESULT_FILE}"
 
 	# Adding the header
 	{

@@ -736,23 +736,13 @@ function generate_trivy_html() {
 		TRIVY_TMP="${TRIVY_DIR}/${APP}_trivy.tmp"
 		sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}" | tr -s ' ' >"${TRIVY_TMP}"
 
-		if [[ "${IS_MAC}" == "true" ]]; then
-			sed -i '' -e "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
-			sed -i '' -e "${TRIVY_PATTERNS_2}" "${TRIVY_TMP}"
-			sed -i '' -e "${TRIVY_PATTERNS_3}" "${TRIVY_TMP}"
-			sed -i '' -e "${TRIVY_PATTERNS_4}" "${TRIVY_TMP}"
-			sed -i '' -e "${TRIVY_PATTERNS_5}" "${TRIVY_TMP}"
-			sed -i '' -e "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
-			sed -i '' -e "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
-		else
-			sed -i -e "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
-			sed -i -e "${TRIVY_PATTERNS_2}" "${TRIVY_TMP}"
-			sed -i -e "${TRIVY_PATTERNS_3}" "${TRIVY_TMP}"
-			sed -i -e "${TRIVY_PATTERNS_4}" "${TRIVY_TMP}"
-			sed -i -e "${TRIVY_PATTERNS_5}" "${TRIVY_TMP}"
-			sed -i -e "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
-			sed -i -e "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
-		fi
+		stream_edit "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
+		stream_edit "${TRIVY_PATTERNS_2}" "${TRIVY_TMP}"
+		stream_edit "${TRIVY_PATTERNS_3}" "${TRIVY_TMP}"
+		stream_edit "${TRIVY_PATTERNS_4}" "${TRIVY_TMP}"
+		stream_edit "${TRIVY_PATTERNS_5}" "${TRIVY_TMP}"
+		stream_edit "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
+		stream_edit "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
 
 		{
 			${MUSTACHE} "${TEMPLATE_DIR}/trivy_01.mo"

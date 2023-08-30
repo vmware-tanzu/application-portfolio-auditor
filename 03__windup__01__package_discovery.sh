@@ -50,11 +50,7 @@ function analyze_packages() {
 		set +e
 		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${DIR_TEMP}:/apps" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" -b --discoverPackages --input "/apps" -d >"${PACKAGE_FILE}") >>"${LOG_FILE}" 2>&1
 
-		if [[ "${IS_MAC}" == "true" ]]; then
-			sed -i '' '1,/Known Packages:/d' "${PACKAGE_FILE}"
-		else
-			sed -i '1,/Known Packages:/d' "${PACKAGE_FILE}"
-		fi
+		stream_edit '1,/Known Packages:/d' "${PACKAGE_FILE}"
 
 		echo "Known Packages:" >/tmp/pack
 		cat "${PACKAGE_FILE}" >>/tmp/pack
