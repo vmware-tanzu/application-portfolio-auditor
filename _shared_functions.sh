@@ -101,6 +101,14 @@ function log_console_success() {
 	echo -e "${GREEN}    [SUCCESS] ${*}${N}"
 }
 
+function stream_edit() {
+	if [[ "${IS_MAC}" == "true" ]]; then
+		sed -i '' -e "${1}" "${2}"
+	else
+		sed -i -e "${1}" "${2}"
+	fi
+}
+
 function for_each_group() {
 	while read -r DIR; do
 		GROUP_NAME="$(basename "${DIR}")"

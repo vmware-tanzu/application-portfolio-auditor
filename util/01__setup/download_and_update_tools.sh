@@ -17,6 +17,9 @@ UPDATE_VULN_DBS=true
 ## curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
 DOTNET_RUNTIME_TAG="mcr.microsoft.com/dotnet/runtime:7.0.9-alpine3.18"
 
+# Gradle version for Fernflower
+GRADLE_VERSION='8.3'
+
 # ------ Do not modify
 [[ "$DEBUG" == "true" ]] && set -x
 set -eu
@@ -37,21 +40,19 @@ export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
 ## Multiple platform build currently not supported
 # export DOCKER_PLATFORM="linux/amd64,linux/arm64"
 
-NORMAL='\033[0m'
-BLUE='\033[1;34m'
-RED='\033[0;31m'
-ORANGE='\033[0;33m'
+# shellcheck disable=SC1091
+source "${CURRENT_DIR}/_shared_functions.sh"
 
 function log_tool_info() {
-	echo -e "\n${BLUE}${*}${NORMAL}"
+	echo -e "\n${BLUE}${*}${N}"
 }
 
 function log_error() {
-	echo -e "${RED}${*}${NORMAL}"
+	echo -e "${RED}${*}${N}"
 }
 
 function log_warn() {
-	echo -e "${ORANGE}${*}${NORMAL}"
+	echo -e "${ORANGE}${*}${N}"
 }
 
 function simple_check_and_download() {
@@ -180,10 +181,12 @@ else
 
 	# Selectively checkout sub directory
 	git sparse-checkout set plugins/java-decompiler/engine
-	#git checkout HEAD -- plugins/java-decompiler/engine/
 	cd plugins/java-decompiler/engine
 
-	# Build Fernflower
+	# Build Fernflower using the configured $JAVA_VERSION
+	stream_edit "s/targetCompatibility '.*'/targetCompatibility '${JAVA_VERSION}'/" build.gradle
+	stream_edit 's|distributionUrl=.*|distributionUrl=https\://services.gradle.org/distributions/gradle-'"${GRADLE_VERSION}"'-bin.zip|' 'gradle/wrapper/gradle-wrapper.properties'
+	./gradlew wrapper
 	GRADLE_OPTS="-Dorg.gradle.daemon=false" ./gradlew assemble
 	popd &>/dev/null
 
@@ -658,7 +661,6 @@ log_tool_info "99 - Static content"
 JS_DIR="${DIST_DIR}/templating/static/js"
 mkdir -p "${JS_DIR}"
 
-#set -x
 find "${SCRIPT_PATH}/../../dist/templating/static/js" -type f -iname 'd3.v*.min.js' ! -name d3.v4.min.js ! -name d3.v${D3_VERSION}.min.js -delete
 simple_check_and_download "JavaScript - D3.js" "templating/static/js/d3.v4.min.js" 'https://unpkg.com/d3@4.13.0/build/d3.min.js' "4.13.0"
 simple_check_and_download "JavaScript - D3.js" "templating/static/js/d3.v${D3_VERSION}.min.js" "https://unpkg.com/d3@${D3_VERSION}/dist/d3.min.js" "${D3_VERSION}"

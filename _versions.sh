@@ -6,11 +6,11 @@
 # Library tracking versions of all used tools and frameworks.
 ##############################################################################################################
 
-# Java version used for Bagger and Fernflower
-export JAVA_VERSION='17'
-
 # Current version of Application Portfolio Auditor
 export TOOL_VERSION='2.0.0'
+
+# Java version used for Bagger and Fernflower
+export JAVA_VERSION='20'
 
 # List of the versions for all tools in use.
 
