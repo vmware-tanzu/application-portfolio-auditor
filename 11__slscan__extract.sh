@@ -41,7 +41,7 @@ function generate_csv() {
 		VULNS="n/a"
 		if [ -f "${TXT_IN}" ]; then
 			VULNS="0"
-			COUNT_VULNS=$(sed -n '/.*Tool.*Critical.*$/,$p' "${TXT_IN}" | tail -n +3 | sed '$d' | sed 's/[^0-9 ]*//g' | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
+			COUNT_VULNS=$(sed -n '/.*Tool.*Critical.*$/,$p' "${TXT_IN}" | tail -n +3 | sed 's/[^0-9 ]*//g' | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
 			[ -n "${COUNT_VULNS}" ] && VULNS=${COUNT_VULNS}
 		fi
 		echo "${APP}${SEPARATOR}${VULNS}" >>"${RESULT_FILE}"
@@ -52,10 +52,16 @@ function generate_csv() {
 }
 
 function main() {
-	if [[ "${ARCH}" == "arm64" ]]; then
+
+	# Extract results only if an SLSCAN directory is present 
+	if [[ -n $(find "${REPORTS_DIR}" -mindepth 1 -maxdepth 1 -type d -iname "${STEP}"'__SLSCAN*') ]]; then
+		for_each_group generate_csv
+	elif [[ "${ARCH}" == "arm64" ]]; then
 		exit
+	else
+		log_console_error "No SLSCAN result directory found in ${REPORTS_DIR}."
 	fi
-	for_each_group generate_csv
+
 }
 
 main
