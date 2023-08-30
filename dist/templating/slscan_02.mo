@@ -144,6 +144,9 @@
           } else if (d.value.startsWith("Dependency Scan (nodejs)")) {
             latestDataHref="./"+app_name+"/depscan-report-nodejs.html";
 
+          } else if (d.value.startsWith("Dependency Scan (universal)")) {
+            latestDataHref="./"+app_name+"/depscan-report-universal.html";
+
           } else if (d.value.startsWith("JSP Security Audit")) {
             latestDataHref="./"+app_name+"/audit-jsp-report.html";
 
