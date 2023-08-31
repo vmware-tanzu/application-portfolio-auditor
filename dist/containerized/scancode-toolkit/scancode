@@ -126,6 +126,7 @@ if [[ $OSTYPE == 'darwin'* && $(uname -m) == 'arm64' && $(sysctl -in sysctl.proc
     exit $?
 fi
 
+
 SCANCODE_CONFIGURED_PYTHON="$SCANCODE_ROOT_DIR/venv/bin/python"
 if [ ! -f "$SCANCODE_CONFIGURED_PYTHON" ]; then
     set -e

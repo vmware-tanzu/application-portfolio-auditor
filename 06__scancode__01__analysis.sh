@@ -12,7 +12,7 @@
 
 # ----- Please adjust
 THREADS=10
-TIMEOUT=60
+TIMEOUT=90
 
 # ------ Do not modify
 VERSION=${SCANCODE_VERSION}
@@ -98,7 +98,13 @@ function analyze() {
 		log_console_info "Launching ScanCode for app '${APP_NAME}'"
 
 		set +e
-		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -v "${APP_DIR_TMP}:/app/${APP_NAME}:ro" -v "tmpfs:/cache:delegated" -v "${APP_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME}" -l -p -c --html-app "/out/${APP_NAME}/index.html" "/cache/${APP_NAME}" --verbose -n "${THREADS}" --timeout "${TIMEOUT}" --ignore "*.gif" --ignore "*.pdf" --ignore "*.rtf" --ignore "*.idx" --ignore "*.csv" --ignore "/test" --ignore "/tests" --ignore "*.jmx" --ignore "*.sha1" --ignore "*.git" --ignore "*.mvn" >>"${LOG_FILE}" 2>&1
+		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -v "${APP_DIR_TMP}:/app/${APP_NAME}:ro" -v "tmpfs:/cache:delegated" -v "${APP_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME}" \
+			--license --license-references --license-text --license-score 0 --classify --license-clarity-score \
+			--url --info --email \
+			--package \
+			--copyright \
+			--html-app "/out/${APP_NAME}/index.html" "/cache/${APP_NAME}" --verbose -n "${THREADS}" --timeout "${TIMEOUT}" \
+			--ignore "*.gif" --ignore "*.pdf" --ignore "*.rtf" --ignore "*.idx" --ignore "*.csv" --ignore "/test" --ignore "/tests" --ignore "*.jmx" --ignore "*.sha1" --ignore "*.git" --ignore "*.mvn" >>"${LOG_FILE}" 2>&1
 
 		# Hack to fix the issue with files created with root user
 		if sudo -n ls >/dev/null 2>&1; then

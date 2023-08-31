@@ -427,11 +427,22 @@ else
 	set -e
 
 	pushd "${TMP_SCANCODE_BUILD_DIR}/scancode-toolkit-${SCANCODE_VERSION}" &>/dev/null
-	#sed -i '' -Ee 's/FROM python(.*)/FROM arm32v7\/python\1/g' Dockerfile
+
+	# Replace Scancode with in-memory cache workaround
 	rm scancode
 	cp "${SCRIPT_PATH}/../../dist/containerized/scancode-toolkit/scancode" .
 	chmod +x scancode
+
+	# Fix html-app markup
+	wget -q -O "src/formattedcode/templates/html-app/assets/jquery.min.map" "https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.map"
+	rm src/formattedcode/templates/html-app/assets/scancode_datatable.js
+	cp "${SCRIPT_PATH}/../../dist/containerized/scancode-toolkit/scancode_datatable.js" src/formattedcode/templates/html-app/assets/scancode_datatable.js
+	rm src/formattedcode/templates/html-app/template.html
+	cp "${SCRIPT_PATH}/../../dist/containerized/scancode-toolkit/template.html" src/formattedcode/templates/html-app/template.html
+
+	# Build container image
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t scancode-toolkit .
+
 	popd &>/dev/null
 
 	# Cleanup

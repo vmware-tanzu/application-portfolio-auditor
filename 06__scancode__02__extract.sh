@@ -32,7 +32,7 @@ function extract() {
 		OUTPUT_DATA_JS="${APP_DIR_OUT}/${APP_NAME}/index_files/data.js"
 		if [[ -f "${OUTPUT_DATA_JS}" ]]; then
 			# Heavy couting the found licences and ...
-			COUNT_LICENSES=$(tail -c +6 "${OUTPUT_DATA_JS}" | jq '.[] | .licenses | length ' | awk '{s+=$1} END {print s}')
+			COUNT_LICENSES=$(tail -c +6 "${OUTPUT_DATA_JS}" | jq '.[] | .license_detections | length ' | awk '{s+=$1} END {print s}')
 			COUNT_COPYRIGHTS=$(tail -c +6 "${OUTPUT_DATA_JS}" | jq '.[] | .copyrights | length ' | awk '{s+=$1} END {print s}')
 		fi
 
