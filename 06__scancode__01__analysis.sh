@@ -120,6 +120,7 @@ function analyze() {
 			# Removing dependency to result folder
 			cleanup_html "${OUTPUT_REPORT}" "/out/${APP_NAME}"
 			cleanup_html "${OUTPUT_HELP_FILE}" "/out/${APP_NAME}"
+			stream_edit 's|/cache/||g' "${OUTPUT_REPORT}"
 			log_console_success "Open this directory for the results: ${OUTPUT_REPORT}"
 		else
 			log_console_error "No report generated. See '${LOG_FILE}' for more details."
