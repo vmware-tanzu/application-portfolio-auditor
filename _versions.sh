@@ -25,8 +25,7 @@ export LINGUIST_VERSION='7.26.0'
 export CLOC_VERSION='1.98'
 
 # License & Authors
-#export SCANCODE_VERSION='32.0.4' - Latest version does not detect all licenses / copyrights.
-export SCANCODE_VERSION='31.2.6'
+export SCANCODE_VERSION='32.0.6'
 
 # Code quality / bugs
 export MAI_VERSION='1.9.10'
