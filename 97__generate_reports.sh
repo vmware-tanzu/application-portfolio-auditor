@@ -571,13 +571,16 @@ function generate_grype_html() {
 		GRYPE_DIR="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}"
 		GRYPE_REPORT="${GRYPE_DIR}/${APP}.html"
 		GRYPE_CSV="${GRYPE_DIR}/${APP}_grype.csv"
-		if [ -f "${GRYPE_CSV}" ]; then
+		if [ -f "${GRYPE_CSV}" ] && [ $(wc -l <(tail -n +2 "${GRYPE_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ] ; then
 			{
 				${MUSTACHE} "${TEMPLATE_DIR}/grype_01.mo"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${GRYPE_CSV}"
 				${MUSTACHE} "${TEMPLATE_DIR}/grype_02.mo"
 			} >"${GRYPE_REPORT}"
+		else
+			# Empty result file
+			${MUSTACHE} "${TEMPLATE_DIR}/grype_empty.mo" >"${GRYPE_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -734,22 +737,25 @@ function generate_trivy_html() {
 		TRIVY_REPORT="${TRIVY_DIR}/${APP}.html"
 		TRIVY_CSV="${TRIVY_DIR}/${APP}_trivy.csv"
 		TRIVY_TMP="${TRIVY_DIR}/${APP}_trivy.tmp"
-		sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}" | tr -s ' ' >"${TRIVY_TMP}"
 
-		stream_edit "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
-		stream_edit "${TRIVY_PATTERNS_2}" "${TRIVY_TMP}"
-		stream_edit "${TRIVY_PATTERNS_3}" "${TRIVY_TMP}"
-		stream_edit "${TRIVY_PATTERNS_4}" "${TRIVY_TMP}"
-		stream_edit "${TRIVY_PATTERNS_5}" "${TRIVY_TMP}"
-		stream_edit "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
-		stream_edit "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
-
-		{
-			${MUSTACHE} "${TEMPLATE_DIR}/trivy_01.mo"
-			cat "${TRIVY_TMP}"
-			${MUSTACHE} "${TEMPLATE_DIR}/trivy_02.mo"
-		} >"${TRIVY_REPORT}"
-
+		if [ $(wc -l <(tail -n +2 "${TRIVY_CSV}") | tr -d ' ' | cut -d'/' -f 1) -eq 0 ]; then
+			# Empty result file
+			${MUSTACHE} "${TEMPLATE_DIR}/trivy_empty.mo" >"${TRIVY_REPORT}"
+		else
+			sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}" | tr -s ' ' >"${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_2}" "${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_3}" "${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_4}" "${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_5}" "${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
+			stream_edit "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
+			{
+				${MUSTACHE} "${TEMPLATE_DIR}/trivy_01.mo"
+				cat "${TRIVY_TMP}"
+				${MUSTACHE} "${TEMPLATE_DIR}/trivy_02.mo"
+			} >"${TRIVY_REPORT}"
+		fi
 		rm -f "${TRIVY_TMP}" "${TRIVY_TMP}-e"
 	done <"${APP_LIST}"
 }
