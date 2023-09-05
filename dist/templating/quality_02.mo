@@ -14,6 +14,12 @@ var maxValueScancodeL = 1
 var maxValueScancodeC = 1
 var maxValueMAITags = 1
 
+// Compute max value for one simple column
+function maxValueSimpleColumn(data, dataColumn) {
+  return Math.max(1, d3.max(data, function(data) { return +data[dataColumn]; } ));
+}
+
+// Compute max values for each column
 function computeMaxValues(data) {
   var columns=data.columns
   var indexPMD = 0
@@ -27,17 +33,17 @@ function computeMaxValues(data) {
   }
 
   if(indexPMD!=0) {
-    maxValuePMD = d3.max(data, function(data) { return +data['PMD violations']; } );
-    maxValueCPDFragments = d3.max(data, function(data) { return +data['Copy-pasted fragments']; } );
-    maxValueCPDLines = d3.max(data, function(data) { return +data['Copy-pasted lines']; } );
-    maxValueCPDTokens = d3.max(data, function(data) { return +data['Copy-pasted tokens']; } );
+    maxValuePMD = maxValueSimpleColumn(data,'PMD violations');
+    maxValueCPDFragments = maxValueSimpleColumn(data,'Copy-pasted fragments');
+    maxValueCPDLines = maxValueSimpleColumn(data,'Copy-pasted lines');
+    maxValueCPDTokens = maxValueSimpleColumn(data,'Copy-pasted tokens');
   }
   if(indexScancode!=0) {
-    maxValueScancodeL = d3.max(data, function(data) { return +data['ScanCode Licenses']; } );
-    maxValueScancodeC = d3.max(data, function(data) { return +data['ScanCode Copyrights']; } );
+    maxValueScancodeL = maxValueSimpleColumn(data,'ScanCode Licenses');
+    maxValueScancodeC = maxValueSimpleColumn(data,'ScanCode Copyrights');
   }
   if(indexMAI!=0) {
-    maxValueMAITags = d3.max(data, function(data) { return +data['MAI unique tags']; } );
+    maxValueMAITags = maxValueSimpleColumn(data,'MAI unique tags');
   }
 }
 

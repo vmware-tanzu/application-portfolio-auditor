@@ -13,6 +13,18 @@ function numberWithDots(x) {
     return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
 }
 
+// Compute max value for one simple column
+function maxValueSimpleColumn(data, dataColumn) {
+  return Math.max(1, d3.max(data, function(data) { return +data[dataColumn]; } ));
+}
+
+// Compute max value for one simple column
+function computeMaxValueSimpleColumn(data, maxColumn, dataColumn) {
+  if(hasColumn[maxColumn]) {
+    maxValues[maxColumn] = maxValueSimpleColumn(data,dataColumn);
+  }
+}
+
 // Compute max values for each column
 function computeMaxValues(data) {
   var columns=data.columns
@@ -29,36 +41,26 @@ function computeMaxValues(data) {
   }
 
   if(hasColumn['OWASPVulns']) {
-    low = d3.max(data, function(data) { return +data['OWASP Low vulns'] });
-    medium = d3.max(data, function(data) { return +data['OWASP Medium vulns'] });
-    high = d3.max(data, function(data) { return +data['OWASP High vulns'] });
-    critical = d3.max(data, function(data) { return +data['OWASP Critical vulns'] });
-    maxValues['OWASPVulns'] = Math.max(low,medium,high,critical);
+    low = maxValueSimpleColumn(data,'OWASP Low vulns');
+    medium = maxValueSimpleColumn(data,'OWASP Medium vulns');
+    high = maxValueSimpleColumn(data,'OWASP High vulns');
+    critical = maxValueSimpleColumn(data,'OWASP Critical vulns');
+    maxValues['OWASPVulns'] = Math.max(low,medium,high,critical,1);
   }
-  if(hasColumn['OWASPVulnLibs']) {
-    maxValues['OWASPVulnLibs'] = d3.max(data, function(data) { return +data['OWASP Total vuln libs']; } );
-  }
+
   if(hasColumn['FSBBugs']) {
-    low = d3.max(data, function(data) { return +data['FSB Low Bugs'] });
-    medium = d3.max(data, function(data) { return +data['FSB Medium Bugs'] });
-    high = d3.max(data, function(data) { return +data['FSB High Bugs'] });
-    maxValues['FSBBugs'] = Math.max(low,medium,high);
+    low = maxValueSimpleColumn(data,'FSB Low Bugs');
+    medium = maxValueSimpleColumn(data,'FSB Medium Bugs');
+    high = maxValueSimpleColumn(data,'FSB High Bugs');
+    maxValues['FSBBugs'] = Math.max(low,medium,high,1);
   }
-  if(hasColumn['FSBTotalBugs']) {
-    maxValues['FSBTotalBugs'] = d3.max(data, function(data) { return +data['FSB Total Bugs']; } );
-  }
-  if(hasColumn['SLScanVulns']) {
-    maxValues['SLScanVulns'] = d3.max(data, function(data) { return +data['SLScan SAST vulns']; } );
-  }
-  if(hasColumn['InsiderVulns']) {
-    maxValues['InsiderVulns'] = d3.max(data, function(data) { return +data['Insider SAST vulns']; } );
-  }
-  if(hasColumn['GrypeVulns']) {
-    maxValues['GrypeVulns'] = d3.max(data, function(data) { return +data['Grype vulns']; } );
-  }
-  if(hasColumn['TrivyVulns']) {
-    maxValues['TrivyVulns'] = d3.max(data, function(data) { return +data['Trivy vulns']; } );
-  }
+
+  computeMaxValueSimpleColumn(data, 'OWASPVulnLibs', 'OWASP Total vuln libs')
+  computeMaxValueSimpleColumn(data, 'FSBTotalBugs', 'FSB Total Bugs')
+  computeMaxValueSimpleColumn(data, 'SLScanVulns', 'SLScan SAST vulns')
+  computeMaxValueSimpleColumn(data, 'InsiderVulns', 'Insider SAST vulns')
+  computeMaxValueSimpleColumn(data, 'GrypeVulns', 'Grype vulns')
+  computeMaxValueSimpleColumn(data, 'TrivyVulns', 'Trivy vulns')
 }
 
 // Get color

@@ -9,13 +9,18 @@
         return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
     }
     
+    // Compute max value for one simple column
+    function maxValueSimpleColumn(data, dataColumn) {
+      return Math.max(1, d3.max(data, function(data) { return +data[dataColumn]; } ));
+    }
+
     // Compute max values for each column
     function computeMaxValues(data) {
       var columns=data.columns
-      critical = d3.max(data, function(data) { return +data['Critical']; } );
-      high = d3.max(data, function(data) { return +data['High']; } );
-      medium = d3.max(data, function(data) { return +data['Medium']; } );
-      low = d3.max(data, function(data) { return +data['Low']; } );
+      critical = maxValueSimpleColumn(data, 'Critical');
+      high = maxValueSimpleColumn(data, 'High');
+      medium = maxValueSimpleColumn(data, 'Medium');
+      low = maxValueSimpleColumn(data, 'Low');
       // Start > 0 to avoid black numbers
       maxValue = Math.max(1,critical,high,medium,low);
     }

@@ -12,6 +12,11 @@ function numberWithDots(x) {
     return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : "";
 }
 
+// Compute max value for one simple column
+function maxValueSimpleColumn(data, dataColumn) {
+  return Math.max(1, d3.max(data, function(data) { return +data[dataColumn]; } ));
+}
+
 // Compute max values for each column
 function computeMaxValues(data) {
   var columns=data.columns
@@ -22,10 +27,10 @@ function computeMaxValues(data) {
     if(columns[i].startsWith('WAMT criticals')) { indexWAMT=i; }
   }
   if(indexWINDUP!=0) {
-    maxValues['WINDUP'] = d3.max(data, function(data) { return +data['WINDUP story points']; } );
+    maxValues['WINDUP'] = maxValueSimpleColumn(data, 'WINDUP story points');
   }
   if(indexWAMT!=0) {
-    maxValues['WAMT'] = d3.max(data, function(data) { return +data['WAMT total']; } );
+    maxValues['WAMT'] = maxValueSimpleColumn(data, 'WAMT total');
   }
 }
 
