@@ -7,7 +7,7 @@
 ##############################################################################################################
 
 # Current version of Application Portfolio Auditor
-export TOOL_VERSION='2.0.0'
+export TOOL_VERSION='2.0.1'
 
 # Java version used for Bagger and Fernflower
 export JAVA_VERSION='20'
