@@ -171,7 +171,7 @@ if __name__ == '__main__':
         (check_github, 'anchore/grype', r'.*tag/v(.+)', 'Grype', GRYPE_VERSION, None),
         (check_github, 'anchore/syft', r'.*tag/v(.+)', 'Syft', SYFT_VERSION, None),
         (check_github, 'aquasecurity/trivy', r'.*tag/v(.+)', 'Trivy', TRIVY_VERSION, None),
-        (check_wamt, 'https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wamt/ApplicationBinaryTP/', r'.*(09:02).*', 'IBM WAMT', WAMT_VERSION, None),
+        (check_wamt, 'https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wamt/ApplicationBinaryTP/', r'.*(2023-09-01).*(11:00).*', 'IBM WAMT', WAMT_VERSION, None),
 
         # Section for the supporting frameworks
         (print_bold_message, '', r'', '\nSupporting frameworks', '', None),
