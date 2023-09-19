@@ -21,14 +21,14 @@ export CSA_VERSION='4.0.0'
 export WAMT_VERSION='23.0.0.3'
 
 # Languages
-export LINGUIST_VERSION='7.26.0'
+export LINGUIST_VERSION='7.27.0'
 export CLOC_VERSION='1.98'
 
 # License & Authors
 export SCANCODE_VERSION='32.0.6'
 
 # Code quality / bugs
-export MAI_VERSION='1.9.10'
+export MAI_VERSION='1.9.13'
 export PMD_VERSION='6.55.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
@@ -39,16 +39,16 @@ export OWASP_DC_VERSION='8.4.0'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='0.89.0'
-export GRYPE_VERSION='0.66.0'
-export TRIVY_VERSION='0.45.0'
+export SYFT_VERSION='0.90.0'
+export GRYPE_VERSION='0.68.1'
+export TRIVY_VERSION='0.45.1'
 
 # Other
-export MUSTACHE_VERSION="3.0.2"
+export MUSTACHE_VERSION="3.0.3"
 export NGINX_VERSION="1.25.2"
 export NIST_MIRROR_VERSION="1.6.0"
 export D3_VERSION="7.8.5"
 export JQUERY_VERSION="3.7.1"
-export BOOTSTRAP_VERSION="5.3.1"
-export BOOTSTRAP_ICONS_VERSION="1.10.5"
+export BOOTSTRAP_VERSION="5.3.2"
+export BOOTSTRAP_ICONS_VERSION="1.11.1"
 export TIMELINES_CHART_VERSION="2.12.1"
