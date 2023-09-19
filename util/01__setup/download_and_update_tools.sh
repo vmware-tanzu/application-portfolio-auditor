@@ -506,7 +506,7 @@ log_tool_info "08 - CLOC v${CLOC_VERSION}"
 if [ -f "${DIST_DIR}/cloc-${CLOC_VERSION}.tar.gz" ]; then
 	echo "[INFO] 'CLOC' (${CLOC_VERSION}) is already available"
 else
-	find "${DIST_DIR}" -type f -iname 'cloc-*.tar.gz' -exec rm -rf {} \;
+	find "${DIST_DIR}" -type f -iname 'cloc-*.tar.gz' -delete
 	simple_check_and_download "CLOC" "cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
 fi
 
@@ -687,7 +687,7 @@ simple_check_and_download "JavaScript - jQuery" "templating/static/js/jquery-${J
 if [ -f "${JS_DIR}/timelines-chart-${TIMELINES_CHART_VERSION}.min.js" ]; then
 	echo "[INFO] 'JavaScript - Timelines Chart' (${TIMELINES_CHART_VERSION}) is already available"
 else
-	find "${SCRIPT_PATH}/../../dist/templating/static/js" -type d -iname 'timelines-chart*.min.js' -exec rm -rf {} \;
+	find "${SCRIPT_PATH}/../../dist/templating/static/js" -type f -iname 'timelines-chart*.min.js' -delete;
 	simple_check_and_download "JavaScript - Timelines Chart" "templating/static/js/timelines-chart-${TIMELINES_CHART_VERSION}.min.js" "https://unpkg.com/timelines-chart@${TIMELINES_CHART_VERSION}/dist/timelines-chart.min.js" "${TIMELINES_CHART_VERSION}"
 fi
 
@@ -703,13 +703,12 @@ else
 
 	mkdir -p "${DIST_STATIC}"
 	# Delete previous folder and distributions
-	find "${SCRIPT_PATH}/../../dist/templating/static" -type d -iname 'bootstrap-*-dist' -exec rm -rf {} \;
 	find "${SCRIPT_PATH}/../../dist/templating/static" -type f -iname 'bootstrap-*-dist.zip' ! -name bootstrap-${BOOTSTRAP_VERSION}-dist.zip -delete
 
 	simple_check_and_download "Bootstrap" "templating/static/bootstrap-${BOOTSTRAP_VERSION}-dist.zip" "https://github.com/twbs/bootstrap/releases/download/v${BOOTSTRAP_VERSION}/bootstrap-${BOOTSTRAP_VERSION}-dist.zip" "${BOOTSTRAP_VERSION}"
 
 	pushd "${SCRIPT_PATH}/../../dist/templating/static" &>/dev/null
-
+	rm -Rf bootstrap-*-dist
 	unzip bootstrap-${BOOTSTRAP_VERSION}-dist.zip &>/dev/null
 	find bootstrap-${BOOTSTRAP_VERSION}-dist/css -type f ! -iname 'bootstrap.min.css*' -delete
 	find bootstrap-${BOOTSTRAP_VERSION}-dist/js -type f ! -iname 'bootstrap.bundle.min.js*' -delete
@@ -727,9 +726,10 @@ else
 	find "${SCRIPT_PATH}/../../dist/templating/static/fonts" -type f -iname 'bootstrap-icons.*' -delete
 	simple_check_and_download "Bootstrap Icons" "templating/static/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip" "https://github.com/twbs/icons/releases/download/v${BOOTSTRAP_ICONS_VERSION}/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip" "${BOOTSTRAP_ICONS_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/templating/static" &>/dev/null
+	rm -Rf bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/
 	unzip bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip &>/dev/null
-	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/font/bootstrap-icons.css css/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.css
-	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/font/fonts/* fonts/.
+	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/bootstrap-icons.css css/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.css
+	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/fonts/* fonts/.
 	rm -Rf bootstrap-icons-*
 	popd &>/dev/null
 fi
