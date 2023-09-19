@@ -51,7 +51,7 @@ RULES_OWASP=$(curl --compressed -fsSL 'https://nvd.nist.gov/rest/public/dashboar
 echo "05 - OWASP DC: ${RULES_OWASP}"
 
 # JS Repository
-RULES_OWASP_JS=$(grep '"below"' -c "${DIST_DIR}"/owasp_cache/jsrepository.json)
+RULES_OWASP_JS=$(grep '"below"' -c "${DIST_DIR}"/owasp_data/jsrepository.json)
 echo "05 - OWASP DC JS: ${RULES_OWASP_JS}"
 
 ###### 06 - Scancode
@@ -73,7 +73,7 @@ rm -Rf "${TMP_DIR}"
 echo "07 - PMD & GDS: ${RULES_PMD}"
 
 ###### 08 - Linguist
-RULES_LINGUIST=$(curl --compressed -fsSL https://github.com/github/linguist/tree/master/vendor/grammars | grep '<span class="css-truncate css-truncate-target d-block width-fit">' -c)
+RULES_LINGUIST=$(curl --compressed -fsSL https://github.com/github/linguist/tree/master/vendor/grammars | jq -C | grep 'submoduleDisplayName' | grep -v 'CodeMirror' -c)
 echo "08 - Linguist: ${RULES_LINGUIST}"
 
 ###### 08 - CLOC
