@@ -196,6 +196,7 @@
             <span class="mb-3">This website does not use cookies or other tracking technology.</span>
           </div>
         </div>
+      </div>
     </footer>
   </section>
 
