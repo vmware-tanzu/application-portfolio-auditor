@@ -162,8 +162,8 @@ if __name__ == '__main__':
         (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, None),
         (check_github, 'AlDanial/cloc', r'.*/tag/v(.+)', 'CLOC', CLOC_VERSION, None),
         ## Windup: Versions from 6.2.x do not allow multiple targets
-        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.1'),
-        (check_github, 'vmware-tanzu/cloud-suitability-analyzer', r'.*/tag/v(.+)', 'CSA', CSA_VERSION, None),
+        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.2'),
+        (check_github, 'vmware-tanzu/cloud-suitability-analyzer', r'.*/tag/(.+)', 'CSA', CSA_VERSION, None),
         (check_github, 'microsoft/ApplicationInspector', r'.*/tag/v(.+)', 'MAI', MAI_VERSION, None),
         (check_github, 'github/linguist', r'.*/tag/v(.+)', 'Linguist', LINGUIST_VERSION, None),
         (check_github, 'insidersec/insider', r'.*tag/(.+)', 'Insider', INSIDER_VERSION, None),
@@ -171,7 +171,7 @@ if __name__ == '__main__':
         (check_github, 'anchore/grype', r'.*tag/v(.+)', 'Grype', GRYPE_VERSION, None),
         (check_github, 'anchore/syft', r'.*tag/v(.+)', 'Syft', SYFT_VERSION, None),
         (check_github, 'aquasecurity/trivy', r'.*tag/v(.+)', 'Trivy', TRIVY_VERSION, None),
-        (check_wamt, 'https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wamt/ApplicationBinaryTP/', r'.*(2023-09-01).*(11:00).*', 'IBM WAMT', WAMT_VERSION, None),
+        (check_wamt, 'https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wamt/ApplicationBinaryTP/', r'.*(2023-09-29).*(10:03).*', 'IBM WAMT', WAMT_VERSION, None),
 
         # Section for the supporting frameworks
         (print_bold_message, '', r'', '\nSupporting frameworks', '', None),

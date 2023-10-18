@@ -11,7 +11,7 @@
 # ----- Please adjust
 
 # Set to true to get update all local vulnerability databases updated
-UPDATE_VULN_DBS=true
+UPDATE_VULN_DBS=false
 
 # Basis Dotnet runtime image used to build MAI (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
 ## curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
@@ -211,9 +211,9 @@ else
 	rm -Rf "${TMP_DIR}"
 	mkdir -p "${TMP_DIR}"
 	pushd "${TMP_DIR}" &>/dev/null
-	wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa-l"
-	wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa"
-	#wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/CSA-UserManual.pdf"
+	wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/${CSA_VERSION}/csa-l"
+	wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/${CSA_VERSION}/csa"
+	#wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/${CSA_VERSION}/CSA-UserManual.pdf"
 	chmod +x csa-l csa
 	cd ..
 	zip -r "cloud-suitability-analyzer-${CSA_VERSION}.zip" cloud-suitability-analyzer
