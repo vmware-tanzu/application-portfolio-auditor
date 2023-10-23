@@ -17,7 +17,7 @@ export JAVA_VERSION='20'
 # Migration & cloud readiness
 #export WINDUP_VERSION='6.3.0' - Visualization of new version is a step back.
 export WINDUP_VERSION='6.1.11'
-export CSA_VERSION='4.1.0'
+export CSA_VERSION='4.1.9'
 export WAMT_VERSION='23.0.0.4'
 
 # Languages
@@ -35,12 +35,12 @@ export SCC_VERSION='2.12.0'
 
 # Security
 export PMD_GDS_VERSION='2.33.0'
-export OWASP_DC_VERSION='8.4.0'
+export OWASP_DC_VERSION='8.4.2'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='0.93.0'
-export GRYPE_VERSION='0.71.0'
+export SYFT_VERSION='0.94.0'
+export GRYPE_VERSION='0.72.0'
 export TRIVY_VERSION='0.46.0'
 
 # Other
