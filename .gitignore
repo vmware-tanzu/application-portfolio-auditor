@@ -17,7 +17,7 @@
 conf/Fernflower/excluded_sha1.txt
 conf/CSA/default-bins.yaml
 conf/CSA/custom-rules/*
-conf/CSA/default-rules/*
+conf/CSA/default-rules*
 conf/CSA/tmp-rules/*
 conf/CSA/tmp-bins.yaml
 dist/bagger/target
