@@ -39,9 +39,9 @@ export OWASP_DC_VERSION='8.4.2'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export GRYPE_VERSION='0.72.0'
 export TRIVY_VERSION='0.46.1'
 export SYFT_VERSION='0.96.0'
+export GRYPE_VERSION='0.73.1'
 
 # Other
 export MUSTACHE_VERSION="3.0.3"
