@@ -35,7 +35,7 @@ export SCC_VERSION='2.12.0'
 
 # Security
 export PMD_GDS_VERSION='2.33.0'
-export OWASP_DC_VERSION='8.4.2'
+export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
