@@ -77,7 +77,9 @@ function simple_check_and_download() {
 
 function remove_container_images() {
   NAME="${1}"
-  ${CONTAINER_ENGINE} images -a | grep "${NAME}" | awk '{print $3}' | xargs "${CONTAINER_ENGINE}" rmi --force
+  set +e
+  ${CONTAINER_ENGINE} images -a | grep "${NAME}" | awk '{print $3}' | xargs -r "${CONTAINER_ENGINE}" rmi --force
+  set -e
 }
 
 function download_container_image() {
