@@ -385,7 +385,7 @@ elif [[ ! $# -eq 0 && -n "${1}" &&  "${1}" != "run" ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_macos.sh' 'util/01__setup/download_and_update_tools.sh')
 		elif [[ -e "/etc/centos-release" || -e "/etc/redhat-release" ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_centos.sh' 'util/01__setup/download_and_update_tools.sh')
-		elif [[ -e "/etc/lsb-release" && $(grep -q 'Ubuntu' '/etc/lsb-release') ]]; then
+		elif [[ $(command -v lsb_release) && $(lsb_release -d |grep 'Ubuntu') ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_ubuntu.sh' 'util/01__setup/download_and_update_tools.sh')
 		else
 			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS"
