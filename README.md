@@ -30,7 +30,7 @@ $ git clone git@github.com:vmware-tanzu/application-portfolio-auditor.git
 $ cd application-portfolio-auditor
 $ ./audit setup
 ```
-> Note: This command automates the installation of all required prerequisites. It automatically configures based on the detected operating system (MacOS, Ubuntu, or CentOS). The process may take several minutes to complete.
+> Note: This command automates the installation of all required prerequisites. It automatically configures based on the detected operating system (MacOS, Ubuntu, or CentOS) and requires sudo rights. The process may take several minutes to complete.
 
 3. Retrieve necessary tools and frameworks:
 ```bash
