@@ -50,9 +50,21 @@ function log_tool_end() {
 	echo -e "${B}<<<<<<< [${LOG_DATE}] ${*}\n${N}"
 }
 
+function echo_console_warning() {
+	echo -e "${ORANGE}${*}${N}"
+}
+
+function echo_console_error() {
+	echo -e "${RED}${*}${N}"
+}
+
+function echo_console_tool_info() {
+	echo -e "\n${BLUE}${*}${N}"
+}
+
 function log_tool_info() {
 	set -u
-	echo -e "${BLUE}${*}${N}"
+	echo_console_tool_info "${*}"
 	echo "${*}" >>"${LOG_FILE}"
 }
 
@@ -70,6 +82,16 @@ function log_console() {
 	echo -e "${*}" | tee -a "${LOG_FILE}"
 }
 
+function log_warning() {
+	echo "${*}" >>"${LOG_FILE}"
+	echo_console_warning "${*}"
+}
+
+function log_error() {
+	echo "${*}" >>"${LOG_FILE}"
+	echo_console_error "${*}"
+}
+
 function log_console_step() {
 	log_console " -> ${*}"
 }
@@ -83,13 +105,7 @@ function log_console_info() {
 }
 
 function log_console_error() {
-	echo "    [ERROR] ${*}" >>"${LOG_FILE}"
-	echo -e "${RED}    [ERROR] ${*}${N}"
-}
-
-function log_warning() {
-	echo "${*}" >>"${LOG_FILE}"
-	echo -e "${ORANGE}${*}${N}"
+	log_error "    [ERROR] ${*}"
 }
 
 function log_console_warning() {

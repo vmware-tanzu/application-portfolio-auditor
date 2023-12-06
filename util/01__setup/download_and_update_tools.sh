@@ -43,18 +43,6 @@ export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
 
-function log_tool_info() {
-	echo -e "\n${BLUE}${*}${N}"
-}
-
-function log_error() {
-	echo -e "${RED}${*}${N}"
-}
-
-function log_warn() {
-	echo -e "${ORANGE}${*}${N}"
-}
-
 function simple_check_and_download() {
 	NAME="${1}"
 	DIST="${DIST_DIR}/${2}"
@@ -68,7 +56,7 @@ function simple_check_and_download() {
 		wget --user-agent 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36' -q -O "${DIST}" "${URL}"
 		RC=$?
 		if [[ ${RC} -ne 0 ]]; then
-			log_error "Error while downloading '${URL}' (Return code: ${RC})"
+			echo_console_error "Error while downloading '${URL}' (Return code: ${RC})"
 			rm -f "${DIST}"
 		fi
 		set -e
@@ -132,11 +120,11 @@ function check_built_java_version() {
 	if [[ -n "$(command -v od)" ]]; then
 		JAVA_VERSION_BUILD=$(od -t d -j 7 -N 1 "${CLASS}" | head -1 | awk '{print $2 - 44}')
 		if [[ "${JAVA_VERSION_BUILD}" != "${JAVA_VERSION}" ]]; then
-			log_error "Build JAR (Java ${JAVA_VERSION_BUILD}) does not match expected version (${JAVA_VERSION})"
+			echo_console_error "Build JAR (Java ${JAVA_VERSION_BUILD}) does not match expected version (${JAVA_VERSION})"
 			exit 1
 		fi
 	else
-		log_warn "Unable to validate built JAR version as 'od' is not installed"
+		echo_console_warning "Unable to validate built JAR version as 'od' is not installed"
 	fi
 }
 
@@ -159,7 +147,7 @@ fi
 ##############################################################################################################
 # 01 Fernflower
 ##############################################################################################################
-log_tool_info "01 - Fernflower"
+echo_console_tool_info "01 - Fernflower"
 DIST_FERNFLOWER="${DIST_DIR}/fernflower__${JAVA_VERSION}.jar"
 if [ -f "${DIST_FERNFLOWER}" ]; then
 	echo "[INFO] 'Fernflower' is already available"
@@ -201,7 +189,7 @@ fi
 ##############################################################################################################
 # 02 CSA
 ##############################################################################################################
-log_tool_info "02 - CSA v${CSA_VERSION}"
+echo_console_tool_info "02 - CSA v${CSA_VERSION}"
 DIST_CSA="${DIST_DIR}/cloud-suitability-analyzer-${CSA_VERSION}.zip"
 if [ -f "${DIST_CSA}" ]; then
 	echo "[INFO] 'CSA' (${CSA_VERSION}) is already available"
@@ -225,7 +213,7 @@ else
 fi
 
 # 02 CSA - Bagger build
-log_tool_info "02 - CSA v${CSA_VERSION} - Bagger"
+echo_console_tool_info "02 - CSA v${CSA_VERSION} - Bagger"
 if [ -f "${DIST_DIR}/bagger__${JAVA_VERSION}.jar" ]; then
 	echo "[INFO] 'Bagger' is already available"
 else
@@ -240,7 +228,7 @@ fi
 ##############################################################################################################
 # 03 Windup
 ##############################################################################################################
-log_tool_info "03 - Windup v${WINDUP_VERSION}"
+echo_console_tool_info "03 - Windup v${WINDUP_VERSION}"
 DIST_WINDUP="${DIST_DIR}/oci__windup_${WINDUP_VERSION}.img"
 if [ -f "${DIST_WINDUP}" ]; then
 	echo "[INFO] 'Windup' (${WINDUP_VERSION}) is already available"
@@ -290,7 +278,7 @@ fi
 ##############################################################################################################
 # 04 IBM WAMT
 ##############################################################################################################
-log_tool_info "04 - WAMT v${WAMT_VERSION}"
+echo_console_tool_info "04 - WAMT v${WAMT_VERSION}"
 DIST_IBM_WAMT="${DIST_DIR}/oci__wamt_${WAMT_VERSION}.img"
 if [ -f "${DIST_IBM_WAMT}" ]; then
 	echo "[INFO] 'IBM WAMT' (${WAMT_VERSION}) is already available"
@@ -341,7 +329,7 @@ fi
 ##############################################################################################################
 # 05 OWASP DC
 ##############################################################################################################
-log_tool_info "05 - OWASP DC v${OWASP_DC_VERSION}"
+echo_console_tool_info "05 - OWASP DC v${OWASP_DC_VERSION}"
 
 ODC_IMG="${DIST_DIR}/oci__owasp-dependency-check_${OWASP_DC_VERSION}.img"
 if [[ -f "${ODC_IMG}" ]]; then
@@ -398,7 +386,7 @@ fi
 ##############################################################################################################
 # 06 ScanCode Toolkit
 ##############################################################################################################
-log_tool_info "06 - ScanCode v${SCANCODE_VERSION}"
+echo_console_tool_info "06 - ScanCode v${SCANCODE_VERSION}"
 SC_IMG="${DIST_DIR}/oci__scancode-toolkit_${SCANCODE_VERSION}.img"
 if [[ -f "${SC_IMG}" ]]; then
 	echo "[INFO] 'ScanCode' (${SCANCODE_VERSION}) is already available"
@@ -455,7 +443,7 @@ fi
 ##############################################################################################################
 # 07 PMD
 ##############################################################################################################
-log_tool_info "07 - PMD v${PMD_VERSION}"
+echo_console_tool_info "07 - PMD v${PMD_VERSION}"
 simple_check_and_download "PMD" "pmd-bin-${PMD_VERSION}.zip" "https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-bin-${PMD_VERSION}.zip" "${PMD_VERSION}"
 
 # Libraries to fix issues with PMD
@@ -467,13 +455,13 @@ simple_check_and_download "PMD_LIB__janino" "pmd-missing-janino-3.1.7.jar" "http
 simple_check_and_download "PMD_LIB__mailapi" "pmd-missing-mailapi-2.0.1.jar" "https://repo1.maven.org/maven2/com/sun/mail/mailapi/2.0.1/mailapi-2.0.1.jar" "2.0.1"
 
 # Additional security rules
-log_tool_info "07 - PMD v${PMD_VERSION} - GDS rules"
+echo_console_tool_info "07 - PMD v${PMD_VERSION} - GDS rules"
 simple_check_and_download "PMD_GDS" "pmd-gds-${PMD_GDS_VERSION}.jar" "https://github.com/albfernandez/GDS-PMD-Security-Rules/releases/download/v.${PMD_GDS_VERSION}/pmd-gds-${PMD_GDS_VERSION}.jar" "${PMD_GDS_VERSION}"
 
 ##############################################################################################################
 # 08 Linguist
 ##############################################################################################################
-log_tool_info "08 - Linguist v${LINGUIST_VERSION}"
+echo_console_tool_info "08 - Linguist v${LINGUIST_VERSION}"
 LINGUIST_IMG="oci__linguist_${LINGUIST_VERSION}.img"
 if [[ -f "${DIST_DIR}/${LINGUIST_IMG}" ]]; then
 	echo "[INFO] 'Linguist' (${LINGUIST_VERSION}) is already available"
@@ -504,7 +492,7 @@ fi
 ##############################################################################################################
 # 08 CLOC
 ##############################################################################################################
-log_tool_info "08 - CLOC v${CLOC_VERSION}"
+echo_console_tool_info "08 - CLOC v${CLOC_VERSION}"
 if [ -f "${DIST_DIR}/cloc-${CLOC_VERSION}.tar.gz" ]; then
 	echo "[INFO] 'CLOC' (${CLOC_VERSION}) is already available"
 else
@@ -515,7 +503,7 @@ fi
 ##############################################################################################################
 # 09 FindSecBugs
 ##############################################################################################################
-log_tool_info "09 - FindSecBugs v${FSB_VERSION}"
+echo_console_tool_info "09 - FindSecBugs v${FSB_VERSION}"
 FSB_DIST="${DIST_DIR}/oci__findsecbugs_${FSB_VERSION}.img"
 if [ -f "${FSB_DIST}" ]; then
 	echo "[INFO] 'FindSecBugs' (${FSB_VERSION}) is already available"
@@ -566,7 +554,7 @@ fi
 ##############################################################################################################
 # 10 Microsoft Application Inspector (MAI)
 ##############################################################################################################
-log_tool_info "10 - MAI v${MAI_VERSION}"
+echo_console_tool_info "10 - MAI v${MAI_VERSION}"
 DIST_MAI="${DIST_DIR}/oci__mai_${MAI_VERSION}.img"
 if [ -f "${DIST_MAI}" ]; then
 	echo "[INFO] 'MAI' (${DIST_MAI}) is already available"
@@ -604,7 +592,7 @@ fi
 ##############################################################################################################
 # Loading the latest linguist container image (only for amd64)
 if [[ "${ARCH}" == "x86_64" ]]; then
-	log_tool_info "11 - SAST-Scan v${SLSCAN_VERSION}"
+	echo_console_tool_info "11 - SAST-Scan v${SLSCAN_VERSION}"
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__sast-scan_*.img' ! -name oci__sast-scan_${SLSCAN_VERSION}.img -delete
 	download_container_image 'SAST-Scan (slscan)' "latest" "shiftleft/sast-scan" "oci__sast-scan_${SLSCAN_VERSION}.img"
 fi
@@ -613,7 +601,7 @@ fi
 # 12 Insider
 ##############################################################################################################
 # Load the latest Insider container image
-log_tool_info "12 - Insider v${INSIDER_VERSION}"
+echo_console_tool_info "12 - Insider v${INSIDER_VERSION}"
 find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__insider_*.img' ! -name oci__insider_${INSIDER_VERSION}.img -delete
 download_container_image 'Insider' "latest" "insidersec/insider" "oci__insider_${INSIDER_VERSION}.img" "linux/amd64"
 
@@ -621,7 +609,7 @@ download_container_image 'Insider' "latest" "insidersec/insider" "oci__insider_$
 # 13 Grype
 ##############################################################################################################
 # Load the correct Grype container image
-log_tool_info "13 - Grype v${GRYPE_VERSION}"
+echo_console_tool_info "13 - Grype v${GRYPE_VERSION}"
 find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__grype_*.img' ! -name oci__grype_${GRYPE_VERSION}.img -delete
 download_container_image 'Grype' "v${GRYPE_VERSION}" "anchore/grype" "oci__grype_${GRYPE_VERSION}.img"
 
@@ -636,7 +624,7 @@ fi
 # 13 Syft
 ##############################################################################################################
 # Load the correct Syft container image
-log_tool_info "13 - Syft v${SYFT_VERSION}"
+echo_console_tool_info "13 - Syft v${SYFT_VERSION}"
 find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__syft_*.img' ! -name oci__syft_${SYFT_VERSION}.img -delete
 download_container_image 'Syft' "v${SYFT_VERSION}" "anchore/syft" "oci__syft_${SYFT_VERSION}.img"
 
@@ -644,7 +632,7 @@ download_container_image 'Syft' "v${SYFT_VERSION}" "anchore/syft" "oci__syft_${S
 # 14 Trivy
 ##############################################################################################################
 # Load the correct Trivy container image
-log_tool_info "14 - Trivy v${TRIVY_VERSION}"
+echo_console_tool_info "14 - Trivy v${TRIVY_VERSION}"
 DIST_TRIVY="${DIST_DIR}/oci__trivy_${TRIVY_VERSION}.img"
 if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	# Remove current image to force an update of the cache
@@ -674,7 +662,7 @@ fi
 ##############################################################################################################
 # 99 Reports - Update imported static content
 ##############################################################################################################
-log_tool_info "99 - Static content"
+echo_console_tool_info "99 - Static content"
 
 JS_DIR="${DIST_DIR}/templating/static/js"
 mkdir -p "${JS_DIR}"
