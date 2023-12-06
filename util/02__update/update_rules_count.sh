@@ -6,8 +6,10 @@
 # Count the number rules of each tool used by "Application Portfolio Auditor".
 ##############################################################################################################
 
-#set -x
+# ----- Please adjust
+LOCAL_WINDUP_REPORT="$(pwd)/reports/2023_10_25__12_30_48__large/03__WINDUP__large"
 
+# ------ Do not modify
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 INSTALL_DIR=${SCRIPT_DIR}/../../bin
 DIST_DIR=${SCRIPT_DIR}/../../dist
@@ -27,13 +29,11 @@ RULES_CSA=$(find "${CSA_RULES_DIR}" -type f | grep -c "yaml" || true)
 echo "02 - CSA: ${RULES_CSA}"
 
 ###### 03 - Windup
-wget -q "${WINDUP_REPORT}" https://arg-small.vela.decc.vmware.com/03__WINDUP__small/reports/windup_ruleproviders.html
-WINDUP_REPORT="./windup_ruleproviders.html"
+WINDUP_REPORT="${LOCAL_WINDUP_REPORT}/reports/windup_ruleproviders.html"
 COUNT_TABLES=$(grep -c "<table" "${WINDUP_REPORT}")
 COUNT_SUCCESS=$(grep -c "success" "${WINDUP_REPORT}")
 RULES_WINDUP=$((COUNT_SUCCESS - COUNT_TABLES))
 echo "03 - WINDUP: ${RULES_WINDUP}"
-rm -f "${WINDUP_REPORT}"
 
 ###### 04 - WAMT
 TMP_DIR="/tmp/wamt"
