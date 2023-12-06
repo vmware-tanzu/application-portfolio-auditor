@@ -22,7 +22,7 @@ TARGET_OS=Ubuntu
 
 ## Point to the latest local "Applicaton Portfolio Auditor" distribution - Please update!
 SCRIPT_DIR="$( cd -- "$(dirname "${0}" )" || exit >/dev/null 2>&1 ; pwd -P )"
-DIST_FOLDER="${SCRIPT_DIR}/../../../gitlab_application-portfolio-auditor-tmp/backup"
+DIST_FOLDER="${SCRIPT_DIR}/../../../application-portfolio-auditor-releases"
 
 # --- Don't change
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
