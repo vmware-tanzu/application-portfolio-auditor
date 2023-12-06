@@ -721,8 +721,8 @@ else
 	pushd "${SCRIPT_PATH}/../../dist/templating/static" &>/dev/null
 	rm -Rf bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/
 	unzip bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip &>/dev/null
-	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/bootstrap-icons.css css/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.css
-	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/fonts/* fonts/.
+	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/font/bootstrap-icons.css css/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.css
+	cp -f bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}/font/fonts/* fonts/.
 	rm -Rf bootstrap-icons-*
 	popd &>/dev/null
 fi
