@@ -145,7 +145,7 @@ async def check_dotnet_runtime(client, short_url, regex, name, version, unstable
     try:
         html = await fetch_html(client, url)
         tags = json.loads(html)['tags']
-        filtered_tags = [tag for tag in tags if 'alpine' in tag and 'preview' not in tag and 'amd64' not in tag and 'arm' not in tag]
+        filtered_tags = [tag for tag in tags if 'alpine' in tag and 'preview' not in tag and 'amd64' not in tag and 'arm' not in tag and 'rc' not in tag]
         filtered_tags.sort()
         project_version = filtered_tags[-1] if filtered_tags else None
         if project_version != version:
@@ -203,7 +203,7 @@ if __name__ == '__main__':
         (check_github_tag,'tests-always-included/mo', r'(.+)', 'Mustache', MUSTACHE_VERSION, None),
         (check_github_tag,'nginx/nginx', r'release-(.+)', 'Nginx', NGINX_VERSION, None),
         (check_github_tag,'vasturiano/timelines-chart', r'v(.+)', 'Timeline Chart', TIMELINES_CHART_VERSION, None),
-        (check_dotnet_runtime, '', r'', '.NET Runtime', DONET_RUNTIME_VERSION, '8.0.0-rc.2-alpine3.18')
+        (check_dotnet_runtime, '', r'', '.NET Runtime', DONET_RUNTIME_VERSION, None)
     ]))
 
     for line_idx, result in sorted(results.items()):
