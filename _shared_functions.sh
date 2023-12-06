@@ -59,7 +59,7 @@ function echo_console_error() {
 }
 
 function echo_console_tool_info() {
-	echo -e "\n${BLUE}${*}${N}"
+	echo -e "${BLUE}${*}${N}"
 }
 
 function log_tool_info() {
