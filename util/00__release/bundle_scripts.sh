@@ -18,7 +18,7 @@ AUDITOR_DIR="${SCRIPT_DIR}/../.."
 RELEASE_DIR="${AUDITOR_DIR}/../application-portfolio-auditor-releases"
 
 # Folder containing test application(s) to be included in the binary release
-TEST_APPLICATION="${AUDITOR_DIR}/apps/test"
+TEST_APPLICATION="${AUDITOR_DIR}/apps/test-application/example.ear"
 
 # Temporary directory to prepare the release
 TMP_DIR="/tmp/application-portfolio-auditor"
@@ -57,7 +57,8 @@ find dist/containerized/. \( -name '*.zip' -o -name '*.orig' \) -type f -delete
 mkdir -p apps bin reports
 
 # Add test application
-cp -Rfp "${TEST_APPLICATION}" apps/.
+mkdir apps/test-application
+cp -Rfp "${TEST_APPLICATION}/example.ear" apps/test-application/.
 
 cd .. || exit
 
