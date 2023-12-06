@@ -98,22 +98,26 @@ function check_java_version() {
 	echo "Check Java version (>=${NEEDED_JAVA_VERSION})"
 	if [[ -n "$(command -v javac)" ]]; then
 		if javac -version 2>&1 | grep -q 'No Java runtime present'; then
-			echo "No Java runtime present. Please install Java ${NEEDED_JAVA_VERSION}."
+			echo_console_error "No Java runtime present. Please install Java ${NEEDED_JAVA_VERSION}."
 			exit 1
 		else
 			JAVA_VERSION_CURRENT=$(javac -version 2>&1 | grep 'javac' | awk '{print $2}')
+			if [ -z "${JAVA_VERSION_CURRENT}" ]; then
+				echo_console_error "No Java runtime detected. Please install Java ${NEEDED_JAVA_VERSION}."
+				exit 1
+			fi
 			JAVA_VERSION_MAJOR="$(echo "${JAVA_VERSION_CURRENT}" 2>&1 | cut -d . -f 1)"
 			COUNT_ZULU=$(java -version 2>&1 | grep -c 'Zulu' || true)
 			if ((COUNT_ZULU > 0)); then
-				echo "Wrong JDK provider in use ('Zulu'). Please switch to a non-Zulu JDK."
+				echo_console_error "Wrong JDK provider in use ('Zulu'). Please switch to a non-Zulu JDK."
 				exit 1
 			elif [ ${JAVA_VERSION_MAJOR} -lt ${NEEDED_JAVA_VERSION} ]; then
-				echo "Wrong Java version ('${JAVA_VERSION_CURRENT}') in use. Please switch to Java ${NEEDED_JAVA_VERSION}."
+				echo_console_error "Wrong Java version ('${JAVA_VERSION_CURRENT}') in use. Please switch to Java ${NEEDED_JAVA_VERSION}."
 				exit 1
 			fi
 		fi
 	else
-		echo "Java is not available. Please install Java ${NEEDED_JAVA_VERSION} or later."
+		echo_console_error "Java is not available. Please install Java ${NEEDED_JAVA_VERSION} or later."
 		exit 1
 	fi
 }
