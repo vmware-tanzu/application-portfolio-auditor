@@ -136,7 +136,7 @@ function main() {
 	setup_docker
 
 	# Set timezone
-	sudo ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone
+	sudo ln -snf "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" >/etc/timezone
 
 	sudo locale-gen en_US.UTF-8
 	update-locale LANG=en_US.UTF-8
