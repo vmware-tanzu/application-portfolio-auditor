@@ -44,6 +44,7 @@ export GRYPE_VERSION='0.73.3'
 export TRIVY_VERSION='0.47.0'
 
 # Other
+export DONET_RUNTIME_VERSION="7.0.14-alpine3.18"
 export MUSTACHE_VERSION="3.0.4"
 export NGINX_VERSION="1.25.3"
 export NIST_MIRROR_VERSION="1.6.0"

@@ -23,7 +23,7 @@ class Color:
     NORMAL = '\033[0m'
 
 # Tool names used to retrieve versions from OS environment variables
-tool_names = [ 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'FSB', 'GRYPE', 'INSIDER', 
+tool_names = [ 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FSB', 'GRYPE', 'INSIDER', 
     'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OWASP_DC', 'PMD_GDS',
     'PMD', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
@@ -137,6 +137,24 @@ async def check_latest_versions(tools):
                 tasks.append(asyncio.create_task(check_operation(client, url, regex, name, version, unstable_version, i+1)))
         await asyncio.gather(*tasks)
 
+async def check_dotnet_runtime(client, short_url, regex, name, version, unstable_version, line_idx):
+    """Check if the current used version is the latest released one."""
+    # Python equivalent of the following line:
+    # curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
+    url = f'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list'
+    try:
+        html = await fetch_html(client, url)
+        tags = json.loads(html)['tags']
+        filtered_tags = [tag for tag in tags if 'alpine' in tag and 'preview' not in tag and 'amd64' not in tag and 'arm' not in tag]
+        filtered_tags.sort()
+        project_version = filtered_tags[-1] if filtered_tags else None
+        if project_version != version:
+            await print_warn(f'{name} - New version available: {project_version} (current: {version}) - Check: {url}',line_idx, select_warn_color(project_version,unstable_version))
+        else:
+            await print_ok(f'{name} - Version up-to-date: {project_version}',line_idx)
+    except Exception as error:
+        await print_error(f'{name} - Request ({url}) failed: '+repr(error),line_idx)
+
 async def print_bold_message(message,line_idx):
     # Section for the supporting frameworks
    await print_message(message,line_idx,Color.BOLD)
@@ -185,6 +203,7 @@ if __name__ == '__main__':
         (check_github_tag,'tests-always-included/mo', r'(.+)', 'Mustache', MUSTACHE_VERSION, None),
         (check_github_tag,'nginx/nginx', r'release-(.+)', 'Nginx', NGINX_VERSION, None),
         (check_github_tag,'vasturiano/timelines-chart', r'v(.+)', 'Timeline Chart', TIMELINES_CHART_VERSION, None),
+        (check_dotnet_runtime, '', r'', '.NET Runtime', DONET_RUNTIME_VERSION, '8.0.0-rc.2-alpine3.18')
     ]))
 
     for line_idx, result in sorted(results.items()):

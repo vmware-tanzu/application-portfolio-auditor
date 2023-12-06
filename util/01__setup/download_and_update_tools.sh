@@ -13,10 +13,6 @@
 # Set to true to get update all local vulnerability databases updated
 UPDATE_VULN_DBS=false
 
-# Basis Dotnet runtime image used to build MAI (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-## curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
-DOTNET_RUNTIME_TAG="mcr.microsoft.com/dotnet/runtime:7.0.9-alpine3.18"
-
 # Gradle version for Fernflower
 GRADLE_VERSION='8.3'
 
@@ -34,6 +30,10 @@ export DIST_BIN="${HOME_DIR}/bin"
 
 # shellcheck source=/dev/null
 source "${HOME_DIR}/_versions.sh"
+
+# Basis Dotnet runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
+## curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
+DOTNET_RUNTIME_TAG="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 
 # Determining platform architecture for the build
 ARCH="$(uname -m)"
