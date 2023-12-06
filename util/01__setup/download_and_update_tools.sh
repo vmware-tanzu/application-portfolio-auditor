@@ -23,7 +23,10 @@ GRADLE_VERSION='8.3'
 # ------ Do not modify
 [[ "$DEBUG" == "true" ]] && set -x
 set -eu
-SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+SCRIPT_PATH="$(
+	cd -- "$(dirname "$0")" >/dev/null 2>&1
+	pwd -P
+)"
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 HOME_DIR="${SCRIPT_DIR}/../.."
 export DIST_DIR="${HOME_DIR}/dist"
@@ -53,7 +56,7 @@ function simple_check_and_download() {
 	else
 		echo "Downloading '${NAME}' (${VERSION})"
 		set +e
-		wget --user-agent 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36' -q -O "${DIST}" "${URL}"
+		wget --user-agent 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_1_2 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36' -q -O "${DIST}" "${URL}"
 		RC=$?
 		if [[ ${RC} -ne 0 ]]; then
 			echo_console_error "Error while downloading '${URL}' (Return code: ${RC})"
@@ -64,10 +67,10 @@ function simple_check_and_download() {
 }
 
 function remove_container_images() {
-  NAME="${1}"
-  set +e
-  ${CONTAINER_ENGINE} images -a | grep "${NAME}" | awk '{print $3}' | xargs -r "${CONTAINER_ENGINE}" rmi --force
-  set -e
+	NAME="${1}"
+	set +e
+	${CONTAINER_ENGINE} images -a | grep "${NAME}" | awk '{print $3}' | xargs -r "${CONTAINER_ENGINE}" rmi --force
+	set -e
 }
 
 function download_container_image() {
@@ -220,7 +223,7 @@ else
 	check_java_version
 	echo "Compiling & packaging 'Bagger'"
 	mvn -v >/dev/null 2>&1 || { echo >&2 "[ERROR] Maven is required for Bagger, but not installed."; }
-	mvn -f "${DIST_DIR}/bagger" clean package assembly:single -Djava.version="${JAVA_VERSION}"	
+	mvn -f "${DIST_DIR}/bagger" clean package assembly:single -Djava.version="${JAVA_VERSION}"
 	check_built_java_version "${DIST_DIR}/bagger/target/classes/io/pivotal//Bagger.class"
 	cp "${DIST_DIR}"/bagger/target/*-with-dependencies.jar "${DIST_DIR}/bagger__${JAVA_VERSION}.jar"
 fi
@@ -677,7 +680,7 @@ simple_check_and_download "JavaScript - jQuery" "templating/static/js/jquery-${J
 if [ -f "${JS_DIR}/timelines-chart-${TIMELINES_CHART_VERSION}.min.js" ]; then
 	echo "[INFO] 'JavaScript - Timelines Chart' (${TIMELINES_CHART_VERSION}) is already available"
 else
-	find "${SCRIPT_PATH}/../../dist/templating/static/js" -type f -iname 'timelines-chart*.min.js' -delete;
+	find "${SCRIPT_PATH}/../../dist/templating/static/js" -type f -iname 'timelines-chart*.min.js' -delete
 	simple_check_and_download "JavaScript - Timelines Chart" "templating/static/js/timelines-chart-${TIMELINES_CHART_VERSION}.min.js" "https://unpkg.com/timelines-chart@${TIMELINES_CHART_VERSION}/dist/timelines-chart.min.js" "${TIMELINES_CHART_VERSION}"
 fi
 
