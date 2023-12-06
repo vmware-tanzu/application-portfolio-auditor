@@ -82,7 +82,7 @@ Please check the <a href="https://github.com/vmware-tanzu/application-portfolio-
 <details>
 <summary>I have an issue, what should I do?</summary>
 <br/>
-First make sure that you are meeting all prerequisites. Especially ensure you have enough RAM allocated to your docker environment.
+First, make sure that you are meeting all prerequisites. Especially ensure you have enough RAM allocated to your docker environment.
 
 If a restart, some cleanup or a glance at the documentation does not further helps, you can <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/issues/new/choose">create</a> an issue on GitHub. For specifics on what to include in your report, please follow the pull request guidelines above and share:
 <ul>
