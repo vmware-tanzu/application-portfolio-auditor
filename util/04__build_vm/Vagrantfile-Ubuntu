@@ -6,7 +6,7 @@ host_name = 'auditor-ubuntu'
 
 # Ubuntu 22.04 - https://app.vagrantup.com/bento/boxes/ubuntu-22.04
 host_box_name = "bento/ubuntu-22.04"
-host_box_version = "202303.13.0"
+host_box_version = "202309.08.0"
 
 host_cpu = 4
 host_ram = 4096
@@ -18,10 +18,10 @@ ansible_playbook = 'ansible-auditor-ubuntu.yml'
 Vagrant.configure(2) do |config|
 
   config.vm.box_check_update = false
-  config.vbguest.auto_update = true
 
   config.vagrant.plugins = ['vagrant-vbguest']
-  config.vbguest.installer_options = { allow_kernel_upgrade: true }
+  config.vbguest.installer_options = { allow_kernel_upgrade: false }
+  config.vbguest.auto_update = false
 
   config.vm.define 'auditor-ubuntu', primary: false do |host|
     host.vm.box = host_box_name
@@ -31,6 +31,7 @@ Vagrant.configure(2) do |config|
 
     host.vm.provision "ansible" do |ansible|
       ansible.playbook = ansible_playbook
+      ansible.compatibility_mode = "2.0" 
       ansible.extra_vars = { auditor_local_zip: ansible_playbook_auditor_local_distribution_zip }
     end
   end

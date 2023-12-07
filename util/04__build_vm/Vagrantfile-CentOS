@@ -6,7 +6,7 @@ host_name = 'auditor-centos'
 
 # CentOS Stream 9 - https://app.vagrantup.com/boxomatic/boxes/centos-stream-9
 host_box_name = "boxomatic/centos-stream-9"
-host_box_version = "20230424.0.1"
+host_box_version = "20230727.0.1"
 
 host_cpu = 4
 host_ram = 4096

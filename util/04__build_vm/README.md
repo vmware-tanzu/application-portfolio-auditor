@@ -86,7 +86,7 @@ Example - adding specific rules to the VM:
 
     $ vagrant ssh application-portfolio-auditor-centos
     $ sudo yum clean all
-    $ rm -Rf .bash_history
+    $ history -c
     $ exit
 
 ### Export the VM

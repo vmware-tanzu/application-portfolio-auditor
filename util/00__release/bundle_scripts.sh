@@ -58,7 +58,7 @@ mkdir -p apps bin reports
 
 # Add test application
 mkdir apps/test-application
-cp -Rfp "${TEST_APPLICATION}/example.ear" apps/test-application/.
+cp -Rfp "${TEST_APPLICATION}" apps/test-application/.
 
 cd .. || exit
 

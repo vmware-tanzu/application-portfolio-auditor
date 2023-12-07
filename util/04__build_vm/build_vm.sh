@@ -21,7 +21,10 @@ TARGET_OS=Ubuntu
 #TARGET_OS=CentOS
 
 ## Point to the latest local "Applicaton Portfolio Auditor" distribution - Please update!
-SCRIPT_DIR="$( cd -- "$(dirname "${0}" )" || exit >/dev/null 2>&1 ; pwd -P )"
+SCRIPT_DIR="$(
+	cd -- "$(dirname "${0}")" || exit >/dev/null 2>&1
+	pwd -P
+)"
 DIST_FOLDER="${SCRIPT_DIR}/../../../application-portfolio-auditor-releases"
 
 # --- Don't change
@@ -46,5 +49,10 @@ function run_vagrant {
 	popd &>/dev/null
 }
 
-# Call the function with each Vagrantfile
-run_vagrant "${TARGET_OS}"
+if [[ -f "${DIST_ZIP}" ]]; then
+	# Call the function with each Vagrantfile
+	run_vagrant "${TARGET_OS}"
+else
+	echo "No available packaged distribution of 'Application Portfolio Auditor' (${DIST_ZIP})"
+	echo "  Package the current distribution with: $ ./audit package"
+fi
