@@ -21,7 +21,7 @@ export CSA_VERSION='4.1.11'
 export WAMT_VERSION='23.0.0.5'
 
 # Languages
-export LINGUIST_VERSION='7.27.0'
+export LINGUIST_VERSION='7.28.0'
 export CLOC_VERSION='1.98'
 
 # License & Authors
