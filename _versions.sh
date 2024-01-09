@@ -28,7 +28,7 @@ export CLOC_VERSION='1.98'
 export SCANCODE_VERSION='32.0.8'
 
 # Code quality / bugs
-export MAI_VERSION='1.9.16'
+export MAI_VERSION='1.9.17'
 export PMD_VERSION='6.55.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
