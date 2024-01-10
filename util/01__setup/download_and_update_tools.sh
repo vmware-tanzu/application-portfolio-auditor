@@ -754,6 +754,7 @@ fi
 
 simple_check_and_download "Logo - VMware" "templating/static/img/vmware.svg" 'https://www.vmware.com/content/dam/digitalmarketing/vmware/en/images/company/vmware-logo-grey.svg' "latest"
 simple_check_and_download "Logo - Grype" "templating/static/img/grype.png" 'https://anchore.com/wp-content/uploads/2021/11/image-111.png' "latest"
+simple_check_and_download "Logo - Syft" "templating/static/img/syft.png" 'https://cdn-dllid.nitrocdn.com/lfaFdmeTaONuMeYAvisIiEiZRrNJpVpd/assets/images/optimized/rev-01d5fbc/anchore.com/wp-content/uploads/2021/11/image-112.png' "latest"
 simple_check_and_download "Logo - IBM WAMT" "templating/static/img/ibm.jpg" 'https://avatars.githubusercontent.com/u/28316667?s=200&v=4' "latest"
 simple_check_and_download "Logo - Insider" "templating/static/img/insider.png" 'https://avatars.githubusercontent.com/u/53912687?s=200&v=4' "latest"
 simple_check_and_download "Logo - Microsoft" "templating/static/img/microsoft.png" 'https://avatars.githubusercontent.com/u/6154722?s=200&v=4' "latest"
