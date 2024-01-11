@@ -1,5 +1,5 @@
 <!--
-    Copyright 2019-2023 VMware, Inc.
+    Copyright 2019-2024 VMware, Inc.
     SPDX-License-Identifier: Apache-2.0
 -->
 <!DOCTYPE html>
@@ -256,7 +256,7 @@
               on {{REPORT_TIMESTAMP}}</span>
           </div>
           <div class="footer-links mt-3">
-              <span class="mb-3">&#169; 2023 VMware, Inc.</span>
+              <span class="mb-3">&#169; 2024 VMware, Inc.</span>
               <a href="https://www.vmware.com/help/legal.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Terms of Use" title="Terms of Use" name="nav_footer_bottom : Terms of Use" rel="noreferrer" target="_blank">Terms of Use</a> 
               <a href="https://www.vmware.com/help/privacy/california-privacy-rights.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Your California Privacy Rights" title="Your California Privacy Rights" name="nav_footer_bottom : Your California Privacy Rights" rel="noreferrer" target="_blank">Your California Privacy Rights</a> 
               <a href="https://www.vmware.com/help/privacy.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Privacy" title="Privacy" name="nav_footer_bottom : Privacy" rel="noreferrer" target="_blank">Privacy</a> 

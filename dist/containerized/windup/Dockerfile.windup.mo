@@ -1,4 +1,4 @@
-# Copyright 2019-2023 VMware, Inc.
+# Copyright 2019-2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 FROM alpine:latest AS build
 ADD windup-cli-{{WINDUP_VERSION}}.Final-offline.zip /
