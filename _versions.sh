@@ -41,7 +41,7 @@ export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
 export SYFT_VERSION='0.100.0'
 export GRYPE_VERSION='0.74.0'
-export TRIVY_VERSION='0.48.2'
+export TRIVY_VERSION='0.48.3'
 
 # Other
 export DONET_RUNTIME_VERSION="8.0.0-alpine3.18"
