@@ -17,7 +17,7 @@ export JAVA_VERSION='20'
 # Migration & cloud readiness
 #export WINDUP_VERSION='6.3.0' - Visualization of new version is a step back.
 export WINDUP_VERSION='6.1.11'
-export CSA_VERSION='4.1.11'
+export CSA_VERSION='4.1.12'
 export WAMT_VERSION='23.0.0.5'
 
 # Languages
