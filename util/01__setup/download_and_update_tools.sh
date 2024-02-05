@@ -208,9 +208,9 @@ else
 	rm -Rf "${TMP_DIR}"
 	mkdir -p "${TMP_DIR}"
 	pushd "${TMP_DIR}" &>/dev/null
-	wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/${CSA_VERSION}/csa-l"
-	wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/${CSA_VERSION}/csa"
-	#wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/${CSA_VERSION}/CSA-UserManual.pdf"
+	wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa-l"
+	wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa"
+	#wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/CSA-UserManual.pdf"
 	chmod +x csa-l csa
 	cd ..
 	zip -r "cloud-suitability-analyzer-${CSA_VERSION}.zip" cloud-suitability-analyzer
