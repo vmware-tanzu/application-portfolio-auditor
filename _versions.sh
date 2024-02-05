@@ -39,9 +39,9 @@ export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='0.101.1'
-export GRYPE_VERSION='0.74.2'
-export TRIVY_VERSION='0.48.3'
+export SYFT_VERSION='0.103.1'
+export GRYPE_VERSION='0.74.4'
+export TRIVY_VERSION='0.49.0'
 
 # Other
 export DONET_RUNTIME_VERSION="8.0.1-alpine3.19"
