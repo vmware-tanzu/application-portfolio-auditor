@@ -667,6 +667,15 @@ else
 fi
 
 ##############################################################################################################
+# 15 OSV
+##############################################################################################################
+# Load the correct OSV container image
+echo_console_tool_info "15 - OSV v${OSV_VERSION}"
+DIST_OSV="${DIST_DIR}/oci__osv_${OSV_VERSION}.img"
+find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__osv_*.img' ! -name oci__osv_${OSV_VERSION}.img -delete
+download_container_image 'OSV' "v${OSV_VERSION}" "ghcr.io/google/osv-scanner" "oci__osv_${OSV_VERSION}.img"
+
+##############################################################################################################
 # 99 Reports - Update imported static content
 ##############################################################################################################
 echo_console_tool_info "99 - Static content"

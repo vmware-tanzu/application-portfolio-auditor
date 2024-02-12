@@ -42,6 +42,7 @@ export INSIDER_VERSION='3.0.0'
 export SYFT_VERSION='0.104.0'
 export GRYPE_VERSION='0.74.5'
 export TRIVY_VERSION='0.49.1'
+export OSV_VERSION='1.6.2'
 
 # Other
 export DONET_RUNTIME_VERSION="8.0.1-alpine3.19"

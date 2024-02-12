@@ -24,7 +24,7 @@ class Color:
 
 # Tool names used to retrieve versions from OS environment variables
 tool_names = [ 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FSB', 'GRYPE', 'INSIDER', 
-    'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OWASP_DC', 'PMD_GDS',
+    'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC', 'PMD_GDS',
     'PMD', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
 results = {}
@@ -189,6 +189,7 @@ if __name__ == '__main__':
         (check_github, 'anchore/grype', r'.*tag/v(.+)', 'Grype', GRYPE_VERSION, None),
         (check_github, 'anchore/syft', r'.*tag/v(.+)', 'Syft', SYFT_VERSION, None),
         (check_github, 'aquasecurity/trivy', r'.*tag/v(.+)', 'Trivy', TRIVY_VERSION, None),
+        (check_github, 'google/osv-scanner', r'.*tag/v(.+)', 'OSV', OSV_VERSION, None),
         (check_wamt, 'https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wamt/ApplicationBinaryTP/', r'.*(2023-12-01).*(03:03).*', 'IBM WAMT', WAMT_VERSION, None),
 
         # Section for the supporting frameworks
