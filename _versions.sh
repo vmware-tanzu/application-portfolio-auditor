@@ -45,9 +45,9 @@ export TRIVY_VERSION='0.49.1'
 export OSV_VERSION='1.6.2'
 
 # Other
-export DONET_RUNTIME_VERSION="8.0.1-alpine3.19"
+export DONET_RUNTIME_VERSION="8.0.2-alpine3.19"
 export MUSTACHE_VERSION="3.0.4"
-export NGINX_VERSION="1.25.3"
+export NGINX_VERSION="1.25.4"
 export NIST_MIRROR_VERSION="1.6.0"
 export D3_VERSION="7.8.5"
 export JQUERY_VERSION="3.7.1"
