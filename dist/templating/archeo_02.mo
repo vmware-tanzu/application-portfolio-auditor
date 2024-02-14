@@ -39,7 +39,7 @@
         }).enter()
         .append('td')
         .style('text-align',function(d) {
-          if (!d || !d.name || !d.name.startsWith("Description")) return 'center';
+          if (!d || !d.name || !d.name.startsWith("Description") && !d.name.startsWith("Library") ) return 'center';
           return 'left';
         })
         .style("background-color", function(d) {
