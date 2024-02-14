@@ -20,6 +20,7 @@ LINK_SPRING_CLOUD="<a href='https://spring.io/projects/spring-cloud' rel='norefe
 LINK_SPRING_SECURITY="<a href='https://spring.io/projects/spring-security#support' rel='noreferrer' target='_blank'>Spring Security OSS support</a>"
 LINK_SPRING_FRAMEWORK="<a href='https://spring.io/projects/spring-framework#support' rel='noreferrer' target='_blank'>Spring Framework OSS support</a>"
 LINK_SPRING_BOOT="<a href='https://spring.io/projects/spring-boot#support' rel='noreferrer' target='_blank'>Spring Boot OSS support</a>"
+LINK_SPRING_CLOUD_TASK="<a href='https://spring.io/projects/spring-cloud-task#support' rel='noreferrer' target='_blank'>Spring Cloud Task OSS support</a>"
 
 # Compare version numbers (see https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
 # Function returns "0 if ="  "1 if >"  "2 if <"
@@ -53,6 +54,20 @@ function compare_versions() {
 function log_finding() {
 	echo "${2}${SEPARATOR}${3}${SEPARATOR}${4}${SEPARATOR}${5}${SEPARATOR}\"${6}\"" >>"${1}"
 	#echo "(${4}) [${5}] ${6} for ${2}:${3}"
+}
+
+function check_expiration_spring_4() {
+	LIB_VERSION="${1}"
+	APP_CSV="${2}"
+	LIB="${3}"
+	LINK="${4}"
+	if [[ "$( compare_versions "${LIB_VERSION}" "4.1"; echo $? )" == "2" ]]; then
+		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION}" "Supportability" "Critical" "${LINK_SPRING_COMMONS} expired (=< 4.0.x)"
+	elif [[ "$( compare_versions "${LIB_VERSION}" "4.2"; echo $? )" == "2" ]]; then
+		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION}" "Supportability" "High" "${LINK_SPRING_COMMONS} ends on 28 November 2024 (4.1.x)"
+	else
+		echo "[INFO] Ok for ${LIB}:${LIB_VERSION}"
+	fi
 }
 
 function generate_csv() {
@@ -120,9 +135,7 @@ function generate_csv() {
 
 				# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
 				elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
-					if [[ "$( compare_versions "${E_VERSION}" "3.1"
-						echo $?
-					)" == "2" ]]; then
+					if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
 						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_BOOT} expired (=< 3.0.x)"
 					elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
 						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 18 May 2024 (3.1.x)"
@@ -153,25 +166,11 @@ function generate_csv() {
 				elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
 					if [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
 						# Spring Cloud Commons
-						if [[ "$( compare_versions "${E_VERSION}" "4.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_COMMONS} expired (=< 4.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "4.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "High" "${LINK_SPRING_COMMONS} ends on 28 November 2024 (4.1.x)"
-						else
-							echo "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION}"
-						fi
-
-					elif [[ "${LIB}" == *"netflix"* ]]; then
+						check_expiration_spring_4 "${E_VERSION}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_COMMONS}"
+					elif [[ "${E_PACKAGE}" == *"netflix"* ]]; then
 						# Spring Cloud Netflix
-						if [[ "$( compare_versions "${E_VERSION}" "4.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_NETFLIX} expired (=< 4.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "4.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "High" "${LINK_SPRING_NETFLIX} ends on 28 November 2024 (4.1.x)"
-						else
-							echo "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION}"
-						fi
-
-					elif [[ "${LIB}" == *"kubernetes"* ]]; then
+						check_expiration_spring_4 "${E_VERSION}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_NETFLIX}"
+					elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
 						# Spring Cloud Kubernetes
 						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_KUBERNETES} expired (=< 3.1.x)"
@@ -181,21 +180,27 @@ function generate_csv() {
 							echo "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION}"
 						fi
 
-					elif [[ "${LIB}" == *"task"* ]]; then
-						#Spring Cloud Task 2.4.0-RC1
+					elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
+						# Spring Cloud Task
 						if [[ "$( compare_versions "${E_VERSION}" "2.4.0"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} (Task) expired (< 2.4.0)"
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_CLOUD_TASK} expired (=< 3.1.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "High" "${LINK_SPRING_CLOUD_TASK} ends on 28 November 2024 (3.1.x)"
+						else
+							echo "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION}"
 						fi
+
 					elif [[ "${LIB}" == *"circuitbreaker"* || "${LIB}" == *"starter"* ]]; then
 						#Spring Cloud Circuitbreaker 2.1.0-RC1
 						#Spring Cloud Starter Build ((2021.0.0-RC1)) 2.1.0
 						if [[ "$( compare_versions "${E_VERSION}" "2.1.0"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 2.1.0)"
 						fi
+
 					elif [[ "${LIB}" == *"vault"* || "${LIB}" == *"bus"* || "${LIB}" == *"cli"* || "${LIB}" == *"zookeeper"* ||
 						"${E_GROUP}:${E_PACKAGE}" == *"commons"* || "${E_GROUP}:${E_PACKAGE}" == *"openfeign"* || "${E_GROUP}:${E_PACKAGE}" == *"sleuth"* ||
 						"${E_GROUP}:${E_PACKAGE}" == *"contract"* || "${E_GROUP}:${E_PACKAGE}" == *"consul"* || "${E_GROUP}:${E_PACKAGE}" == *"gateway"* ||
-						"${E_GROUP}:${E_PACKAGE}" == *"config"* || "${E_GROUP}:${E_PACKAGE}" == *"cloudfoundry"* || "${E_GROUP}:${E_PACKAGE}" == *"netflix"* ]]; then
+						"${E_GROUP}:${E_PACKAGE}" == *"config"* || "${E_GROUP}:${E_PACKAGE}" == *"cloudfoundry"* ]]; then
 						#Spring Cloud Vault 3.1.0-RC1
 						#Spring Cloud Bus 3.1.0-RC1
 						#Spring Cloud Cli 3.1.0-RC1
