@@ -271,6 +271,7 @@ while true; do
 		OWASP_ACTIVE="true"
 		FSB_ACTIVE="true"
 		SCANCODE_ACTIVE="true"
+		ARCHEO_ACTIVE="true"
 		PMD_ACTIVE="true"
 		LANGUAGES_ACTIVE="true"
 		MAI_ACTIVE="true"
