@@ -46,12 +46,11 @@
       content: "\21E1";
     }
     th { text-align:center }
-    tr:nth-child(1), td:nth-child(1) { width: 40%; }
-    tr:nth-child(2), td:nth-child(2) { width: 5%; }
-    tr:nth-child(3), td:nth-child(3) { width: 5%; }
-    tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(6) { width: 45%; word-break:break-word;}
-    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
+    tr:nth-child(1), td:nth-child(1) { width: 36%; word-break:break-word;}
+    tr:nth-child(2), td:nth-child(2) { width: 7%; }
+    tr:nth-child(3), td:nth-child(3) { width: 7%; }
+    tr:nth-child(4), td:nth-child(4) { width: 7%; }
+    tr:nth-child(5), td:nth-child(6) { width: 40%; word-break:break-word;}    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
 </head>
