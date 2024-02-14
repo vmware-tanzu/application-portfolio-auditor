@@ -66,12 +66,12 @@ function analyze() {
 					--sbom="/src/${RESULT_JSON}" \
 					--format json --output "/out/${APP_NAME_SHORT}_osv.json" 2>>"${LOG_FILE}"
 
-				#${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
-				#	-v "${OUT_DIR_SYFT}:/src:delegated" \
-				#	-v "${OUT_DIR_OSV}:/out:delegated" \
-				#	--name OSV "${CONTAINER_IMAGE_NAME_OSV}" \
-				#	--sbom=/src/${RESULT_JSON} \
-				#	--format table --output /out/${APP_NAME_SHORT}_osv.txt 2>>"${LOG_FILE}"
+				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
+					-v "${OUT_DIR_SYFT}:/src:delegated" \
+					-v "${OUT_DIR_OSV}:/out:delegated" \
+					--name OSV "${CONTAINER_IMAGE_NAME_OSV}" \
+					--sbom=/src/${RESULT_JSON} \
+					--format table --output /out/${APP_NAME_SHORT}_osv.txt 2>>"${LOG_FILE}"
 
 				RESULT_FILE_OSV_JSON="${OUT_DIR_OSV}/${APP_NAME_SHORT}_osv.json"
 				RESULT_FILE_OSV_CSV="${OUT_DIR_OSV}/${APP_NAME_SHORT}_osv.csv"
@@ -89,8 +89,8 @@ function analyze_group() {
 	GROUP=$(basename "${1}")
 	log_analysis_message "group '${GROUP}'"
 
-	export OUT_DIR_SYFT="${REPORTS_DIR}/Security/Syft"
-	export OUT_DIR_OSV="${REPORTS_DIR}/Security/OSV"
+	export OUT_DIR_SYFT="${REPORTS_DIR}/${STEP}__OSV"
+	export OUT_DIR_OSV="${REPORTS_DIR}/${STEP}__OSV"
 
 	mkdir -p "${OUT_DIR_SYFT}" "${OUT_DIR_OSV}"
 

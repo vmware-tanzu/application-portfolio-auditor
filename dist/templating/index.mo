@@ -247,6 +247,16 @@
           </div>
         </li>
 {{/HAS_TRIVY_REPORT}}
+{{#HAS_OSV_REPORT}}
+        <li class="d-flex">
+          <a href="{{OSV_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/osv.png" height="50" width="50" alt="OSV"></a>
+          <div>
+            <h5 class="mt-0 mb-1">OSV <a href="https://github.com/google/osv.dev" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OSV_VERSION}}</a></h5>
+            Find vulnerable dependencies according to the OSV database. (<a href="{{OSV_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{OSV_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <br/><br/>
+          </div>
+        </li>
+{{/HAS_OSV_REPORT}}
       </ul>
     </div>
 {{/HAS_SECURITY_REPORT}}
@@ -255,6 +265,16 @@
 <div class="wrapper quality">
     <h3><a href="{{#HAS_QUALITY_REPORT}}./quality{{GROUP_POSTFIX}}.html{{/HAS_QUALITY_REPORT}}">Quality</a></h3>
       <ul class="list-unstyled">
+{{#HAS_ARCHEO_REPORT}}
+        <li class="d-flex">
+          <a href="{{ARCHEO_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
+          <div>
+            <h5 class="mt-0 mb-1">Archeo(logist) <a href="https://github.com/vmware-tanzu/application-portfolio-auditor" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
+            Find unsupported and unnecessary ancient libraries in your applications. (<a href="{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <br/><br/>
+          </div>
+        </li>
+{{/HAS_ARCHEO_REPORT}}
 {{#HAS_PMD_REPORT}}
         <li class="d-flex">
           <a href="{{PMD_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/pmd.png" width="50" alt="PMD Source Code Analyzer"></a>
@@ -270,7 +290,7 @@
           <a href="{{SCANCODE_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/scancode.png" height="50" width="50" alt="ScanCode Toolkit"></a>
           <div>
             <h5 class="mt-0 mb-1">ScanCode Toolkit <a href="https://github.com/nexB/scancode-toolkit" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SCANCODE_VERSION}}</a></h5>
-            Detects licenses, copyrights, and package manifests of embedded libraries. (<a href="{{SCANCODE_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{SCANCODE_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            Detect licenses, copyrights, and package manifests of embedded libraries. (<a href="{{SCANCODE_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{SCANCODE_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
             <br/><br/>
           </div>
         </li>
@@ -280,7 +300,7 @@
           <a href="{{MAI_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/microsoft.png" height="50" width="50" alt="Microsoft Application Inspector"></a>
           <div>
             <h5 class="mt-0 mb-1">Microsoft Application Inspector <a href="https://github.com/Microsoft/ApplicationInspector" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{MAI_VERSION}}</a></h5>
-            Identifies what is in the applications using static analysis. (<a href="{{MAI_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{MAI_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            Identify what is in the applications using static analysis. (<a href="{{MAI_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{MAI_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
             <br/><br/>
           </div>
         </li>

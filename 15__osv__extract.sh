@@ -18,8 +18,8 @@ function generate_csv() {
 	APP_DIR_INCOMING=${1}
 	GROUP=$(basename "${APP_DIR_INCOMING}")
 
-	APP_DIR_OUT="${REPORTS_DIR}/Security/OSV"
-	RESULT_FILE="${REPORTS_DIR}/Security/results__security__osv.csv"
+	APP_DIR_OUT="${REPORTS_DIR}/${STEP}__OSV"
+	RESULT_FILE="${REPORTS_DIR}/${STEP}__OSV/_results__security__osv.csv"
 
 	if [[ ! -d "${APP_DIR_OUT}" ]]; then
 		LOG_FILE=/dev/null
@@ -36,7 +36,7 @@ function generate_csv() {
 	while read -r APP; do
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
-		OSV_OUTPUT="${APP_DIR_OUT}/${APP_NAME}.json"
+		OSV_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_osv.json"
 		COUNT_VULNS="n/a"
 		if [ -f "${OSV_OUTPUT}" ]; then
 			COUNT_VULNS=$(jq -r '[ .results[].packages[] .vulnerabilities[] ] | length' "${OSV_OUTPUT}")

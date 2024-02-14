@@ -58,7 +58,7 @@ function analyze() {
 			# Check if SBOM is not empty
 			if [[ -f "${RESULT_FILE_SYFT}" ]] && [[ -s "${RESULT_FILE_SYFT}" ]]; then
 				# Filter Syft results to generate a list of all packages found
-				jq -r ' .packages[] | select(.externalRefs) .externalRefs[] | select(.referenceCategory == "PACKAGE-MANAGER") | .referenceLocator' "${RESULT_FILE_SYFT}" >>"${RESULT_FILE_ARCHEO}"
+				jq -r ' .packages[] | select(.externalRefs) .externalRefs[] | select(.referenceCategory == "PACKAGE-MANAGER") | .referenceLocator' "${RESULT_FILE_SYFT}" | sort | uniq >>"${RESULT_FILE_ARCHEO}"
 			fi
 			set -e
 		done <"${APP_LIST}"
@@ -70,7 +70,7 @@ function analyze_group() {
 	GROUP=$(basename "${1}")
 	log_analysis_message "group '${GROUP}'"
 
-	export OUT_DIR_ARCHEO="${REPORTS_DIR}/Quality/Archeo"
+	export OUT_DIR_ARCHEO="${REPORTS_DIR}/${STEP}__Archeo"
 
 	mkdir -p "${OUT_DIR_ARCHEO}"
 

@@ -666,11 +666,8 @@ SCRIPTS=(
 [[ "${ARCHEO_ACTIVE}" == "true" ]] && {
 	log_console "-> Archeo v.${TOOL_VERSION}"
 	log_console "-> Syft v.${SYFT_VERSION}"
-	SCRIPTS+=(16__archeo__analysis.sh)
+	SCRIPTS+=(16__archeo__analysis.sh 16__archeo__extract.sh)
 }
-
-# Re-extract all results
-# { SCRIPTS+=(02__csa__02__extract.sh 03__windup__03__extract.sh 04__wamt__02__extract.sh 05__owasp_dc__02__extract.sh 06__scancode__02__extract.sh 07__pmd__02__extract.sh 08__linguist_and_cloc__02__extract.sh 09__findsecbugs__02__extract.sh 10__mai__extract.sh 11__slscan__extract.sh 12__insider__extract.sh 13__grype__analysis.sh 14__trivy__analysis.sh); }
 
 # Generates and package summary report with links
 [[ "${PRE_ANALYSIS_ACTIVE}" == "false" ]] && { SCRIPTS+=(97__generate_reports.sh 98__generate_timeline.sh 99__package_reports.sh); }

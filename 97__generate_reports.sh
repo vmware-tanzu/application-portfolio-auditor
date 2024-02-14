@@ -41,13 +41,13 @@ REPORT_VARIABLES=(
 	"TOOLS_CLOUD_COUNT" "HAS_MULTIPLE_CLOUD_TOOLS" "HAS_WINDUP" "HAS_WINDUP_REPORT" "HAS_WINDUP_PACKAGES_REPORT" "HAS_WINDUP_OR_PACKAGES_REPORT" "WINDUP_URL" "WINDUP_PACKAGES" "WINDUP_CSV_ALL" "WINDUP_LOG" "WAMT_URL" "WAMT_LOG" "HAS_CSA_REPORT" "HAS_WAMT_REPORT" "HAS_CLOUD_REPORT" "HAS_INDEX_CLOUD_REPORT"
 
 	# Quality
-	"HAS_QUALITY_REPORT" "TOOLS_QUALITY_COUNT" "HAS_MULTIPLE_QUALITY_TOOLS" "PMD_URL" "PMD_LOG" "FSB_URL" "FSB_LOG" "HAS_PMD_REPORT" "HAS_MAI_REPORT" "HAS_FSB_REPORT"
+	"HAS_QUALITY_REPORT" "TOOLS_QUALITY_COUNT" "HAS_MULTIPLE_QUALITY_TOOLS" "HAS_PMD_REPORT" "PMD_URL" "PMD_LOG" "HAS_FSB_REPORT" "FSB_URL" "FSB_LOG" "HAS_MAI_REPORT" "MAI_URL" "MAI_LOG" "HAS_ARCHEO_REPORT" "ARCHEO_URL" "ARCHEO_LOG"
 
 	# Security
-	"HAS_SECURITY_REPORT" "TOOLS_SECURITY_COUNT" "HAS_SECURITY_REPORT_TABLE" "HAS_MULTIPLE_SECURITY_TOOLS" "SCANCODE_URL" "SCANCODE_LOG" "SLSCAN_URL" "SLSCAN_LOG" "INSIDER_URL" "INSIDER_LOG" "ODC_URL" "ODC_LOG" "GRYPE_URL" "GRYPE_LOG" "TRIVY_URL" "TRIVY_LOG" "HAS_SCANCODE_REPORT" "HAS_ODC_REPORT" "HAS_SLSCAN_REPORT" "HAS_INSIDER_REPORT" "HAS_GRYPE_REPORT" "HAS_TRIVY_REPORT"
+	"HAS_SECURITY_REPORT" "TOOLS_SECURITY_COUNT" "HAS_SECURITY_REPORT_TABLE" "HAS_MULTIPLE_SECURITY_TOOLS" "SCANCODE_URL" "SCANCODE_LOG" "SLSCAN_URL" "SLSCAN_LOG" "INSIDER_URL" "INSIDER_LOG" "ODC_URL" "ODC_LOG" "GRYPE_URL" "GRYPE_LOG" "TRIVY_URL" "TRIVY_LOG" "HAS_SCANCODE_REPORT" "HAS_ODC_REPORT" "HAS_SLSCAN_REPORT" "HAS_INSIDER_REPORT" "HAS_GRYPE_REPORT" "HAS_TRIVY_REPORT" "HAS_OSV_REPORT" "OSV_URL" "OSV_LOG"
 
 	# Language
-	"TOOLS_LANGUAGE_COUNT" "HAS_MULTIPLE_LANGUAGE_TOOLS" "MAI_URL" "MAI_LOG" "LANGUAGES_URL" "LANGUAGES_LOG" "HAS_LANGUAGES_REPORT"
+	"TOOLS_LANGUAGE_COUNT" "HAS_MULTIPLE_LANGUAGE_TOOLS" "LANGUAGES_URL" "LANGUAGES_LOG" "HAS_LANGUAGES_REPORT"
 )
 
 # Replace the sort function to sort the lines after the header
@@ -110,6 +110,12 @@ function export_vars() {
 
 	TRIVY_URL="./14__TRIVY__${APP_GROUP}/"
 	TRIVY_LOG="./14__TRIVY.log"
+
+	OSV_URL="./15__OSV/"
+	OSV_LOG="./15__OSV.log"
+
+	ARCHEO_URL="./16__Archeo/"
+	ARCHEO_LOG="./16__Archeo.log"
 
 	CSA_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'csa.db' | grep -c 'CSA' || true)
 	if ((CSA_REPORT > 0)); then
@@ -256,6 +262,27 @@ function export_vars() {
 		TOOLS_SECURITY_COUNT=$((TOOLS_SECURITY_COUNT + 1))
 	else
 		export HAS_TRIVY_REPORT=''
+	fi
+
+	OSV_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__security__osv.csv' | grep -c 'OSV' || true)
+	if ((OSV_REPORT > 0)); then
+		export HAS_OSV_REPORT=TRUE
+		HAS_SECURITY_REPORT=TRUE
+		TOOLS_COUNT=$((TOOLS_COUNT + 1))
+		TOOLS_SECURITY_COUNT=$((TOOLS_SECURITY_COUNT + 1))
+	else
+		export HAS_OSV_REPORT=''
+	fi
+
+	ARCHEO_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__quality__archeo.csv' | grep -c 'Archeo' || true)
+	if ((ARCHEO_REPORT > 0)); then
+		export HAS_ARCHEO_REPORT=TRUE
+		HAS_QUALITY_OR_LANGUAGE_REPORT=TRUE
+		HAS_QUALITY_REPORT=TRUE
+		TOOLS_COUNT=$((TOOLS_COUNT + 1))
+		TOOLS_QUALITY_COUNT=$((TOOLS_QUALITY_COUNT + 1))
+	else
+		export HAS_ARCHEO_REPORT=''
 	fi
 
 	if ((TOOLS_CLOUD_COUNT > 1)); then
@@ -429,6 +456,7 @@ function generate_security_csv() {
 	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
 	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}/results_extracted.csv"
 	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}/results_extracted.csv"
+	export OSV_CSV_FILE="${REPORTS_DIR}/15__OSV/_results__security__osv.csv"
 
 	# Debug info to compare the result counts
 	#echo "LANG_CSV     - $(cat $LANG_CSV | wc -l |  tr -d ' \t') entries - $LANG_CSV"
@@ -489,6 +517,15 @@ function generate_security_csv() {
 		fi
 	fi
 
+	if [[ -f "${OSV_CSV_FILE}" ]]; then
+		if [[ -f "${TMP_CSV}" ]]; then
+			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${OSV_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
+			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
+		else
+			sort_wo_header "${OSV_CSV_FILE}" >"${TMP_CSV}"
+		fi
+	fi
+
 	if [[ -f "${TMP_CSV}" ]]; then
 		add_language_column "${APP_GROUP}" "${TMP_CSV}"
 	fi
@@ -500,12 +537,22 @@ function generate_quality_csv() {
 	APP_GROUP=${2}
 	rm -f "${TMP_CSV}"
 
+	export ARCHEO_CSV="${REPORTS_DIR}/16__ARCHEO/_results__quality__archeo.csv"
 	export PMD_CSV="${REPORTS_DIR}/07__PMD/${APP_GROUP}___results_extracted.csv"
 	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE__${APP_GROUP}/results_extracted.csv"
 	export MAI_CSV="${REPORTS_DIR}/10__MAI/${APP_GROUP}__results_extracted.csv"
 
+	if [[ -f "${ARCHEO_CSV}" ]]; then
+		sort_wo_header "${ARCHEO_CSV}" >"${TMP_CSV}"
+	fi
+
 	if [[ -f "${PMD_CSV}" ]]; then
-		sort_wo_header "${PMD_CSV}" >"${TMP_CSV}"
+		if [[ -f "${TMP_CSV}" ]]; then
+			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${PMD_CSV}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
+			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
+		else
+			sort_wo_header "${PMD_CSV}" >"${TMP_CSV}"
+		fi
 	fi
 
 	if [[ -f "${SCANCODE_CSV}" ]]; then
@@ -558,7 +605,6 @@ function generate_slscan_html() {
 
 # Generate the Grype pages
 function generate_grype_html() {
-
 	export APP GRYPE_REPORT_DIR
 
 	APP_GROUP=${1}
@@ -595,7 +641,7 @@ function build_trivy_regex() {
 	echo "${TRIVY_REPORT_REGEX}"
 }
 
-# Generate the Tryvi pages
+# Generate the Trivy pages
 function generate_trivy_html() {
 
 	export APP GRYPE_REPORT_DIR
@@ -760,6 +806,36 @@ function generate_trivy_html() {
 	done <"${APP_LIST}"
 }
 
+# Generate the Archeo pages
+function generate_archeo_html() {
+
+	export APP ARCHEO_REPORT_DIR
+
+	APP_GROUP=${1}
+	ARCHEO_REPORT_DIR=./../16__ARCHEO
+
+	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+
+	while read -r FILE; do
+		APP="$(basename "${FILE}")"
+		ARCHEO_DIR="${REPORTS_DIR}/16__ARCHEO"
+		ARCHEO_REPORT="${ARCHEO_DIR}/${APP}.html"
+		ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo.csv"
+		if [ -f "${ARCHEO_CSV}" ] && [ $(wc -l <(tail -n +2 "${ARCHEO_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
+			{
+				${MUSTACHE} "${TEMPLATE_DIR}/archeo_01.mo"
+				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
+				sed 's/\$/\\\$/g; s/\`/"/g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; ' "${ARCHEO_CSV}"
+				${MUSTACHE} "${TEMPLATE_DIR}/archeo_02.mo"
+			} >"${ARCHEO_REPORT}"
+		else
+			# Empty result file
+			${MUSTACHE} "${TEMPLATE_DIR}/archeo_empty.mo" >"${ARCHEO_REPORT}"
+		fi
+	done <"${APP_LIST}"
+
+}
+
 # Generate all pages
 function generate_reports() {
 
@@ -859,8 +935,12 @@ function generate_reports() {
 		# Generate CSV file with all results
 		generate_quality_csv "${QUALITY_TMP_CSV}" "${APP_GROUP}"
 
+		if [[ "${HAS_ARCHEO_REPORT}" == TRUE ]]; then
+			generate_archeo_html "${APP_GROUP}"
+		fi
+
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then
-			# Generate security HTML file
+			# Generate quality HTML file
 			{
 				${MUSTACHE} "${TEMPLATE_DIR}/quality_01.mo"
 				echo 'const longText = `'\\

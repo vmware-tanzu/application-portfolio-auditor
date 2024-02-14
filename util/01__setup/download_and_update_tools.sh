@@ -773,6 +773,8 @@ simple_check_and_download "Logo - Scan" "templating/static/img/scan-light.png" '
 simple_check_and_download "Logo - ScanCode" "templating/static/img/scancode.png" 'https://avatars.githubusercontent.com/u/10789967?s=200&v=4' "latest"
 simple_check_and_download "Logo - Trivy" "templating/static/img/trivy.svg" 'https://raw.githubusercontent.com/aquasecurity/trivy-docker-extension/main/trivy.svg' "latest"
 simple_check_and_download "Logo - Windup" "templating/static/img/windup.png" 'https://avatars.githubusercontent.com/u/4266383?s=200&v=4' "latest"
+simple_check_and_download "Logo - Archeo" "templating/static/img/archeo.png" 'https://cdn-icons-png.flaticon.com/512/1674/1674561.png' "latest"
+simple_check_and_download "Logo - OSV" "templating/static/img/osv.png" 'https://img.stackshare.io/service/47887/default_a2d28c0237a20e15bd37c42301dce372c1e20e2d.png' "latest"
 
 # https://devicon.dev/
 simple_check_and_download "Icon - C#" "templating/static/img/icon-csharp.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg' "latest"
