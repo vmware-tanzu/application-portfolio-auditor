@@ -46,7 +46,7 @@ function analyze() {
 				log_console_error "Invalid application: '${APP}'"
 			else
 				## Run -Syft- to generate SBOM
-				${CONTAINER_ENGINE} run "${CONTAINER_ENGINE_ARG}" \
+				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} \
 					-v "${APP_FOLDER}:/src" -v "${OUT_DIR_ARCHEO}:/out" \
 					-e SYFT_CHECK_FOR_APP_UPDATE=false \
 					"${CONTAINER_IMAGE_NAME_SYFT}" \

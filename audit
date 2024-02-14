@@ -664,7 +664,7 @@ SCRIPTS=(
 
 # Archeo analysis
 [[ "${ARCHEO_ACTIVE}" == "true" ]] && {
-	log_console "-> ARCHEO v.${TOOL_VERSION}"
+	log_console "-> Archeo v.${TOOL_VERSION}"
 	log_console "-> Syft v.${SYFT_VERSION}"
 	SCRIPTS+=(16__archeo__analysis.sh)
 }

@@ -48,7 +48,7 @@ function analyze() {
 				log_console_error "Invalid application: '${APP}'"
 			else
 				## Run -Syft- to generate SBOM
-				${CONTAINER_ENGINE} run "${CONTAINER_ENGINE_ARG}" \
+				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} \
 					-v "${APP_FOLDER}:/src" -v "${OUT_DIR_SYFT}:/out" \
 					-e SYFT_CHECK_FOR_APP_UPDATE=false \
 					"${CONTAINER_IMAGE_NAME_SYFT}" \
@@ -59,14 +59,14 @@ function analyze() {
 			# Check if SBOM is not empty
 			if [[ -f "${RESULT_FILE_SYFT}" ]] && [[ -s "${RESULT_FILE_SYFT}" ]]; then
 				## Run -OSV- using the -Syft- output file
-				${CONTAINER_ENGINE} run "${CONTAINER_ENGINE_ARG}" --rm \
+				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
 					-v "${OUT_DIR_SYFT}:/src:delegated" \
 					-v "${OUT_DIR_OSV}:/out:delegated" \
 					--name OSV "${CONTAINER_IMAGE_NAME_OSV}" \
 					--sbom="/src/${RESULT_JSON}" \
 					--format json --output "/out/${APP_NAME_SHORT}_osv.json" 2>>"${LOG_FILE}"
 
-				#${CONTAINER_ENGINE} run "${CONTAINER_ENGINE_ARG}" --rm \
+				#${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
 				#	-v "${OUT_DIR_SYFT}:/src:delegated" \
 				#	-v "${OUT_DIR_OSV}:/out:delegated" \
 				#	--name OSV "${CONTAINER_IMAGE_NAME_OSV}" \
