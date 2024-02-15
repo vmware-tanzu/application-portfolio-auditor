@@ -22,8 +22,7 @@ LINK_SPRING_FRAMEWORK="<a href='https://spring.io/projects/spring-framework#supp
 LINK_SPRING_BOOT="<a href='https://spring.io/projects/spring-boot#support' rel='noreferrer' target='_blank'>Spring Boot OSS support</a>"
 LINK_SPRING_CLOUD_TASK="<a href='https://spring.io/projects/spring-cloud-task#support' rel='noreferrer' target='_blank'>Spring Cloud Task OSS support</a>"
 
-# Compare version numbers (see https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
-# Function returns "0 if ="  "1 if >"  "2 if <"
+# Compare version numbers and returns "0 if ="  "1 if >"  "2 if <" (inspired from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
 function compare_versions() {
 	local IFS=.
 	local i
@@ -34,28 +33,18 @@ function compare_versions() {
 	read -r -a ver1 <<< "$1"
 	read -r -a ver2 <<< "$2"
 
-	if [[ $ver1 == $ver2 ]]; then
-		return 0
-	fi
-	local IFS=.
-	local i ver1=($1) ver2=($2)
-	
-	# fill empty fields in ver1 with zeros
-	for ((i = ${#ver1[@]}; i < ${#ver2[@]}; i++)); do
-		ver1[i]=0
-	done
-	for ((i = 0; i < ${#ver1[@]}; i++)); do
-		if [[ -z ${ver2[i]} ]]; then
-			# fill empty fields in ver2 with zeros
-			ver2[i]=0
-		fi
-		if ((10#${ver1[i]} > 10#${ver2[i]})); then
+	# Compare each segment of the version numbers
+	for ((i = 0; i < ${#ver1[@]} || i < ${#ver2[@]}; i++)); do
+		# Default to 0 if segment doesn't exist
+		local num1=$((10#${ver1[i]:-0}))  
+		local num2=$((10#${ver2[i]:-0}))
+		if ((num1 > num2)); then
 			return 1
-		fi
-		if ((10#${ver1[i]} < 10#${ver2[i]})); then
+		elif ((num1 < num2)); then
 			return 2
 		fi
 	done
+	# If execution reaches here, the versions are equal
 	return 0
 }
 
@@ -139,132 +128,141 @@ function generate_csv() {
 
 				####### Unsupported Libraries
 
-				# Check support for Spring Framework (https://spring.io/projects/spring-framework#support)
-				if [[ "${E_GROUP}" == "org.springframework" ]]; then
-					if [[ "$( compare_versions "${E_VERSION}" "5.3"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_FRAMEWORK} expired (=< 5.2.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "5.4"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 December 2024 (5.3.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 August 2024 (6.0.x)"
-					else
-						log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-					fi
+				if [[ "${E_GROUP}" == "org.springframework"* ]]; then
+					# Check support for Spring Framework (https://spring.io/projects/spring-framework#support)
+					if [[ "${E_GROUP}" == "org.springframework" ]]; then
 
-				# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
-				elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
-					if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_BOOT} expired (=< 3.0.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 18 May 2024 (3.1.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 23 November 2024 (3.2.x)"
-					else
-						log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-					fi
-
-				# Check support for Spring Security (https://spring.io/projects/spring-security#support)
-				elif [[ "${E_GROUP}" == "org.springframework.security" ]]; then
-					if [[ "$( compare_versions "${E_VERSION}" "5.8"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (=< 5.7.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "6.0"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 31 December 2024 (5.8.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (6.0.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "6.2"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 15 May 2024 (6.1.x)"
-					elif [[ "$( compare_versions "${E_VERSION}" "6.3"; echo $? )" == "2" ]]; then
-						log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 20 November 2024 (6.2.x)"
-					else
-						log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-					fi				
-
-				# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
-				# Simplified check: Below Spring Cloud 2021.0: no support (https://spring.io/projects/spring-cloud) - https://github.com/spring-cloud/spring-cloud-release/wiki/Supported-Versions - https://stackoverflow.com/questions/42659920/is-there-a-compatibility-matrix-of-spring-boot-and-spring-cloud
-				elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
-					if [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
-						# Spring Cloud Commons
-						check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_COMMONS}"
-					elif [[ "${E_PACKAGE}" == *"netflix"* ]]; then
-						# Spring Cloud Netflix
-						check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_NETFLIX}"
-					elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
-						# Spring Cloud Kubernetes
-						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_KUBERNETES} expired (=< 3.1.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_KUBERNETES} ends on 28 November 2024 (3.1.x)"
+						if [[ "$( compare_versions "${E_VERSION}" "5.3"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_FRAMEWORK} expired (=< 5.2.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "5.4"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 December 2024 (5.3.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 August 2024 (6.0.x)"
 						else
 							log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 
-					elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
-						# Spring Cloud Task
-						if [[ "$( compare_versions "${E_VERSION}" "2.4.0"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD_TASK} expired (=< 3.1.x)"
+					# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
+					elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
+						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_BOOT} expired (=< 3.0.x)"
 						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_CLOUD_TASK} ends on 28 November 2024 (3.1.x)"
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 18 May 2024 (3.1.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 23 November 2024 (3.2.x)"
 						else
 							log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 
-					elif [[ "${LIB}" == *"circuitbreaker"* || "${LIB}" == *"starter"* ]]; then
-						#Spring Cloud Circuitbreaker 2.1.0-RC1
-						#Spring Cloud Starter Build ((2021.0.0-RC1)) 2.1.0
-						if [[ "$( compare_versions "${E_VERSION}" "2.1.0"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 2.1.0)"
-						fi
+					# Check support for Spring Security (https://spring.io/projects/spring-security#support)
+					elif [[ "${E_GROUP}" == "org.springframework.security" ]]; then
+						if [[ "$( compare_versions "${E_VERSION}" "5.8"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (=< 5.7.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "6.0"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 31 December 2024 (5.8.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (6.0.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "6.2"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 15 May 2024 (6.1.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "6.3"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 20 November 2024 (6.2.x)"
+						else
+							log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						fi				
 
-					elif [[ "${LIB}" == *"vault"* || "${LIB}" == *"bus"* || "${LIB}" == *"cli"* || "${LIB}" == *"zookeeper"* ||
-						"${E_GROUP}:${E_PACKAGE}" == *"commons"* || "${E_GROUP}:${E_PACKAGE}" == *"openfeign"* || "${E_GROUP}:${E_PACKAGE}" == *"sleuth"* ||
-						"${E_GROUP}:${E_PACKAGE}" == *"contract"* || "${E_GROUP}:${E_PACKAGE}" == *"consul"* || "${E_GROUP}:${E_PACKAGE}" == *"gateway"* ||
-						"${E_GROUP}:${E_PACKAGE}" == *"config"* || "${E_GROUP}:${E_PACKAGE}" == *"cloudfoundry"* ]]; then
-						#Spring Cloud Vault 3.1.0-RC1
-						#Spring Cloud Bus 3.1.0-RC1
-						#Spring Cloud Cli 3.1.0-RC1
-						#Spring Cloud Zookeeper 3.1.0-RC1
-						#Spring Cloud Commons 3.1.0-RC1 (issues)
-						#Spring Cloud Openfeign 3.1.0-RC1 (issues)
-						#Spring Cloud Sleuth 3.1.0-RC1 (issues)
-						#Spring Cloud Contract 3.1.0-RC1 (issues)
-						#Spring Cloud Consul 3.1.0-RC1
-						#Spring Cloud Gateway 3.1.0-RC1 (issues)
-						#Spring Cloud Config 3.1.0-RC1 (issues)
-						#Spring Cloud Cloudfoundry 3.1.0-RC1
-						#Spring Cloud Netflix 3.1.0-RC1
-						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 3.1.x)"
+					# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
+					# Simplified check: Below Spring Cloud 2021.0: no support (https://spring.io/projects/spring-cloud) - https://github.com/spring-cloud/spring-cloud-release/wiki/Supported-Versions - https://stackoverflow.com/questions/42659920/is-there-a-compatibility-matrix-of-spring-boot-and-spring-cloud
+					elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
+						if [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
+							# Spring Cloud Commons
+							check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_COMMONS}"
+						elif [[ "${E_PACKAGE}" == *"netflix"* ]]; then
+							# Spring Cloud Netflix
+							check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_NETFLIX}"
+						elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
+							# Spring Cloud Kubernetes
+							if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_KUBERNETES} expired (=< 3.1.x)"
+							elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_KUBERNETES} ends on 28 November 2024 (3.1.x)"
+							else
+								log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							fi
+
+						elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
+							# Spring Cloud Task
+							if [[ "$( compare_versions "${E_VERSION}" "2.4.0"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD_TASK} expired (=< 3.1.x)"
+							elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_CLOUD_TASK} ends on 28 November 2024 (3.1.x)"
+							else
+								log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							fi
+
+						elif [[ "${LIB}" == *"circuitbreaker"* || "${LIB}" == *"starter"* ]]; then
+							#Spring Cloud Circuitbreaker 2.1.0-RC1
+							#Spring Cloud Starter Build ((2021.0.0-RC1)) 2.1.0
+							if [[ "$( compare_versions "${E_VERSION}" "2.1.0"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 2.1.0)"
+							fi
+
+						elif [[ "${LIB}" == *"vault"* || "${LIB}" == *"bus"* || "${LIB}" == *"cli"* || "${LIB}" == *"zookeeper"* ||
+							"${E_GROUP}:${E_PACKAGE}" == *"commons"* || "${E_GROUP}:${E_PACKAGE}" == *"openfeign"* || "${E_GROUP}:${E_PACKAGE}" == *"sleuth"* ||
+							"${E_GROUP}:${E_PACKAGE}" == *"contract"* || "${E_GROUP}:${E_PACKAGE}" == *"consul"* || "${E_GROUP}:${E_PACKAGE}" == *"gateway"* ||
+							"${E_GROUP}:${E_PACKAGE}" == *"config"* || "${E_GROUP}:${E_PACKAGE}" == *"cloudfoundry"* ]]; then
+							#Spring Cloud Vault 3.1.0-RC1
+							#Spring Cloud Bus 3.1.0-RC1
+							#Spring Cloud Cli 3.1.0-RC1
+							#Spring Cloud Zookeeper 3.1.0-RC1
+							#Spring Cloud Commons 3.1.0-RC1 (issues)
+							#Spring Cloud Openfeign 3.1.0-RC1 (issues)
+							#Spring Cloud Sleuth 3.1.0-RC1 (issues)
+							#Spring Cloud Contract 3.1.0-RC1 (issues)
+							#Spring Cloud Consul 3.1.0-RC1
+							#Spring Cloud Gateway 3.1.0-RC1 (issues)
+							#Spring Cloud Config 3.1.0-RC1 (issues)
+							#Spring Cloud Cloudfoundry 3.1.0-RC1
+							#Spring Cloud Netflix 3.1.0-RC1
+							if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 3.1.x)"
+							fi
+						else
+							log_console_info "[INFO] Unknown Spring Cloud library ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
-					else
-						log_console_info "[INFO] Unknown Spring Cloud library ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+					elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
+						log_console_info "[INFO] Unknown Spring library ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 					fi
-				elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
-					log_console_info "[INFO] Unknown Spring library ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 				fi
 
-				####### Test libraries (should not be in application)
-				# - "test" in name
-				# - Everything in [Testing Frameworks & Tools](https://mvnrepository.com/open-source/testing-frameworks)
-				# - Examples: spring-security-test-*.jar / spring-test-*.jar / groovy-test-*.jar / opentest4j-*.jar / testng-*.jar / ant-junit-*.jar / junit-*.jar / junit-jupiter-api-*.jar / junit-platform-commons-*.jar
-				if [[ "${LIB}" == *"test"* || "${LIB}" == *"junit"* ]]; then
-					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove 'test' library from production deployment"
+				local LIB_TYPE=''
+				case "${LIB}" in
+					*test*|*junit*)
+						####### Test libraries (should not be in application)
+						# - "test" in name
+						# - Everything in [Testing Frameworks & Tools](https://mvnrepository.com/open-source/testing-frameworks)
+						# - Examples: spring-security-test-*.jar / spring-test-*.jar / groovy-test-*.jar / opentest4j-*.jar / testng-*.jar / ant-junit-*.jar / junit-*.jar / junit-jupiter-api-*.jar / junit-platform-commons-*.jar
+						LIB_TYPE="test"
+						;;
+					*mock*)
+						####### Mocking (should not be in application)
+						# - "mock" in name
+						# - Everything in [Mocking](https://mvnrepository.com/open-source/mocking)
+						LIB_TYPE="mock"
+						;;
+					*aspectjweaver*)
+						####### Build libraries (should not be in application)
+						# - graddle / maven / ant-*.jar / groovy-ant-*.jar / aspectjweaver-*.jar
+						# https://mvnrepository.com/search?q=aspectjweaver
+						LIB_TYPE="AspectJ Weaver"
+						;;
+					*ant*)
+						LIB_TYPE="ant"
+						;;
+				esac
+				if [[ -n "${LIB_TYPE}" ]]; then
+					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
 				fi
 
-				####### Mocking (should not be in application)
-				# - "mock" in name
-				# - Everything in [Mocking](https://mvnrepository.com/open-source/mocking)
-				if [[ "${LIB}" == *"mock"* ]]; then
-					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove 'mock' library from production deployment"
-				fi
-
-				####### Build libraries (should not be in application)
-				# - graddle / maven / ant-*.jar / groovy-ant-*.jar / aspectjweaver-*.jar
-				# https://mvnrepository.com/search?q=aspectjweaver
-				if [[ "${LIB}" == *"aspectjweaver"* ]]; then
-					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove 'AspectJ Weaver' library from production deployment"
-				elif [[ "${LIB}" == *"ant"* ]]; then
-					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove 'ant' library from production deployment"
-				fi
 			done <"${ARCHEO_OUTPUT}"
 		fi
 
