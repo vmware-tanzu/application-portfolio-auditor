@@ -64,7 +64,7 @@
         <li class="nav-item"><a class="nav-link" href="./../index{{GROUP_POSTFIX}}.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../security{{GROUP_POSTFIX}}.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
-        <li class="nav-item"><a class="nav-link active" href="#">Quality</a></li>
+        <li class="nav-item"><a class="nav-link active" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item dropdown">
           <a class="nav-item nav-link dropdown-toggle me-md-2" href="#" id="bd-versions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;</a>
