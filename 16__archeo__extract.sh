@@ -102,6 +102,7 @@ function generate_csv() {
 			###### 1. Generate findings for one application
 			while read -r ENTRY; do
 
+				local  E_TYPE E_GROUP E_PACKAGE E_VERSION_FULL E_VERSION LIB
 				# e.g. 'maven'
 				E_TYPE=$(echo "${ENTRY}" | cut -d '/' -f1 | cut -d ':' -f2)
 
@@ -112,10 +113,18 @@ function generate_csv() {
 				E_PACKAGE=$(echo "${ENTRY}" | cut -d '/' -f3 | cut -d '@' -f1)
 
 				# e.g. '5.1.9.RELEASE'
-				E_VERSION_FULL=$(echo "${ENTRY}" | cut -d '@' -f2)
+				if [[ "${ENTRY}" == *'@'* ]]; then
+					E_VERSION_FULL=$(echo "${ENTRY}" | cut -d '@' -f2)
+				else
+					E_VERSION_FULL=''
+				fi
 
-				# e.g. '5.1.9'
-				E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d [:alpha:] | tr -d '-' | sed 's/\.$//')
+				if [[ -n "${E_VERSION_FULL}" ]]; then
+					# e.g. '5.1.9'
+					E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d [:alpha:] | tr -d '-' | sed 's/\.$//')
+				else
+					E_VERSION=''
+				fi
 
 				# e.g. 'org.springframework:spring-aop'
 				LIB="${E_GROUP}:${E_PACKAGE}"
