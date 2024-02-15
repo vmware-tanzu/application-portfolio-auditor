@@ -50,7 +50,6 @@ function compare_versions() {
 
 function log_finding() {
 	echo "${2}${SEPARATOR}${3}${SEPARATOR}${4}${SEPARATOR}${5}${SEPARATOR}\"${6}\"" >>"${1}"
-	#log_console_info "(${4}) [${5}] ${6} for ${2}:${3}"
 }
 
 function check_expiration_spring_4() {
@@ -64,7 +63,7 @@ function check_expiration_spring_4() {
 	elif [[ "$( compare_versions "${LIB_VERSION}" "4.2"; echo $? )" == "2" ]]; then
 		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "High" "${LINK} ends on 28 November 2024 (4.1.x)"
 	else
-		log_console_info "[INFO] Ok for ${LIB}:${LIB_VERSION_FULL}"
+		log_console_info "Ok for ${LIB}:${LIB_VERSION_FULL}"
 	fi
 }
 
@@ -139,7 +138,7 @@ function generate_csv() {
 						elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 August 2024 (6.0.x)"
 						else
-							log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 
 					# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
@@ -151,7 +150,7 @@ function generate_csv() {
 						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 23 November 2024 (3.2.x)"
 						else
-							log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 
 					# Check support for Spring Security (https://spring.io/projects/spring-security#support)
@@ -167,7 +166,7 @@ function generate_csv() {
 						elif [[ "$( compare_versions "${E_VERSION}" "6.3"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 20 November 2024 (6.2.x)"
 						else
-							log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi				
 
 					# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
@@ -186,7 +185,7 @@ function generate_csv() {
 							elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
 								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_KUBERNETES} ends on 28 November 2024 (3.1.x)"
 							else
-								log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 							fi
 
 						elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
@@ -196,7 +195,7 @@ function generate_csv() {
 							elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
 								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_CLOUD_TASK} ends on 28 November 2024 (3.1.x)"
 							else
-								log_console_info "[INFO] Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 							fi
 
 						elif [[ "${LIB}" == *"circuitbreaker"* || "${LIB}" == *"starter"* ]]; then
@@ -227,10 +226,10 @@ function generate_csv() {
 								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 3.1.x)"
 							fi
 						else
-							log_console_info "[INFO] Unknown Spring Cloud library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							log_console_info "Unknown Spring Cloud library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 					else
-						log_console_info "[INFO] Unknown Spring library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						log_console_info "Unknown Spring library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 					fi
 				fi
 
@@ -263,6 +262,23 @@ function generate_csv() {
 					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
 				fi
 			done <"${ARCHEO_OUTPUT}"
+
+			##### Check for duplicated libraries
+			# Extract and sort the unique library names
+			LIBRARIES=$(awk -F'/' '{printf("%s/%s\n",$2,$3)}' "$ARCHEO_OUTPUT" | cut -d '@' -f1 | uniq | sort -u)
+
+			# Loop through each unique library
+			while IFS= read -r LIBRARY; do
+				# Extract all versions of the current library
+				VERSIONS=$(grep "/${LIBRARY}@" "$ARCHEO_OUTPUT" | awk -F'@' '{print $2}' | sort -u)
+
+				# If there are multiple versions, add one entry
+				LIB_COUNT=$(echo "$VERSIONS" | wc -l)
+				if [[ ${LIB_COUNT} -gt 1 ]]; then
+					LIB="${LIBRARY//\//:}"
+					log_finding "${ARCHEO_APP_CSV}" "${LIB}" "Multiple" "Duplicates" "High" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
+				fi
+			done <<< "$LIBRARIES"
 		fi
 
 		###### 2. Add the aggregate findings count to the CSV file
