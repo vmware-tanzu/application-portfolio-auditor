@@ -227,10 +227,10 @@ function generate_csv() {
 								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 3.1.x)"
 							fi
 						else
-							log_console_info "[INFO] Unknown Spring Cloud library ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							log_console_info "[INFO] Unknown Spring Cloud library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
-					elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
-						log_console_info "[INFO] Unknown Spring library ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+					else
+						log_console_info "[INFO] Unknown Spring library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 					fi
 				fi
 
@@ -262,7 +262,6 @@ function generate_csv() {
 				if [[ -n "${LIB_TYPE}" ]]; then
 					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
 				fi
-
 			done <"${ARCHEO_OUTPUT}"
 		fi
 
