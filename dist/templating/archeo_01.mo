@@ -73,7 +73,7 @@
           </div>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
+          <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{NAV_LINK}}" rel="noreferrer" target="_blank"><i class="{{NAV_ICON}}"></i></a>
