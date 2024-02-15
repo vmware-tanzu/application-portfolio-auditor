@@ -9,7 +9,7 @@
 # ----- Please adjust
 
 # ------ Do not modify
-VERSION=${TOOL_VERSION}
+export VERSION=${TOOL_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
 
@@ -25,11 +25,21 @@ LINK_SPRING_CLOUD_TASK="<a href='https://spring.io/projects/spring-cloud-task#su
 # Compare version numbers (see https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
 # Function returns "0 if ="  "1 if >"  "2 if <"
 function compare_versions() {
-	if [[ $1 == $2 ]]; then
-		echo 0
+	local IFS=.
+	local i
+	local -a ver1=()
+	local -a ver2=()
+
+	# Split the version strings into arrays
+	read -r -a ver1 <<< "$1"
+	read -r -a ver2 <<< "$2"
+
+	if [[ $ver1 == $ver2 ]]; then
+		return 0
 	fi
 	local IFS=.
 	local i ver1=($1) ver2=($2)
+	
 	# fill empty fields in ver1 with zeros
 	for ((i = ${#ver1[@]}; i < ${#ver2[@]}; i++)); do
 		ver1[i]=0
@@ -40,12 +50,10 @@ function compare_versions() {
 			ver2[i]=0
 		fi
 		if ((10#${ver1[i]} > 10#${ver2[i]})); then
-			echo 1
-			ex
+			return 1
 		fi
 		if ((10#${ver1[i]} < 10#${ver2[i]})); then
-			echo 2
-			exit
+			return 2
 		fi
 	done
 	return 0
@@ -63,9 +71,9 @@ function check_expiration_spring_4() {
 	LIB="${4}"
 	LINK="${5}"
 	if [[ "$( compare_versions "${LIB_VERSION}" "4.1"; echo $? )" == "2" ]]; then
-		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_COMMONS} expired (=< 4.0.x)"
+		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "Critical" "${LINK} expired (=< 4.0.x)"
 	elif [[ "$( compare_versions "${LIB_VERSION}" "4.2"; echo $? )" == "2" ]]; then
-		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_COMMONS} ends on 28 November 2024 (4.1.x)"
+		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "High" "${LINK} ends on 28 November 2024 (4.1.x)"
 	else
 		log_console_info "[INFO] Ok for ${LIB}:${LIB_VERSION_FULL}"
 	fi
@@ -102,9 +110,9 @@ function generate_csv() {
 			###### 1. Generate findings for one application
 			while read -r ENTRY; do
 
-				local  E_TYPE E_GROUP E_PACKAGE E_VERSION_FULL E_VERSION LIB
+				local  E_GROUP E_PACKAGE E_VERSION_FULL E_VERSION LIB
 				# e.g. 'maven'
-				E_TYPE=$(echo "${ENTRY}" | cut -d '/' -f1 | cut -d ':' -f2)
+				#E_TYPE=$(echo "${ENTRY}" | cut -d '/' -f1 | cut -d ':' -f2)
 
 				# e.g. 'org.springframework'
 				E_GROUP=$(echo "${ENTRY}" | cut -d '/' -f2)
@@ -121,7 +129,7 @@ function generate_csv() {
 
 				if [[ -n "${E_VERSION_FULL}" ]]; then
 					# e.g. '5.1.9'
-					E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d [:alpha:] | tr -d '-' | sed 's/\.$//')
+					E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d '[:alpha:]' | tr -d '-' | sed 's/\.$//')
 				else
 					E_VERSION=''
 				fi
