@@ -21,6 +21,7 @@ LINK_SPRING_SECURITY="<a href='https://spring.io/projects/spring-security#suppor
 LINK_SPRING_FRAMEWORK="<a href='https://spring.io/projects/spring-framework#support' rel='noreferrer' target='_blank'>Spring Framework OSS support</a>"
 LINK_SPRING_BOOT="<a href='https://spring.io/projects/spring-boot#support' rel='noreferrer' target='_blank'>Spring Boot OSS support</a>"
 LINK_SPRING_CLOUD_TASK="<a href='https://spring.io/projects/spring-cloud-task#support' rel='noreferrer' target='_blank'>Spring Cloud Task OSS support</a>"
+LINK_SPRING_DATA="<a href='https://spring.io/projects/spring-data#support' rel='noreferrer' target='_blank'>Spring Data OSS support</a>"
 
 # Compare version numbers and returns "0 if ="  "1 if >"  "2 if <" (inspired from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
 function compare_versions() {
@@ -142,13 +143,25 @@ function generate_csv() {
 						fi
 
 					# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
-					elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
+					elif [[ "${E_GROUP}" == "org.springframework.boot"* ]]; then
 						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_BOOT} expired (=< 3.0.x)"
 						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 18 May 2024 (3.1.x)"
 						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 23 November 2024 (3.2.x)"
+						else
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						fi
+
+					# Check support for Spring (https://spring.io/projects/spring-data#support)
+					elif [[ "${E_GROUP}" == "org.springframework.data"* ]]; then
+						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_DATA} expired (=< 3.0.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_DATA} ends on 12 May 2024 (3.1.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_DATA} ends on 17 November 2024 (3.2.x)"
 						else
 							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
