@@ -22,6 +22,10 @@ LINK_SPRING_FRAMEWORK="<a href='https://spring.io/projects/spring-framework#supp
 LINK_SPRING_BOOT="<a href='https://spring.io/projects/spring-boot#support' rel='noreferrer' target='_blank'>Spring Boot OSS support</a>"
 LINK_SPRING_CLOUD_TASK="<a href='https://spring.io/projects/spring-cloud-task#support' rel='noreferrer' target='_blank'>Spring Cloud Task OSS support</a>"
 LINK_SPRING_DATA="<a href='https://spring.io/projects/spring-data#support' rel='noreferrer' target='_blank'>Spring Data OSS support</a>"
+LINK_SPRING_BATCH="<a href='https://spring.io/projects/spring-batch#support' rel='noreferrer' target='_blank'>Spring Batch OSS support</a>"
+LINK_SPRING_SESSION="<a href='https://spring.io/projects/spring-session#support' rel='noreferrer' target='_blank'>Spring Session OSS support</a>"
+LINK_SPRING_CLOUD_DATA_FLOW="<a href='https://spring.io/projects/spring-cloud-dataflow#support' rel='noreferrer' target='_blank'>Spring Cloud Data Flow OSS support</a>"
+LINK_SPRING_HATEOAS="<a href='https://spring.io/projects/spring-hateoas#support' rel='noreferrer' target='_blank'>Spring HATEOAS OSS support</a>"
 
 # Compare version numbers and returns "0 if ="  "1 if >"  "2 if <" (inspired from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
 function compare_versions() {
@@ -154,7 +158,19 @@ function generate_csv() {
 							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 
-					# Check support for Spring (https://spring.io/projects/spring-data#support)
+					# Check support for Spring Session (https://spring.io/projects/spring-session#support)
+					elif [[ "${E_GROUP}" == "org.springframework.session"* ]]; then
+						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SESSION} expired (=< 3.0.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SESSION} ends on 16 May 2024 (3.1.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SESSION} ends on 21 November 2024 (3.2.x)"
+						else
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						fi
+
+					# Check support for Spring Data (https://spring.io/projects/spring-data#support)
 					elif [[ "${E_GROUP}" == "org.springframework.data"* ]]; then
 						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_DATA} expired (=< 3.0.x)"
@@ -166,8 +182,20 @@ function generate_csv() {
 							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
 
+					# Check support for Spring Batch (https://spring.io/projects/spring-batch#support)
+					elif [[ "${E_GROUP}" == "org.springframework.batch"* ]]; then
+						if [[ "$( compare_versions "${E_VERSION}" "5.0"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_BATCH} expired (< 5.0.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "5.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BATCH} ends on 18 May 2024 (5.0.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "5.2"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BATCH} ends on 22 November 2024 (5.1.x)"
+						else
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						fi
+
 					# Check support for Spring Security (https://spring.io/projects/spring-security#support)
-					elif [[ "${E_GROUP}" == "org.springframework.security" ]]; then
+					elif [[ "${E_GROUP}" == "org.springframework.security"* ]]; then
 						if [[ "$( compare_versions "${E_VERSION}" "5.8"; echo $? )" == "2" ]]; then
 							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (=< 5.7.x)"
 						elif [[ "$( compare_versions "${E_VERSION}" "6.0"; echo $? )" == "2" ]]; then
@@ -182,15 +210,30 @@ function generate_csv() {
 							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi				
 
+					# Check support for Spring HATEOAS (https://spring.io/projects/spring-hateoas#support)
+					elif [[ "${E_GROUP}" == "org.springframework.hateoas"* ]]; then
+						if [[ "$( compare_versions "${E_VERSION}" "2.1"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_HATEOAS} expired (=< 2.0.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "2.2"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_HATEOAS} ends on 11 May 2024 (2.1.x)"
+						elif [[ "$( compare_versions "${E_VERSION}" "2.3"; echo $? )" == "2" ]]; then
+							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_HATEOAS} ends on 16 November 2024 (2.2.x)"
+						else
+							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						fi	
+
 					# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
 					# Simplified check: Below Spring Cloud 2021.0: no support (https://spring.io/projects/spring-cloud) - https://github.com/spring-cloud/spring-cloud-release/wiki/Supported-Versions - https://stackoverflow.com/questions/42659920/is-there-a-compatibility-matrix-of-spring-boot-and-spring-cloud
-					elif [[ "${E_GROUP}" == org.springframework.cloud* ]]; then
+					elif [[ "${E_GROUP}" == "org.springframework.cloud"* ]]; then
+
 						if [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
 							# Spring Cloud Commons
 							check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_COMMONS}"
+
 						elif [[ "${E_PACKAGE}" == *"netflix"* ]]; then
 							# Spring Cloud Netflix
 							check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_NETFLIX}"
+
 						elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
 							# Spring Cloud Kubernetes
 							if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
@@ -201,6 +244,16 @@ function generate_csv() {
 								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 							fi
 
+						elif [[ "${E_PACKAGE}" == "spring-cloud-dataflow"* ]]; then
+							# Spring Cloud Data Flow
+							if [[ "$( compare_versions "${E_VERSION}" "2.11"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD_DATA_FLOW} expired (=< 2.10.x)"
+							elif [[ "$( compare_versions "${E_VERSION}" "2.12"; echo $? )" == "2" ]]; then
+								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_CLOUD_DATA_FLOW} ends on 20 September 2024 (2.11.x)"
+							else
+								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							fi
+						
 						elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
 							# Spring Cloud Task
 							if [[ "$( compare_versions "${E_VERSION}" "2.4.0"; echo $? )" == "2" ]]; then
@@ -219,7 +272,7 @@ function generate_csv() {
 							fi
 
 						elif [[ "${LIB}" == *"vault"* || "${LIB}" == *"bus"* || "${LIB}" == *"cli"* || "${LIB}" == *"zookeeper"* ||
-							"${E_GROUP}:${E_PACKAGE}" == *"commons"* || "${E_GROUP}:${E_PACKAGE}" == *"openfeign"* || "${E_GROUP}:${E_PACKAGE}" == *"sleuth"* ||
+							"${E_GROUP}:${E_PACKAGE}" == *"openfeign"* || "${E_GROUP}:${E_PACKAGE}" == *"sleuth"* ||
 							"${E_GROUP}:${E_PACKAGE}" == *"contract"* || "${E_GROUP}:${E_PACKAGE}" == *"consul"* || "${E_GROUP}:${E_PACKAGE}" == *"gateway"* ||
 							"${E_GROUP}:${E_PACKAGE}" == *"config"* || "${E_GROUP}:${E_PACKAGE}" == *"cloudfoundry"* ]]; then
 							#Spring Cloud Vault 3.1.0-RC1
