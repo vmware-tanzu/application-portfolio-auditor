@@ -177,6 +177,12 @@
               "active":{{#HAS_TRIVY_REPORT}}true{{/HAS_TRIVY_REPORT}}{{^HAS_TRIVY_REPORT}}false{{/HAS_TRIVY_REPORT}},
               "value":{{ TRIVY_RULES }},
               "url":"https://github.com/aquasecurity/trivy"
+            },
+            {
+              "name":"OSV",
+              "active":{{#HAS_OSV_REPORT}}true{{/HAS_OSV_REPORT}}{{^HAS_OSV_REPORT}}false{{/HAS_OSV_REPORT}},
+              "value":{{ OSV_RULES }},
+              "url":"https://osv.dev/"
             }
           ]
         },
@@ -214,6 +220,12 @@
               "active":{{#HAS_PMD_REPORT}}true{{/HAS_PMD_REPORT}}{{^HAS_PMD_REPORT}}false{{/HAS_PMD_REPORT}},
               "value":{{ PMD_RULES }},
               "url":"https://pmd.github.io/"
+            },
+            {
+              "name":"Archeo",
+              "active":{{#HAS_ARCHEO_REPORT}}true{{/HAS_ARCHEO_REPORT}}{{^HAS_ARCHEO_REPORT}}false{{/HAS_ARCHEO_REPORT}},
+              "value":{{ ARCHEO_RULES }},
+              "url":"https://github.com/vmware-tanzu/application-portfolio-auditor"
             }
           ]
         },
