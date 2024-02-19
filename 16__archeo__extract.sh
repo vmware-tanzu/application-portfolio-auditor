@@ -13,62 +13,123 @@ export VERSION=${TOOL_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
 
-LINK_SPRING_COMMONS="<a href='https://spring.io/projects/spring-cloud-commons#support' rel='noreferrer' target='_blank'>Spring Cloud Commons OSS support</a>"
-LINK_SPRING_NETFLIX="<a href='https://spring.io/projects/spring-cloud-netflix#support' rel='noreferrer' target='_blank'>Spring Cloud Netflix OSS support</a>"
-LINK_SPRING_KUBERNETES="<a href='https://spring.io/projects/spring-cloud-kubernetes#support' rel='noreferrer' target='_blank'>Spring Cloud Kubernetes OSS support</a>"
-LINK_SPRING_CLOUD="<a href='https://spring.io/projects/spring-cloud' rel='noreferrer' target='_blank'>Spring Cloud OSS support</a>"
-LINK_SPRING_SECURITY="<a href='https://spring.io/projects/spring-security#support' rel='noreferrer' target='_blank'>Spring Security OSS support</a>"
-LINK_SPRING_FRAMEWORK="<a href='https://spring.io/projects/spring-framework#support' rel='noreferrer' target='_blank'>Spring Framework OSS support</a>"
-LINK_SPRING_BOOT="<a href='https://spring.io/projects/spring-boot#support' rel='noreferrer' target='_blank'>Spring Boot OSS support</a>"
-LINK_SPRING_CLOUD_TASK="<a href='https://spring.io/projects/spring-cloud-task#support' rel='noreferrer' target='_blank'>Spring Cloud Task OSS support</a>"
-LINK_SPRING_DATA="<a href='https://spring.io/projects/spring-data#support' rel='noreferrer' target='_blank'>Spring Data OSS support</a>"
-LINK_SPRING_BATCH="<a href='https://spring.io/projects/spring-batch#support' rel='noreferrer' target='_blank'>Spring Batch OSS support</a>"
-LINK_SPRING_SESSION="<a href='https://spring.io/projects/spring-session#support' rel='noreferrer' target='_blank'>Spring Session OSS support</a>"
-LINK_SPRING_CLOUD_DATA_FLOW="<a href='https://spring.io/projects/spring-cloud-dataflow#support' rel='noreferrer' target='_blank'>Spring Cloud Data Flow OSS support</a>"
-LINK_SPRING_HATEOAS="<a href='https://spring.io/projects/spring-hateoas#support' rel='noreferrer' target='_blank'>Spring HATEOAS OSS support</a>"
+TODAY="$(date +%Y-%m-%d)"
+CONF_DIR="${CURRENT_DIR}/conf/archeo"
 
-# Compare version numbers and returns "0 if ="  "1 if >"  "2 if <" (inspired from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash)
-function compare_versions() {
-	local IFS=.
-	local i
-	local -a ver1=()
-	local -a ver2=()
-
-	# Split the version strings into arrays
-	read -r -a ver1 <<< "$1"
-	read -r -a ver2 <<< "$2"
-
-	# Compare each segment of the version numbers
-	for ((i = 0; i < ${#ver1[@]} || i < ${#ver2[@]}; i++)); do
-		# Default to 0 if segment doesn't exist
-		local num1=$((10#${ver1[i]:-0}))  
-		local num2=$((10#${ver2[i]:-0}))
-		if ((num1 > num2)); then
-			return 1
-		elif ((num1 < num2)); then
-			return 2
-		fi
-	done
-	# If execution reaches here, the versions are equal
-	return 0
-}
+declare -A SPRING_PROJECT_MAP=(
+    ["spring-amqp"]="Spring AMQP"
+    ["spring-authorization-server"]="Spring Authorization Server"
+    ["spring-batch"]="Spring Batch"
+    ["spring-boot"]="Spring Boot"
+    #["spring-cli"]="Spring CLI" - page does not exist
+    #["spring-cloud"]="Spring Cloud" - page does not exist
+    #["spring-cloud-alibaba"]="Spring Cloud Alibaba" - page does not exist
+    ["spring-cloud-app-broker"]="Spring Cloud App Broker"
+    #["spring-cloud-aws"]="Spring Cloud AWS"
+    #["spring-cloud-azure"]="Spring Cloud Azure"
+    ["spring-cloud-bus"]="Spring Cloud Bus"
+    ["spring-cloud-circuitbreaker"]="Spring Cloud Circuit Breaker"
+    ["spring-cloud-cli"]="Spring Cloud CLI"
+    #["spring-cloud-cloudfoundry-service-broker"]="Spring Cloud Cloud Foundry Service Broker" - page does not exist
+    ["spring-cloud-commons"]="Spring Cloud Commons"
+    ["spring-cloud-config"]="Spring Cloud Config"
+    ["spring-cloud-consul"]="Spring Cloud Consul"
+    ["spring-cloud-contract"]="Spring Cloud Contract"
+    ["spring-cloud-dataflow"]="Spring Cloud Data Flow"
+    ["spring-cloud-function"]="Spring Cloud Function"
+    ["spring-cloud-gateway"]="Spring Cloud Gateway"
+    #["spring-cloud-gcp"]="Spring Cloud GCP" - page does not exist
+    ["spring-cloud-kubernetes"]="Spring Cloud Kubernetes"
+    ["spring-cloud-netflix"]="Spring Cloud Netflix"
+    ["spring-cloud-open-service-broker"]="Spring Cloud Open Service Broker"
+    ["spring-cloud-openfeign"]="Spring Cloud OpenFeign"
+    ["spring-cloud-security"]="Spring Cloud Security"
+    ["spring-cloud-skipper"]="Spring Cloud Skipper"
+    ["spring-cloud-sleuth"]="Spring Cloud Sleuth"
+    ["spring-cloud-stream"]="Spring Cloud Stream"
+    ["spring-cloud-stream-applications"]="Spring Cloud Stream Applications"
+    ["spring-cloud-task"]="Spring Cloud Task"
+    ["spring-cloud-vault"]="Spring Cloud Vault"
+    ["spring-cloud-zookeeper"]="Spring Cloud Zookeeper"
+    ["spring-credhub"]="Spring CredHub"
+    ["spring-data"]="Spring Data"
+    ["spring-data-cassandra"]="Spring Data Cassandra"
+    #["spring-data-couchbase"]="Spring Data Couchbase" - page does not exist
+    #["spring-data-elasticsearch"]="Spring Data Elasticsearch"
+    ["spring-data-envers"]="Spring Data Envers"
+    ["spring-data-gemfire"]="Spring Data Gemfire"
+    ["spring-data-geode"]="Spring Data Geode"
+    ["spring-data-jdbc"]="Spring Data JDBC"
+    ["spring-data-jpa"]="Spring Data JPA"
+    ["spring-data-ldap"]="Spring Data LDAP"
+    ["spring-data-mongodb"]="Spring Data MongoDB"
+    #["spring-data-neo4j"]="Spring Data Neo4J"
+    ["spring-data-r2dbc"]="Spring Data R2DBC"
+    ["spring-data-redis"]="Spring Data Redis"
+    ["spring-data-rest"]="Spring Data REST"
+    #["spring-flo"]="Spring Flo" - page does not exist
+    ["spring-framework"]="Spring Framework"
+    ["spring-graphql"]="Spring for GraphQL"
+    ["spring-hateoas"]="Spring HATEOS"
+    ["spring-integration"]="Spring Integration"
+    ["spring-kafka"]="Spring Kafka"
+    ["spring-ldap"]="Spring LDAP"
+    #["spring-modulith"]="Spring Modulith" - page does not exist
+    ["spring-pulsar"]="Spring for Apache Pulsar"
+    ["spring-restdocs"]="Spring REST Docs"
+    ["spring-security"]="Spring Security"
+    ["spring-security-kerberos"]="Spring Security Kerberos"
+    ["spring-session"]="Spring Session"
+    ["spring-session-data-geode"]="Spring Session Data Geode"
+    ["spring-shell"]="Spring Shell"
+    ["spring-statemachine"]="Spring State Machine"
+    ["spring-vault"]="Spring Vault"
+    ["spring-webflow"]="Spring Web Flow"
+    ["spring-ws"]="Spring Web Services"
+)
 
 function log_finding() {
 	echo "${2}${SEPARATOR}${3}${SEPARATOR}${4}${SEPARATOR}${5}${SEPARATOR}\"${6}\"" >>"${1}"
 }
 
-function check_expiration_spring_4() {
-	LIB_VERSION="${1}"
-	LIB_VERSION_FULL="${2}"
-	APP_CSV="${3}"
-	LIB="${4}"
-	LINK="${5}"
-	if [[ "$( compare_versions "${LIB_VERSION}" "4.1"; echo $? )" == "2" ]]; then
-		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "Critical" "${LINK} expired (=< 4.0.x)"
-	elif [[ "$( compare_versions "${LIB_VERSION}" "4.2"; echo $? )" == "2" ]]; then
-		log_finding "${APP_CSV}" "${LIB}" "${LIB_VERSION_FULL}" "Supportability" "High" "${LINK} ends on 28 November 2024 (4.1.x)"
+function check_support() {
+	local SPRING_PROJECT CSV_FILE LIBRARY E_VERSION E_VERSION_SHORT E_VERSION_FULL SUPPORT_INFO_FILE QUERY BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS
+	SPRING_PROJECT="$1"
+	CSV_FILE="$2"
+	LIBRARY="$3"
+	E_VERSION_SHORT="$4"
+	E_VERSION_FULL="$5"
+
+	SUPPORT_INFO_FILE="${CONF_DIR}/${SPRING_PROJECT}__support-data.json"
+
+	QUERY='.[] |select(.branch | startswith("'${E_VERSION_SHORT}'")) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
+	read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<< "$(jq -r "${QUERY}" "${SUPPORT_INFO_FILE}")"
+
+	LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} OSS support</a>"
+
+	if [[ -n "${SUPPORT_END_OSS}" ]]; then
+		if [[ "${TODAY}" < "${SUPPORT_END_OSS}" ]]; then
+			# Support expired
+			DESCRIPTION="${LINK_SPRING_PROJECT} expired since ${SUPPORT_END_OSS} (=< ${BRANCH})"
+			SEVERITY='Critical'
+		else
+			# Add a warning if the support ends in less than one year
+			ONE_YEAR_FROM_TODAY="$(( $(date +%Y) +1 ))-$(date +%m-%d)"
+			if [[ "${ONE_YEAR_FROM_TODAY}" < "${SUPPORT_END_OSS}" ]]; then
+				DESCRIPTION="${LINK_SPRING_PROJECT} ends on ${SUPPORT_END_OSS} (${BRANCH})"
+				SEVERITY='High'
+			fi
+		fi
 	else
-		log_console_info "Ok for ${LIB}:${LIB_VERSION_FULL}"
+		# Search the lower supported OSS version. Note: 'sort_by' filters the minimum supported OSS version
+		EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0]) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
+		read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<< "$(jq -r "${EXTENDED_QUERY}" "${SUPPORT_INFO_FILE}")"
+		DESCRIPTION="${LINK_SPRING_PROJECT} expired (< ${BRANCH})"
+		SEVERITY='Critical'
+	fi
+
+	if [[ -n "${SEVERITY}" ]]; then
+		log_finding "${CSV_FILE}" "${LIBRARY}" "${E_VERSION_FULL}" "Supportability" "${SEVERITY}" "${DESCRIPTION}"
 	fi
 }
 
@@ -103,7 +164,7 @@ function generate_csv() {
 			###### 1. Generate findings for one application
 			while read -r ENTRY; do
 
-				local  E_GROUP E_PACKAGE E_VERSION_FULL E_VERSION LIB
+				local E_GROUP E_PACKAGE E_VERSION_FULL E_VERSION E_VERSION_SHORT LIB
 				# e.g. 'maven'
 				#E_TYPE=$(echo "${ENTRY}" | cut -d '/' -f1 | cut -d ':' -f2)
 
@@ -127,176 +188,165 @@ function generate_csv() {
 					E_VERSION=''
 				fi
 
+				E_VERSION_SHORT=$(echo "${E_VERSION}"|awk -F '.' '{printf "%s.%s", $1, $2}')
+
 				# e.g. 'org.springframework:spring-aop'
 				LIB="${E_GROUP}:${E_PACKAGE}"
 
 				####### Unsupported Libraries
-
-				if [[ "${E_GROUP}" == "org.springframework"* ]]; then
+				DETECTED_SPRING_PROJECT=''
+				if [[ -n "${E_VERSION_SHORT}" && "${E_GROUP}" == "org.springframework"* ]]; then
 					# Check support for Spring Framework (https://spring.io/projects/spring-framework#support)
 					if [[ "${E_GROUP}" == "org.springframework" ]]; then
-
-						if [[ "$( compare_versions "${E_VERSION}" "5.3"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_FRAMEWORK} expired (=< 5.2.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "5.4"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 December 2024 (5.3.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_FRAMEWORK} ends on 31 August 2024 (6.0.x)"
-						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-						fi
+						DETECTED_SPRING_PROJECT='spring-framework'
 
 					# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
 					elif [[ "${E_GROUP}" == "org.springframework.boot"* ]]; then
-						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_BOOT} expired (=< 3.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 18 May 2024 (3.1.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BOOT} ends on 23 November 2024 (3.2.x)"
-						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-						fi
+						DETECTED_SPRING_PROJECT='spring-boot'
 
 					# Check support for Spring Session (https://spring.io/projects/spring-session#support)
 					elif [[ "${E_GROUP}" == "org.springframework.session"* ]]; then
-						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SESSION} expired (=< 3.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SESSION} ends on 16 May 2024 (3.1.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SESSION} ends on 21 November 2024 (3.2.x)"
-						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-						fi
+						DETECTED_SPRING_PROJECT='spring-session'
 
 					# Check support for Spring Data (https://spring.io/projects/spring-data#support)
 					elif [[ "${E_GROUP}" == "org.springframework.data"* ]]; then
-						if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_DATA} expired (=< 3.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_DATA} ends on 12 May 2024 (3.1.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "3.3"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_DATA} ends on 17 November 2024 (3.2.x)"
+						if [[ "${LIB}" == *"cassandra"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-cassandra'
+						elif [[ "${LIB}" == *"envers"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-envers'
+						elif [[ "${LIB}" == *"gemfire"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-gemfire'
+						elif [[ "${LIB}" == *"geode"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-geode'
+						elif [[ "${LIB}" == *"jdbc"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-jdbc'
+						elif [[ "${LIB}" == *"jpa"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-jpa'
+						elif [[ "${LIB}" == *"ldap"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-ldap'
+						elif [[ "${LIB}" == *"mongodb"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-mongodb'
+						elif [[ "${LIB}" == *"r2dbc"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-r2dbc'
+						elif [[ "${LIB}" == *"redis"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-redis'
+						elif [[ "${LIB}" == *"rest"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-data-rest'
 						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							DETECTED_SPRING_PROJECT='spring-data'
 						fi
 
 					# Check support for Spring Batch (https://spring.io/projects/spring-batch#support)
 					elif [[ "${E_GROUP}" == "org.springframework.batch"* ]]; then
-						if [[ "$( compare_versions "${E_VERSION}" "5.0"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_BATCH} expired (< 5.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "5.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BATCH} ends on 18 May 2024 (5.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "5.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_BATCH} ends on 22 November 2024 (5.1.x)"
-						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-						fi
+						DETECTED_SPRING_PROJECT='spring-batch'
 
 					# Check support for Spring Security (https://spring.io/projects/spring-security#support)
 					elif [[ "${E_GROUP}" == "org.springframework.security"* ]]; then
-						if [[ "$( compare_versions "${E_VERSION}" "5.8"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (=< 5.7.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "6.0"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 31 December 2024 (5.8.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "6.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_SECURITY} expired (6.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "6.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 15 May 2024 (6.1.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "6.3"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_SECURITY} ends on 20 November 2024 (6.2.x)"
+						if [[ "${LIB}" == *"kerberos"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-security-kerberos'
 						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-						fi				
+							DETECTED_SPRING_PROJECT='spring-security'
+						fi
 
 					# Check support for Spring HATEOAS (https://spring.io/projects/spring-hateoas#support)
 					elif [[ "${E_GROUP}" == "org.springframework.hateoas"* ]]; then
-						if [[ "$( compare_versions "${E_VERSION}" "2.1"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_HATEOAS} expired (=< 2.0.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "2.2"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_HATEOAS} ends on 11 May 2024 (2.1.x)"
-						elif [[ "$( compare_versions "${E_VERSION}" "2.3"; echo $? )" == "2" ]]; then
-							log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_HATEOAS} ends on 16 November 2024 (2.2.x)"
-						else
-							log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-						fi	
+						DETECTED_SPRING_PROJECT='spring-hateoas'
 
 					# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
-					# Simplified check: Below Spring Cloud 2021.0: no support (https://spring.io/projects/spring-cloud) - https://github.com/spring-cloud/spring-cloud-release/wiki/Supported-Versions - https://stackoverflow.com/questions/42659920/is-there-a-compatibility-matrix-of-spring-boot-and-spring-cloud
 					elif [[ "${E_GROUP}" == "org.springframework.cloud"* ]]; then
-
-						if [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
-							# Spring Cloud Commons
-							check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_COMMONS}"
-
-						elif [[ "${E_PACKAGE}" == *"netflix"* ]]; then
-							# Spring Cloud Netflix
-							check_expiration_spring_4 "${E_VERSION}" "${E_VERSION_FULL}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${LINK_SPRING_NETFLIX}"
-
-						elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
-							# Spring Cloud Kubernetes
-							if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_KUBERNETES} expired (=< 3.1.x)"
-							elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_KUBERNETES} ends on 28 November 2024 (3.1.x)"
-							else
-								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-							fi
-
+						if [[ "${LIB}" == *"spring-cloud-app-broker"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-app-broker'
+						elif [[ "${LIB}" == *"bus"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-bus'
+						elif [[ "${LIB}" == *"circuitbreaker"* || "${E_PACKAGE}" == "hystrix" ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-circuitbreaker'
+						elif [[ "${LIB}" == *"cli"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-cli'
+						elif [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then   
+							DETECTED_SPRING_PROJECT='spring-cloud-commons'
+						elif [[ "${LIB}" == *"config"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-config'
+						elif [[ "${LIB}" == *"consul"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-consul'
+						elif [[ "${LIB}" == *"contract"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-contract'
 						elif [[ "${E_PACKAGE}" == "spring-cloud-dataflow"* ]]; then
-							# Spring Cloud Data Flow
-							if [[ "$( compare_versions "${E_VERSION}" "2.11"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD_DATA_FLOW} expired (=< 2.10.x)"
-							elif [[ "$( compare_versions "${E_VERSION}" "2.12"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_CLOUD_DATA_FLOW} ends on 20 September 2024 (2.11.x)"
-							else
-								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-							fi
-						
+							DETECTED_SPRING_PROJECT='spring-cloud-dataflow'
+						elif [[ "${E_PACKAGE}" == "spring-cloud-function"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-function'
+						elif [[ "${E_PACKAGE}" == "spring-cloud-gateway"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-gateway'
+						elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-kubernetes'
+						elif [[ "${E_PACKAGE}" == *"netflix"* || "${E_PACKAGE}" == *"hystrix"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-netflix'
+						elif [[ "${E_PACKAGE}" == *"spring-cloud-open-service-broker"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-open-service-broker'
+						elif [[ "${E_PACKAGE}" == *"openfeign"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-openfeign'
+						elif [[ "${LIB}" == *"security"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-security'
+						elif [[ "${E_PACKAGE}" == *"spring-cloud-skipper"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-skipper'
+						elif [[ "${LIB}" == *"sleuth"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-sleuth'
+						elif [[ "${LIB}" == *"spring-cloud-stream-applications"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-stream-applications'
+						elif [[ "${LIB}" == *"spring-cloud-stream"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-stream'
 						elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
-							# Spring Cloud Task
-							if [[ "$( compare_versions "${E_VERSION}" "2.4.0"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD_TASK} expired (=< 3.1.x)"
-							elif [[ "$( compare_versions "${E_VERSION}" "3.2"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "High" "${LINK_SPRING_CLOUD_TASK} ends on 28 November 2024 (3.1.x)"
-							else
-								log_console_info "Ok for ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
-							fi
-
-						elif [[ "${LIB}" == *"circuitbreaker"* || "${LIB}" == *"starter"* ]]; then
-							#Spring Cloud Circuitbreaker 2.1.0-RC1
-							#Spring Cloud Starter Build ((2021.0.0-RC1)) 2.1.0
-							if [[ "$( compare_versions "${E_VERSION}" "2.1.0"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 2.1.0)"
-							fi
-
-						elif [[ "${LIB}" == *"vault"* || "${LIB}" == *"bus"* || "${LIB}" == *"cli"* || "${LIB}" == *"zookeeper"* ||
-							"${E_GROUP}:${E_PACKAGE}" == *"openfeign"* || "${E_GROUP}:${E_PACKAGE}" == *"sleuth"* ||
-							"${E_GROUP}:${E_PACKAGE}" == *"contract"* || "${E_GROUP}:${E_PACKAGE}" == *"consul"* || "${E_GROUP}:${E_PACKAGE}" == *"gateway"* ||
-							"${E_GROUP}:${E_PACKAGE}" == *"config"* || "${E_GROUP}:${E_PACKAGE}" == *"cloudfoundry"* ]]; then
-							#Spring Cloud Vault 3.1.0-RC1
-							#Spring Cloud Bus 3.1.0-RC1
-							#Spring Cloud Cli 3.1.0-RC1
-							#Spring Cloud Zookeeper 3.1.0-RC1
-							#Spring Cloud Commons 3.1.0-RC1 (issues)
-							#Spring Cloud Openfeign 3.1.0-RC1 (issues)
-							#Spring Cloud Sleuth 3.1.0-RC1 (issues)
-							#Spring Cloud Contract 3.1.0-RC1 (issues)
-							#Spring Cloud Consul 3.1.0-RC1
-							#Spring Cloud Gateway 3.1.0-RC1 (issues)
-							#Spring Cloud Config 3.1.0-RC1 (issues)
-							#Spring Cloud Cloudfoundry 3.1.0-RC1
-							#Spring Cloud Netflix 3.1.0-RC1
-							if [[ "$( compare_versions "${E_VERSION}" "3.1"; echo $? )" == "2" ]]; then
-								log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Supportability" "Critical" "${LINK_SPRING_CLOUD} expired (< 3.1.x)"
-							fi
+							DETECTED_SPRING_PROJECT='spring-cloud-task'
+						elif [[ "${LIB}" == *"vault"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-vault'
+						elif [[ "${LIB}" == *"zookeeper"* ]]; then
+							DETECTED_SPRING_PROJECT='spring-cloud-zookeeper'
 						else
 							log_console_info "Unknown Spring Cloud library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 						fi
+
+					elif [[ "${E_GROUP}" == "org.springframework.pulsar"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-pulsar'
+
+					elif [[ "${E_GROUP}" == "org.springframework.restdocs"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-restdocs'
+
+					elif [[ "${E_GROUP}" == "org.springframework.statemachine"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-statemachine'
+
+					elif [[ "${E_GROUP}" == "org.springframework.webflow"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-webflow'
+
+					elif [[ "${E_GROUP}" == "org.springframework.ws"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-ws'
+
+					elif [[ "${E_GROUP}" == "org.springframework.integration"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-integration'
+
+					elif [[ "${E_GROUP}" == "org.springframework.shell"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-shell'
+
+					elif [[ "${E_GROUP}" == "org.springframework.ldap"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-ldap'
+
+					elif [[ "${E_GROUP}" == "org.springframework.kafka"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-kafka'
+
+					elif [[ "${E_GROUP}" == "org.springframework.graphql"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-graphql'
+
+					elif [[ "${E_GROUP}" == "org.springframework.credhub"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-credhub'
+
+					elif [[ "${E_GROUP}" == "org.springframework.amqp"* ]]; then
+						DETECTED_SPRING_PROJECT='spring-amqp'
+
 					else
 						log_console_info "Unknown Spring library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
 					fi
+				fi
+
+				if [[ -n "${DETECTED_SPRING_PROJECT}" ]]; then
+					check_support "${DETECTED_SPRING_PROJECT}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
 				fi
 
 				local LIB_TYPE=''
@@ -325,18 +375,24 @@ function generate_csv() {
 						;;
 				esac
 				if [[ -n "${LIB_TYPE}" ]]; then
-					log_finding "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
+					# Cut everything after last '@'
+					ENTRY_TRIM="${ENTRY%%@*}"
+					# Cut everything before first '/'
+					ENTRY_CLEAN="${ENTRY_TRIM#*/}"
+					# Replace all '/' by ':'
+					ENTRY_FINAL="${ENTRY_CLEAN//\//:}"
+					log_finding "${ARCHEO_APP_CSV}" "${ENTRY_FINAL}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
 				fi
 			done <"${ARCHEO_OUTPUT}"
 
 			##### Check for duplicated libraries
 			# Extract and sort the unique library names
-			LIBRARIES=$(awk -F'/' '{printf("%s/%s\n",$2,$3)}' "$ARCHEO_OUTPUT" | cut -d '@' -f1 | uniq | sort -u)
+			LIBRARIES=$(awk -F'/' '{printf("%s/%s\n",$2,$3)}' "${ARCHEO_OUTPUT}" | cut -d '@' -f1 | uniq | sort -u)
 
 			# Loop through each unique library
 			while IFS= read -r LIBRARY; do
 				# Extract all versions of the current library
-				VERSIONS=$(grep "/${LIBRARY}@" "$ARCHEO_OUTPUT" | awk -F'@' '{print $2}' | sort -u)
+				VERSIONS=$(grep "/${LIBRARY}@" "${ARCHEO_OUTPUT}" | awk -F'@' '{print $2}' | sort -u)
 
 				# If there are multiple versions, add one entry
 				LIB_COUNT=$(echo "$VERSIONS" | wc -l)
@@ -359,7 +415,23 @@ function generate_csv() {
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
+# Download all latest JSON files containing Spring Support information
+download_spring_project_support_files() {
+	mkdir -p "${CONF_DIR}"
+    for KEY in "${!SPRING_PROJECT_MAP[@]}"; do
+        FILENAME="${CONF_DIR}/${KEY}__support-data.json"
+        if [ ! -f "${FILENAME}" ]; then
+	        URL="https://spring.io/page-data/projects/$KEY/page-data.json"
+            log_console_info "Downloading configuration for ${KEY} (${FILENAME})"
+            curl -Ls "$URL" | jq -r '.result.data.page.support' > "${FILENAME}"
+        else
+            log_console_info "Configuration for ${KEY} already exists. Skipping download. (${FILENAME})"
+        fi
+    done
+}
+
 function main() {
+	#download_spring_project_support_files
 	for_each_group generate_csv
 }
 

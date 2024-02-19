@@ -1,0 +1,26 @@
+[
+  {
+    "branch": "1.0.x",
+    "initialDate": "2022-05-18",
+    "ossEnforcedEnd": "2023-11-18",
+    "ossPolicyEnd": "2023-11-18",
+    "commercialEnforcedEnd": "2025-03-18",
+    "commercialPolicyEnd": "2025-03-18"
+  },
+  {
+    "branch": "1.1.x",
+    "initialDate": "2022-11-22",
+    "ossEnforcedEnd": "2023-11-22",
+    "ossPolicyEnd": "2023-11-22",
+    "commercialEnforcedEnd": "2025-03-22",
+    "commercialPolicyEnd": "2025-03-22"
+  },
+  {
+    "branch": "1.2.x",
+    "initialDate": "2023-05-17",
+    "ossEnforcedEnd": "2024-11-30",
+    "ossPolicyEnd": "2024-05-17",
+    "commercialEnforcedEnd": "2026-02-28",
+    "commercialPolicyEnd": "2025-09-17"
+  }
+]

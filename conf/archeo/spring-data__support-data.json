@@ -1,0 +1,50 @@
+[
+  {
+    "branch": "3.2.x",
+    "initialDate": "2023-11-17",
+    "ossEnforcedEnd": "",
+    "ossPolicyEnd": "2024-11-17",
+    "commercialEnforcedEnd": "",
+    "commercialPolicyEnd": "2026-03-17"
+  },
+  {
+    "branch": "3.1.x",
+    "initialDate": "2023-05-12",
+    "ossEnforcedEnd": "",
+    "ossPolicyEnd": "2024-05-12",
+    "commercialEnforcedEnd": "",
+    "commercialPolicyEnd": "2025-09-12"
+  },
+  {
+    "branch": "3.0.x",
+    "initialDate": "2022-11-18",
+    "ossEnforcedEnd": "",
+    "ossPolicyEnd": "2023-11-18",
+    "commercialEnforcedEnd": "2025-02-24",
+    "commercialPolicyEnd": "2025-03-18"
+  },
+  {
+    "branch": "2.7.x",
+    "initialDate": "2022-05-13",
+    "ossEnforcedEnd": "2023-11-18",
+    "ossPolicyEnd": "2023-05-13",
+    "commercialEnforcedEnd": "2025-08-18",
+    "commercialPolicyEnd": "2024-09-13"
+  },
+  {
+    "branch": "2.6.x",
+    "initialDate": "2021-11-12",
+    "ossEnforcedEnd": "2022-11-12",
+    "ossPolicyEnd": "2022-11-12",
+    "commercialEnforcedEnd": "2024-03-12",
+    "commercialPolicyEnd": "2024-03-12"
+  },
+  {
+    "branch": "2.5.x",
+    "initialDate": "2021-04-14",
+    "ossEnforcedEnd": "2022-04-14",
+    "ossPolicyEnd": "2022-04-14",
+    "commercialEnforcedEnd": "2023-08-14",
+    "commercialPolicyEnd": "2023-08-14"
+  }
+]

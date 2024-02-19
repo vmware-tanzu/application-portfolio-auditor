@@ -1,0 +1,10 @@
+[
+  {
+    "branch": "2.2.x",
+    "initialDate": "2019-11-26",
+    "ossEnforcedEnd": "2020-11-26",
+    "ossPolicyEnd": "2020-11-26",
+    "commercialEnforcedEnd": "2022-03-26",
+    "commercialPolicyEnd": "2022-03-26"
+  }
+]
