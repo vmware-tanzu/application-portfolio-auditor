@@ -17,75 +17,75 @@ TODAY="$(date +%Y-%m-%d)"
 CONF_DIR="${CURRENT_DIR}/conf/archeo"
 
 declare -A SPRING_PROJECT_MAP=(
-    ["spring-amqp"]="Spring AMQP"
-    ["spring-authorization-server"]="Spring Authorization Server"
-    ["spring-batch"]="Spring Batch"
-    ["spring-boot"]="Spring Boot"
-    #["spring-cli"]="Spring CLI" - page does not exist
-    #["spring-cloud"]="Spring Cloud" - page does not exist
-    #["spring-cloud-alibaba"]="Spring Cloud Alibaba" - page does not exist
-    ["spring-cloud-app-broker"]="Spring Cloud App Broker"
-    #["spring-cloud-aws"]="Spring Cloud AWS"
-    #["spring-cloud-azure"]="Spring Cloud Azure"
-    ["spring-cloud-bus"]="Spring Cloud Bus"
-    ["spring-cloud-circuitbreaker"]="Spring Cloud Circuit Breaker"
-    ["spring-cloud-cli"]="Spring Cloud CLI"
-    #["spring-cloud-cloudfoundry-service-broker"]="Spring Cloud Cloud Foundry Service Broker" - page does not exist
-    ["spring-cloud-commons"]="Spring Cloud Commons"
-    ["spring-cloud-config"]="Spring Cloud Config"
-    ["spring-cloud-consul"]="Spring Cloud Consul"
-    ["spring-cloud-contract"]="Spring Cloud Contract"
-    ["spring-cloud-dataflow"]="Spring Cloud Data Flow"
-    ["spring-cloud-function"]="Spring Cloud Function"
-    ["spring-cloud-gateway"]="Spring Cloud Gateway"
-    #["spring-cloud-gcp"]="Spring Cloud GCP" - page does not exist
-    ["spring-cloud-kubernetes"]="Spring Cloud Kubernetes"
-    ["spring-cloud-netflix"]="Spring Cloud Netflix"
-    ["spring-cloud-open-service-broker"]="Spring Cloud Open Service Broker"
-    ["spring-cloud-openfeign"]="Spring Cloud OpenFeign"
-    ["spring-cloud-security"]="Spring Cloud Security"
-    ["spring-cloud-skipper"]="Spring Cloud Skipper"
-    ["spring-cloud-sleuth"]="Spring Cloud Sleuth"
-    ["spring-cloud-stream"]="Spring Cloud Stream"
-    ["spring-cloud-stream-applications"]="Spring Cloud Stream Applications"
-    ["spring-cloud-task"]="Spring Cloud Task"
-    ["spring-cloud-vault"]="Spring Cloud Vault"
-    ["spring-cloud-zookeeper"]="Spring Cloud Zookeeper"
-    ["spring-credhub"]="Spring CredHub"
-    ["spring-data"]="Spring Data"
-    ["spring-data-cassandra"]="Spring Data Cassandra"
-    #["spring-data-couchbase"]="Spring Data Couchbase" - page does not exist
-    #["spring-data-elasticsearch"]="Spring Data Elasticsearch"
-    ["spring-data-envers"]="Spring Data Envers"
-    ["spring-data-gemfire"]="Spring Data Gemfire"
-    ["spring-data-geode"]="Spring Data Geode"
-    ["spring-data-jdbc"]="Spring Data JDBC"
-    ["spring-data-jpa"]="Spring Data JPA"
-    ["spring-data-ldap"]="Spring Data LDAP"
-    ["spring-data-mongodb"]="Spring Data MongoDB"
-    #["spring-data-neo4j"]="Spring Data Neo4J"
-    ["spring-data-r2dbc"]="Spring Data R2DBC"
-    ["spring-data-redis"]="Spring Data Redis"
-    ["spring-data-rest"]="Spring Data REST"
-    #["spring-flo"]="Spring Flo" - page does not exist
-    ["spring-framework"]="Spring Framework"
-    ["spring-graphql"]="Spring for GraphQL"
-    ["spring-hateoas"]="Spring HATEOS"
-    ["spring-integration"]="Spring Integration"
-    ["spring-kafka"]="Spring Kafka"
-    ["spring-ldap"]="Spring LDAP"
-    #["spring-modulith"]="Spring Modulith" - page does not exist
-    ["spring-pulsar"]="Spring for Apache Pulsar"
-    ["spring-restdocs"]="Spring REST Docs"
-    ["spring-security"]="Spring Security"
-    ["spring-security-kerberos"]="Spring Security Kerberos"
-    ["spring-session"]="Spring Session"
-    ["spring-session-data-geode"]="Spring Session Data Geode"
-    ["spring-shell"]="Spring Shell"
-    ["spring-statemachine"]="Spring State Machine"
-    ["spring-vault"]="Spring Vault"
-    ["spring-webflow"]="Spring Web Flow"
-    ["spring-ws"]="Spring Web Services"
+	["spring-amqp"]="Spring AMQP"
+	["spring-authorization-server"]="Spring Authorization Server"
+	["spring-batch"]="Spring Batch"
+	["spring-boot"]="Spring Boot"
+	#["spring-cli"]="Spring CLI" - page does not exist
+	#["spring-cloud"]="Spring Cloud" - page does not exist
+	#["spring-cloud-alibaba"]="Spring Cloud Alibaba" - page does not exist
+	["spring-cloud-app-broker"]="Spring Cloud App Broker"
+	#["spring-cloud-aws"]="Spring Cloud AWS"
+	#["spring-cloud-azure"]="Spring Cloud Azure"
+	["spring-cloud-bus"]="Spring Cloud Bus"
+	["spring-cloud-circuitbreaker"]="Spring Cloud Circuit Breaker"
+	["spring-cloud-cli"]="Spring Cloud CLI"
+	#["spring-cloud-cloudfoundry-service-broker"]="Spring Cloud Cloud Foundry Service Broker" - page does not exist
+	["spring-cloud-commons"]="Spring Cloud Commons"
+	["spring-cloud-config"]="Spring Cloud Config"
+	["spring-cloud-consul"]="Spring Cloud Consul"
+	["spring-cloud-contract"]="Spring Cloud Contract"
+	["spring-cloud-dataflow"]="Spring Cloud Data Flow"
+	["spring-cloud-function"]="Spring Cloud Function"
+	["spring-cloud-gateway"]="Spring Cloud Gateway"
+	#["spring-cloud-gcp"]="Spring Cloud GCP" - page does not exist
+	["spring-cloud-kubernetes"]="Spring Cloud Kubernetes"
+	["spring-cloud-netflix"]="Spring Cloud Netflix"
+	["spring-cloud-open-service-broker"]="Spring Cloud Open Service Broker"
+	["spring-cloud-openfeign"]="Spring Cloud OpenFeign"
+	["spring-cloud-security"]="Spring Cloud Security"
+	["spring-cloud-skipper"]="Spring Cloud Skipper"
+	["spring-cloud-sleuth"]="Spring Cloud Sleuth"
+	["spring-cloud-stream"]="Spring Cloud Stream"
+	["spring-cloud-stream-applications"]="Spring Cloud Stream Applications"
+	["spring-cloud-task"]="Spring Cloud Task"
+	["spring-cloud-vault"]="Spring Cloud Vault"
+	["spring-cloud-zookeeper"]="Spring Cloud Zookeeper"
+	["spring-credhub"]="Spring CredHub"
+	["spring-data"]="Spring Data"
+	["spring-data-cassandra"]="Spring Data Cassandra"
+	#["spring-data-couchbase"]="Spring Data Couchbase" - page does not exist
+	#["spring-data-elasticsearch"]="Spring Data Elasticsearch"
+	["spring-data-envers"]="Spring Data Envers"
+	["spring-data-gemfire"]="Spring Data Gemfire"
+	["spring-data-geode"]="Spring Data Geode"
+	["spring-data-jdbc"]="Spring Data JDBC"
+	["spring-data-jpa"]="Spring Data JPA"
+	["spring-data-ldap"]="Spring Data LDAP"
+	["spring-data-mongodb"]="Spring Data MongoDB"
+	#["spring-data-neo4j"]="Spring Data Neo4J"
+	["spring-data-r2dbc"]="Spring Data R2DBC"
+	["spring-data-redis"]="Spring Data Redis"
+	["spring-data-rest"]="Spring Data REST"
+	#["spring-flo"]="Spring Flo" - page does not exist
+	["spring-framework"]="Spring Framework"
+	["spring-graphql"]="Spring for GraphQL"
+	["spring-hateoas"]="Spring HATEOS"
+	["spring-integration"]="Spring Integration"
+	["spring-kafka"]="Spring Kafka"
+	["spring-ldap"]="Spring LDAP"
+	#["spring-modulith"]="Spring Modulith" - page does not exist
+	["spring-pulsar"]="Spring for Apache Pulsar"
+	["spring-restdocs"]="Spring REST Docs"
+	["spring-security"]="Spring Security"
+	["spring-security-kerberos"]="Spring Security Kerberos"
+	["spring-session"]="Spring Session"
+	["spring-session-data-geode"]="Spring Session Data Geode"
+	["spring-shell"]="Spring Shell"
+	["spring-statemachine"]="Spring State Machine"
+	["spring-vault"]="Spring Vault"
+	["spring-webflow"]="Spring Web Flow"
+	["spring-ws"]="Spring Web Services"
 )
 
 function log_finding() {
@@ -103,7 +103,7 @@ function check_support() {
 	SUPPORT_INFO_FILE="${CONF_DIR}/${SPRING_PROJECT}__support-data.json"
 
 	QUERY='.[] |select(.branch | startswith("'${E_VERSION_SHORT}'")) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
-	read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<< "$(jq -r "${QUERY}" "${SUPPORT_INFO_FILE}")"
+	read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<<"$(jq -r "${QUERY}" "${SUPPORT_INFO_FILE}")"
 
 	LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} OSS support</a>"
 
@@ -114,7 +114,7 @@ function check_support() {
 			SEVERITY='Critical'
 		else
 			# Add a warning if the support ends in less than one year
-			ONE_YEAR_FROM_TODAY="$(( $(date +%Y) +1 ))-$(date +%m-%d)"
+			ONE_YEAR_FROM_TODAY="$(($(date +%Y) + 1))-$(date +%m-%d)"
 			if [[ "${ONE_YEAR_FROM_TODAY}" < "${SUPPORT_END_OSS}" ]]; then
 				DESCRIPTION="${LINK_SPRING_PROJECT} ends on ${SUPPORT_END_OSS} (${BRANCH})"
 				SEVERITY='High'
@@ -123,7 +123,7 @@ function check_support() {
 	else
 		# Search the lower supported OSS version. Note: 'sort_by' filters the minimum supported OSS version
 		EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0]) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
-		read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<< "$(jq -r "${EXTENDED_QUERY}" "${SUPPORT_INFO_FILE}")"
+		read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<<"$(jq -r "${EXTENDED_QUERY}" "${SUPPORT_INFO_FILE}")"
 		DESCRIPTION="${LINK_SPRING_PROJECT} expired (< ${BRANCH})"
 		SEVERITY='Critical'
 	fi
@@ -188,7 +188,7 @@ function generate_csv() {
 					E_VERSION=''
 				fi
 
-				E_VERSION_SHORT=$(echo "${E_VERSION}"|awk -F '.' '{printf "%s.%s", $1, $2}')
+				E_VERSION_SHORT=$(echo "${E_VERSION}" | awk -F '.' '{printf "%s.%s", $1, $2}')
 
 				# e.g. 'org.springframework:spring-aop'
 				LIB="${E_GROUP}:${E_PACKAGE}"
@@ -262,7 +262,7 @@ function generate_csv() {
 							DETECTED_SPRING_PROJECT='spring-cloud-circuitbreaker'
 						elif [[ "${LIB}" == *"cli"* ]]; then
 							DETECTED_SPRING_PROJECT='spring-cloud-cli'
-						elif [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then   
+						elif [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
 							DETECTED_SPRING_PROJECT='spring-cloud-commons'
 						elif [[ "${LIB}" == *"config"* ]]; then
 							DETECTED_SPRING_PROJECT='spring-cloud-config'
@@ -351,28 +351,28 @@ function generate_csv() {
 
 				local LIB_TYPE=''
 				case "${LIB}" in
-					*test*|*junit*)
-						####### Test libraries (should not be in application)
-						# - "test" in name
-						# - Everything in [Testing Frameworks & Tools](https://mvnrepository.com/open-source/testing-frameworks)
-						# - Examples: spring-security-test-*.jar / spring-test-*.jar / groovy-test-*.jar / opentest4j-*.jar / testng-*.jar / ant-junit-*.jar / junit-*.jar / junit-jupiter-api-*.jar / junit-platform-commons-*.jar
-						LIB_TYPE="test"
-						;;
-					*mock*)
-						####### Mocking (should not be in application)
-						# - "mock" in name
-						# - Everything in [Mocking](https://mvnrepository.com/open-source/mocking)
-						LIB_TYPE="mock"
-						;;
-					*aspectjweaver*)
-						####### Build libraries (should not be in application)
-						# - graddle / maven / ant-*.jar / groovy-ant-*.jar / aspectjweaver-*.jar
-						# https://mvnrepository.com/search?q=aspectjweaver
-						LIB_TYPE="AspectJ Weaver"
-						;;
-					*ant*)
-						LIB_TYPE="ant"
-						;;
+				*test* | *junit*)
+					####### Test libraries (should not be in application)
+					# - "test" in name
+					# - Everything in [Testing Frameworks & Tools](https://mvnrepository.com/open-source/testing-frameworks)
+					# - Examples: spring-security-test-*.jar / spring-test-*.jar / groovy-test-*.jar / opentest4j-*.jar / testng-*.jar / ant-junit-*.jar / junit-*.jar / junit-jupiter-api-*.jar / junit-platform-commons-*.jar
+					LIB_TYPE="test"
+					;;
+				*mock*)
+					####### Mocking (should not be in application)
+					# - "mock" in name
+					# - Everything in [Mocking](https://mvnrepository.com/open-source/mocking)
+					LIB_TYPE="mock"
+					;;
+				*aspectjweaver*)
+					####### Build libraries (should not be in application)
+					# - graddle / maven / ant-*.jar / groovy-ant-*.jar / aspectjweaver-*.jar
+					# https://mvnrepository.com/search?q=aspectjweaver
+					LIB_TYPE="AspectJ Weaver"
+					;;
+				*ant*)
+					LIB_TYPE="ant"
+					;;
 				esac
 				if [[ -n "${LIB_TYPE}" ]]; then
 					# Cut everything after last '@'
@@ -400,7 +400,7 @@ function generate_csv() {
 					LIB="${LIBRARY//\//:}"
 					log_finding "${ARCHEO_APP_CSV}" "${LIB}" "Multiple" "Duplicates" "High" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
 				fi
-			done <<< "$LIBRARIES"
+			done <<<"$LIBRARIES"
 		fi
 
 		###### 2. Add the aggregate findings count to the CSV file
@@ -418,16 +418,16 @@ function generate_csv() {
 # Download all latest JSON files containing Spring Support information
 download_spring_project_support_files() {
 	mkdir -p "${CONF_DIR}"
-    for KEY in "${!SPRING_PROJECT_MAP[@]}"; do
-        FILENAME="${CONF_DIR}/${KEY}__support-data.json"
-        if [ ! -f "${FILENAME}" ]; then
-	        URL="https://spring.io/page-data/projects/$KEY/page-data.json"
-            log_console_info "Downloading configuration for ${KEY} (${FILENAME})"
-            curl -Ls "$URL" | jq -r '.result.data.page.support' > "${FILENAME}"
-        else
-            log_console_info "Configuration for ${KEY} already exists. Skipping download. (${FILENAME})"
-        fi
-    done
+	for KEY in "${!SPRING_PROJECT_MAP[@]}"; do
+		FILENAME="${CONF_DIR}/${KEY}__support-data.json"
+		if [ ! -f "${FILENAME}" ]; then
+			URL="https://spring.io/page-data/projects/$KEY/page-data.json"
+			log_console_info "Downloading configuration for ${KEY} (${FILENAME})"
+			curl -Ls "$URL" | jq -r '.result.data.page.support' >"${FILENAME}"
+		else
+			log_console_info "Configuration for ${KEY} already exists. Skipping download. (${FILENAME})"
+		fi
+	done
 }
 
 function main() {
