@@ -38,7 +38,7 @@
   <!-- Header -->
   <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
     <div class="container">
-      <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white vmware-logo" src="./static/img/vmware.svg" alt="VMware"/>Application Portfolio Auditor</a>
+      <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-logo" src="./static/img/company.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
@@ -90,15 +90,15 @@
         <div class="col-lg-12 col-md-12 footer-links-wrapper">
           <div class="footer-links mt-3">
             <span class="mb-3">
-              <a href="https://www.vmware.com/" rel="noreferrer" target="_blank"><img class="mr-3 me-2 vmware-logo" src="./static/img/vmware.svg" alt="VMware"/></a>
+              <a href="https://www.vmware.com/" rel="noreferrer" target="_blank"><img class="mr-3 me-2 company-logo" src="./static/img/company.svg" alt="VMware"/></a>
               Generated with
               <a href="{{NAV_LINK}}" class="text-xxss text-black mb-3 ml-lg-3" rel="noreferrer" target="_blank">Application Portfolio Auditor</a>
               v.{{TOOL_VERSION}} from
-              <a href="https://tanzu.vmware.com/labs" class="text-xxss text-black mb-3 ml-lg-3" aria-label="VMware Tanzu Labs" title="VMware Tanzu Labs" rel="noreferrer" target="_blank">VMware Tanzu Labs</a>
+              <a href="https://tanzu.vmware.com/labs" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Tanzu Labs" title="Tanzu Labs" rel="noreferrer" target="_blank">Tanzu Labs</a>
               on {{REPORT_TIMESTAMP}}</span>
           </div>
           <div class="footer-links mt-3">
-              <span class="mb-3">&#169; 2024 VMware, Inc.</span>
+              <span class="mb-3">&#169; 2024 Broadcom</span>
               <a href="https://www.vmware.com/help/legal.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Terms of Use" title="Terms of Use" name="nav_footer_bottom : Terms of Use" rel="noreferrer" target="_blank">Terms of Use</a> 
               <a href="https://www.vmware.com/help/privacy/california-privacy-rights.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Your California Privacy Rights" title="Your California Privacy Rights" name="nav_footer_bottom : Your California Privacy Rights" rel="noreferrer" target="_blank">Your California Privacy Rights</a> 
               <a href="https://www.vmware.com/help/privacy.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Privacy" title="Privacy" name="nav_footer_bottom : Privacy" rel="noreferrer" target="_blank">Privacy</a> 
