@@ -1,0 +1,159 @@
+[
+    {
+        "description": "Favicon - VMware",
+        "url": "https://www.vmware.com/favicon.ico",
+        "targetName": "favicon.ico",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - Archeo",
+        "url": "https://cdn-icons-png.flaticon.com/512/1674/1674561.png",
+        "targetName": "archeo.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - OSV",
+        "url": "https://img.stackshare.io/service/47887/default_a2d28c0237a20e15bd37c42301dce372c1e20e2d.png",
+        "targetName": "osv.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - CSA",
+        "url": "https://raw.githubusercontent.com/vmware-tanzu/cloud-suitability-analyzer/master/csa-app/frontend/src/assets/csa-icon.svg",
+        "targetName": "csa.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - FSB",
+        "url": "https://avatars.githubusercontent.com/u/16162781?s=200&v=4",
+        "targetName": "fsb.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - VMware",
+        "url": "https://tanzu.vmware.com/",
+        "targetName": "company.svg",
+        "targetDir": "img",
+        "extractFirstSVG": "true"
+    },
+    {
+        "description": "Logo - Grype",
+        "url": "https://user-images.githubusercontent.com/5199289/136855393-d0a9eef9-ccf1-4e2b-9d7c-7aad16a567e5.png",
+        "targetName": "grype.png",
+        "targetDir": "img",
+        "crop": {
+            "left": 0,
+            "top": 22,
+            "width": 234,
+            "height": 234
+        }
+    },
+    {
+        "description": "Logo - Syft",
+        "url": "https://user-images.githubusercontent.com/5199289/136844524-1527b09f-c5cb-4aa9-be54-5aa92a6086c1.png",
+        "targetName": "syft.png",
+        "targetDir": "img",
+        "crop": {
+            "left": 10,
+            "top": 20,
+            "width": 250,
+            "height": 250
+        }
+    },
+    {
+        "description": "Logo - IBM WAMT",
+        "url": "https://avatars.githubusercontent.com/u/28316667?s=200&v=4",
+        "targetName": "ibm.jpg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - Insider",
+        "url": "https://avatars.githubusercontent.com/u/53912687?s=200&v=4",
+        "targetName": "insider.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - Microsoft",
+        "url": "https://avatars.githubusercontent.com/u/6154722?s=200&v=4",
+        "targetName": "microsoft.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - OWASP",
+        "url": "https://owasp.org/assets/images/logo.svg",
+        "targetName": "owasp.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - PMD",
+        "url": "https://avatars.githubusercontent.com/u/1958157?s=200&v=4",
+        "targetName": "pmd.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - Scan",
+        "url": "https://avatars.githubusercontent.com/u/21226431?s=200&v=4",
+        "targetName": "scan-light.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - ScanCode",
+        "url": "https://avatars.githubusercontent.com/u/10789967?s=200&v=4",
+        "targetName": "scancode.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - Trivy",
+        "url": "https://raw.githubusercontent.com/aquasecurity/trivy-docker-extension/main/trivy.svg",
+        "targetName": "trivy.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - Windup",
+        "url": "https://avatars.githubusercontent.com/u/4266383?s=200&v=4",
+        "targetName": "windup.png",
+        "targetDir": "img"
+    },
+    {
+        "description": "Icon - C#",
+        "url": "https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg",
+        "targetName": "icon-csharp.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Icon - Java",
+        "url": "https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg",
+        "targetName": "icon-java.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Icon - JavaScript",
+        "url": "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg",
+        "targetName": "icon-javascript.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Icon - Python",
+        "url": "https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg",
+        "targetName": "icon-python.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Icon - Other",
+        "url": "https://icons.getbootstrap.com/assets/icons/patch-question-fill.svg",
+        "targetName": "icon-other.svg",
+        "targetDir": "img"
+    },
+    {
+        "description": "Logo - GitHub",
+        "url": "https://github.githubassets.com/images/modules/logos_page/github-mark.zip",
+        "targetName": "github.svg",
+        "targetDir": "img",
+        "unzip": [
+            {
+                "file": "github-mark/github-mark.svg",
+                "targetName": "github.svg"
+            }
+        ]
+    }
+]

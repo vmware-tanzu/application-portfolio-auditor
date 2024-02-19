@@ -744,45 +744,13 @@ fi
 # Images, Logos, Favicon, Fonts, Scripts
 ##############################################################################################################
 
+echo "[INFO] Downloading and transforming all required images"
 mkdir -p "${DIST_STATIC}/img/"
-simple_check_and_download "Favicon - VMware" "templating/static/img/favicon.ico" 'https://www.vmware.com/favicon.ico' "latest"
-
-simple_check_and_download "Logo - CSA" "templating/static/img/csa.svg" 'https://raw.githubusercontent.com/vmware-tanzu/cloud-suitability-analyzer/master/csa-app/frontend/src/assets/csa-icon.svg' "latest"
-simple_check_and_download "Logo - FSB" "templating/static/img/fsb.png" 'https://avatars.githubusercontent.com/u/16162781?s=200&v=4' "latest"
-
-if [ -f "${DIST_STATIC}/img/github.svg" ]; then
-	echo "[INFO] 'Logo - GitHub' (latest) is already available"
-else
-	simple_check_and_download "Logo - GitHub" "templating/static/img/github-mark.zip" 'https://github.githubassets.com/images/modules/logos_page/github-mark.zip' "latest"
-	pushd "${DIST_STATIC}/img/" &>/dev/null
-	unzip github-mark.zip &>/dev/null
-	mv github-mark/github-mark.svg github.svg
-	rm -Rf github-mark github-mark.zip
-	popd &>/dev/null
-fi
-
-simple_check_and_download "Logo - VMware" "templating/static/img/vmware.svg" 'https://www.vmware.com/content/dam/digitalmarketing/vmware/en/images/company/vmware-logo-grey.svg' "latest"
-simple_check_and_download "Logo - Grype" "templating/static/img/grype.png" 'https://anchore.com/wp-content/uploads/2021/11/image-111.png' "latest"
-simple_check_and_download "Logo - Syft" "templating/static/img/syft.png" 'https://cdn-dllid.nitrocdn.com/lfaFdmeTaONuMeYAvisIiEiZRrNJpVpd/assets/images/optimized/rev-01d5fbc/anchore.com/wp-content/uploads/2021/11/image-112.png' "latest"
-simple_check_and_download "Logo - IBM WAMT" "templating/static/img/ibm.jpg" 'https://avatars.githubusercontent.com/u/28316667?s=200&v=4' "latest"
-simple_check_and_download "Logo - Insider" "templating/static/img/insider.png" 'https://avatars.githubusercontent.com/u/53912687?s=200&v=4' "latest"
-simple_check_and_download "Logo - Microsoft" "templating/static/img/microsoft.png" 'https://avatars.githubusercontent.com/u/6154722?s=200&v=4' "latest"
-simple_check_and_download "Logo - OWASP" "templating/static/img/owasp.svg" 'https://owasp.org/assets/images/logo.svg' "latest"
-simple_check_and_download "Logo - PMD" "templating/static/img/pmd.png" 'https://avatars.githubusercontent.com/u/1958157?s=200&v=4' "latest"
-simple_check_and_download "Logo - Scan" "templating/static/img/scan-light.png" 'https://avatars.githubusercontent.com/u/21226431?s=200&v=4' "latest"
-simple_check_and_download "Logo - ScanCode" "templating/static/img/scancode.png" 'https://avatars.githubusercontent.com/u/10789967?s=200&v=4' "latest"
-simple_check_and_download "Logo - Trivy" "templating/static/img/trivy.svg" 'https://raw.githubusercontent.com/aquasecurity/trivy-docker-extension/main/trivy.svg' "latest"
-simple_check_and_download "Logo - Windup" "templating/static/img/windup.png" 'https://avatars.githubusercontent.com/u/4266383?s=200&v=4' "latest"
-simple_check_and_download "Logo - Archeo" "templating/static/img/archeo.png" 'https://cdn-icons-png.flaticon.com/512/1674/1674561.png' "latest"
-simple_check_and_download "Logo - OSV" "templating/static/img/osv.png" 'https://img.stackshare.io/service/47887/default_a2d28c0237a20e15bd37c42301dce372c1e20e2d.png' "latest"
-
-# https://devicon.dev/
-simple_check_and_download "Icon - C#" "templating/static/img/icon-csharp.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg' "latest"
-simple_check_and_download "Icon - Java" "templating/static/img/icon-java.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg' "latest"
-simple_check_and_download "Icon - JavaScript" "templating/static/img/icon-javascript.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg' "latest"
-simple_check_and_download "Icon - Python" "templating/static/img/icon-python.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg' "latest"
-# https://icons.getbootstrap.com/
-simple_check_and_download "Icon - Other" "templating/static/img/icon-other.svg" 'https://icons.getbootstrap.com/assets/icons/patch-question-fill.svg' "latest"
+pushd "${SCRIPT_PATH}/../../dist/containerized/external-assets-downloader" &>/dev/null
+IMG_NAME="external-assets-downloader:1.0"
+${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" . &>/dev/null
+${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm  -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img" --name Downloader "${IMG_NAME}"
+popd &>/dev/null
 
 # https://github.com/vmware/clarity
 if [ -f "${DIST_STATIC}/fonts/Metropolis-Light.ttf" ]; then
