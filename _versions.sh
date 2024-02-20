@@ -22,13 +22,13 @@ export WAMT_VERSION='23.0.0.5'
 
 # Languages
 export LINGUIST_VERSION='7.28.0'
-export CLOC_VERSION='1.98'
+export CLOC_VERSION='2.00'
 
 # License & Authors
 export SCANCODE_VERSION='32.0.8'
 
 # Code quality / bugs
-export MAI_VERSION='1.9.18'
+export MAI_VERSION='1.9.19'
 export PMD_VERSION='6.55.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
