@@ -46,6 +46,53 @@ export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
 
+function check_container_engine() {
+	if [[ -z "$(command -v ${CONTAINER_ENGINE})" ]]; then
+		if [[ "${CONTAINER_ENGINE}" == "docker" ]]; then
+			if [[ "${IS_MAC}" == "true" ]]; then
+				echo_console_error "'docker' is not available. Please install it and start the docker daemon.
+		[MacOS] Install docker (UI required) with brew and start its daemon
+			$ brew install docker
+			$ open /Applications/Docker.app"
+			else
+				echo_console_error "'docker' is not available. Please install it and start the docker daemon.
+		[CentoOS/RHEL/Fedora] Install docker and start its daemon
+			$ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+			$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+			$ sudo yum -y install docker-ce docker-ce-cli --nobest
+			$ sudo groupadd docker
+			$ sudo usermod -aG docker \${USER}
+			$ sudo mkdir -p /etc/systemd/system/docker.service.d
+			$ sudo systemctl start docker"
+			fi
+		elif [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
+			echo_console_error "'${CONTAINER_ENGINE}' is not available. Please install it and start the '${CONTAINER_ENGINE}' container engine."
+		fi
+		exit 1
+	else
+		# Check if the docker daemon is running
+		set +e
+		${CONTAINER_ENGINE} info >/dev/null 2>&1
+		if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+			if [[ "${CONTAINER_ENGINE}" == "docker" ]]; then
+				if [[ "${IS_MAC}" == "true" ]]; then
+					echo_console_error "The docker daemon is not running! Please start it ([MacOS] '$ open /Applications/Docker.app')."
+				else
+					echo_console_error "The docker daemon is not running! Please start it ([CentoOS/RHEL/Fedora] '$ sudo systemctl start docker')."
+				fi
+			elif [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
+				if [[ "${IS_MAC}" == "true" ]]; then
+					echo_console_error "The podman machine is not running! Please start it ([MacOS] '$ podman machine stop; podman machine rm -f; podman machine init --cpus 8 --memory 16384 --disk-size 20 --rootful; podman machine start')."
+				else
+					echo_console_error "The podman machine is not running! Please start it."
+				fi
+			fi
+			exit 1
+		fi
+		set -e
+	fi
+}
+
 function simple_check_and_download() {
 	NAME="${1}"
 	DIST="${DIST_DIR}/${2}"
@@ -134,6 +181,8 @@ function check_built_java_version() {
 		echo_console_warning "Unable to validate built JAR version as 'od' is not installed"
 	fi
 }
+
+check_container_engine
 
 ##############################################################################################################
 # 00 Mustache
