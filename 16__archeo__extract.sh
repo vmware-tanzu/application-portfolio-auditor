@@ -93,7 +93,8 @@ function log_finding() {
 }
 
 function check_support() {
-	local SPRING_PROJECT CSV_FILE LIBRARY E_VERSION E_VERSION_SHORT E_VERSION_FULL SUPPORT_INFO_FILE QUERY BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS
+	local SPRING_PROJECT CSV_FILE LIBRARY E_VERSION E_VERSION_SHORT E_VERSION_FULL SUPPORT_INFO_FILE QUERY BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS DESCRIPTION SEVERITY
+
 	SPRING_PROJECT="$1"
 	CSV_FILE="$2"
 	LIBRARY="$3"
@@ -105,24 +106,24 @@ function check_support() {
 	QUERY='.[] |select(.branch | startswith("'${E_VERSION_SHORT}'")) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
 	read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<<"$(jq -r "${QUERY}" "${SUPPORT_INFO_FILE}")"
 
-	LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} OSS support</a>"
+	local LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} OSS support</a>"
 
 	if [[ -n "${SUPPORT_END_OSS}" ]]; then
-		if [[ "${TODAY}" < "${SUPPORT_END_OSS}" ]]; then
+		if [[ "${TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 			# Support expired
-			DESCRIPTION="${LINK_SPRING_PROJECT} expired since ${SUPPORT_END_OSS} (=< ${BRANCH})"
+			DESCRIPTION="${LINK_SPRING_PROJECT} expired since ${SUPPORT_END_OSS} (${BRANCH})"
 			SEVERITY='Critical'
 		else
 			# Add a warning if the support ends in less than one year
 			ONE_YEAR_FROM_TODAY="$(($(date +%Y) + 1))-$(date +%m-%d)"
-			if [[ "${ONE_YEAR_FROM_TODAY}" < "${SUPPORT_END_OSS}" ]]; then
+			if [[ "${ONE_YEAR_FROM_TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 				DESCRIPTION="${LINK_SPRING_PROJECT} ends on ${SUPPORT_END_OSS} (${BRANCH})"
 				SEVERITY='High'
 			fi
 		fi
 	else
 		# Search the lower supported OSS version. Note: 'sort_by' filters the minimum supported OSS version
-		EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0]) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
+		local EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0]) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
 		read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<<"$(jq -r "${EXTENDED_QUERY}" "${SUPPORT_INFO_FILE}")"
 		DESCRIPTION="${LINK_SPRING_PROJECT} expired (< ${BRANCH})"
 		SEVERITY='Critical'
@@ -170,29 +171,28 @@ function generate_csv() {
 
 				# e.g. 'org.springframework'
 				E_GROUP=$(echo "${ENTRY}" | cut -d '/' -f2)
-
+				
 				# e.g. 'spring-aop'
 				E_PACKAGE=$(echo "${ENTRY}" | cut -d '/' -f3 | cut -d '@' -f1)
-
+				
+				E_VERSION_FULL=''
+				E_VERSION=''
+				E_VERSION_SHORT=''
 				# e.g. '5.1.9.RELEASE'
 				if [[ "${ENTRY}" == *'@'* ]]; then
 					E_VERSION_FULL=$(echo "${ENTRY}" | cut -d '@' -f2)
-				else
-					E_VERSION_FULL=''
+					if [[ -n "${E_VERSION_FULL}" ]]; then
+						# e.g. '5.1.9'
+						E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d '[:alpha:]' | tr -d '-' | sed 's/\.$//')
+						if [[ -n "${E_VERSION}" ]]; then
+							E_VERSION_SHORT=$(echo "${E_VERSION}" | awk -F '.' '{printf "%s.%s", $1, $2}')
+						fi
+					fi
 				fi
-
-				if [[ -n "${E_VERSION_FULL}" ]]; then
-					# e.g. '5.1.9'
-					E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d '[:alpha:]' | tr -d '-' | sed 's/\.$//')
-				else
-					E_VERSION=''
-				fi
-
-				E_VERSION_SHORT=$(echo "${E_VERSION}" | awk -F '.' '{printf "%s.%s", $1, $2}')
-
+				
 				# e.g. 'org.springframework:spring-aop'
 				LIB="${E_GROUP}:${E_PACKAGE}"
-
+				
 				####### Unsupported Libraries
 				DETECTED_SPRING_PROJECT=''
 				if [[ -n "${E_VERSION_SHORT}" && "${E_GROUP}" == "org.springframework"* ]]; then
@@ -301,7 +301,7 @@ function generate_csv() {
 						elif [[ "${LIB}" == *"zookeeper"* ]]; then
 							DETECTED_SPRING_PROJECT='spring-cloud-zookeeper'
 						else
-							log_console_info "Unknown Spring Cloud library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+							log_console_info "Unknown Spring Cloud library: ${LIB}:${E_VERSION_FULL}"
 						fi
 
 					elif [[ "${E_GROUP}" == "org.springframework.pulsar"* ]]; then
@@ -341,12 +341,12 @@ function generate_csv() {
 						DETECTED_SPRING_PROJECT='spring-amqp'
 
 					else
-						log_console_info "Unknown Spring library: ${E_GROUP}:${E_PACKAGE}:${E_VERSION_FULL}"
+						log_console_info "Unknown Spring library: ${LIB}:${E_VERSION_FULL}"
 					fi
 				fi
 
 				if [[ -n "${DETECTED_SPRING_PROJECT}" ]]; then
-					check_support "${DETECTED_SPRING_PROJECT}" "${ARCHEO_APP_CSV}" "${E_GROUP}:${E_PACKAGE}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
+					check_support "${DETECTED_SPRING_PROJECT}" "${ARCHEO_APP_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
 				fi
 
 				local LIB_TYPE=''
