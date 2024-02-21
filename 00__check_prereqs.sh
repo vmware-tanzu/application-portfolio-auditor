@@ -374,6 +374,19 @@ if [[ "${TRIVY_ACTIVE}" == "true" ]]; then
 	check_container_engine "trivy:${TRIVY_VERSION}" "${DIST_DIR}/oci__trivy_${TRIVY_VERSION}.img"
 fi
 
+# 15
+if [[ "${OSV_ACTIVE}" == "true" ]]; then
+	log_console_step "Step 15 - Check OSV prerequisites"
+	check_container_engine "anchore/syft:v${SYFT_VERSION}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
+	check_container_engine "ghcr.io/google/osv-scanner:v${OSV_VERSION}" "${DIST_DIR}/oci__osv_${OSV_VERSION}.img"
+fi
+
+# 16
+if [[ "${ARCHEO_ACTIVE}" == "true" ]]; then
+	log_console_step "Step 16 - Check Archeo prerequisites"
+	check_container_engine "anchore/syft:v${SYFT_VERSION}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
+fi
+
 # 99
 if [[ -z "$(command -v zip)" ]]; then
 	if [[ "${IS_MAC}" == "true" ]]; then

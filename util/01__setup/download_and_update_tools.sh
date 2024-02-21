@@ -46,6 +46,53 @@ export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
 
+function check_container_engine() {
+	if [[ -z "$(command -v ${CONTAINER_ENGINE})" ]]; then
+		if [[ "${CONTAINER_ENGINE}" == "docker" ]]; then
+			if [[ "${IS_MAC}" == "true" ]]; then
+				echo_console_error "'docker' is not available. Please install it and start the docker daemon.
+		[MacOS] Install docker (UI required) with brew and start its daemon
+			$ brew install docker
+			$ open /Applications/Docker.app"
+			else
+				echo_console_error "'docker' is not available. Please install it and start the docker daemon.
+		[CentoOS/RHEL/Fedora] Install docker and start its daemon
+			$ sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+			$ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+			$ sudo yum -y install docker-ce docker-ce-cli --nobest
+			$ sudo groupadd docker
+			$ sudo usermod -aG docker \${USER}
+			$ sudo mkdir -p /etc/systemd/system/docker.service.d
+			$ sudo systemctl start docker"
+			fi
+		elif [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
+			echo_console_error "'${CONTAINER_ENGINE}' is not available. Please install it and start the '${CONTAINER_ENGINE}' container engine."
+		fi
+		exit 1
+	else
+		# Check if the docker daemon is running
+		set +e
+		${CONTAINER_ENGINE} info >/dev/null 2>&1
+		if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+			if [[ "${CONTAINER_ENGINE}" == "docker" ]]; then
+				if [[ "${IS_MAC}" == "true" ]]; then
+					echo_console_error "The docker daemon is not running! Please start it ([MacOS] '$ open /Applications/Docker.app')."
+				else
+					echo_console_error "The docker daemon is not running! Please start it ([CentoOS/RHEL/Fedora] '$ sudo systemctl start docker')."
+				fi
+			elif [[ "${CONTAINER_ENGINE}" == "podman" ]]; then
+				if [[ "${IS_MAC}" == "true" ]]; then
+					echo_console_error "The podman machine is not running! Please start it ([MacOS] '$ podman machine stop; podman machine rm -f; podman machine init --cpus 8 --memory 16384 --disk-size 20 --rootful; podman machine start')."
+				else
+					echo_console_error "The podman machine is not running! Please start it."
+				fi
+			fi
+			exit 1
+		fi
+		set -e
+	fi
+}
+
 function simple_check_and_download() {
 	NAME="${1}"
 	DIST="${DIST_DIR}/${2}"
@@ -134,6 +181,8 @@ function check_built_java_version() {
 		echo_console_warning "Unable to validate built JAR version as 'od' is not installed"
 	fi
 }
+
+check_container_engine
 
 ##############################################################################################################
 # 00 Mustache
@@ -744,43 +793,13 @@ fi
 # Images, Logos, Favicon, Fonts, Scripts
 ##############################################################################################################
 
+echo "[INFO] Downloading and transforming all required images"
 mkdir -p "${DIST_STATIC}/img/"
-simple_check_and_download "Favicon - VMware" "templating/static/img/favicon.ico" 'https://www.vmware.com/favicon.ico' "latest"
-
-simple_check_and_download "Logo - CSA" "templating/static/img/csa.svg" 'https://raw.githubusercontent.com/vmware-tanzu/cloud-suitability-analyzer/master/csa-app/frontend/src/assets/csa-icon.svg' "latest"
-simple_check_and_download "Logo - FSB" "templating/static/img/fsb.png" 'https://avatars.githubusercontent.com/u/16162781?s=200&v=4' "latest"
-
-if [ -f "${DIST_STATIC}/img/github.svg" ]; then
-	echo "[INFO] 'Logo - GitHub' (latest) is already available"
-else
-	simple_check_and_download "Logo - GitHub" "templating/static/img/github-mark.zip" 'https://github.githubassets.com/images/modules/logos_page/github-mark.zip' "latest"
-	pushd "${DIST_STATIC}/img/" &>/dev/null
-	unzip github-mark.zip &>/dev/null
-	mv github-mark/github-mark.svg github.svg
-	rm -Rf github-mark github-mark.zip
-	popd &>/dev/null
-fi
-
-simple_check_and_download "Logo - VMware" "templating/static/img/vmware.svg" 'https://www.vmware.com/content/dam/digitalmarketing/vmware/en/images/company/vmware-logo-grey.svg' "latest"
-simple_check_and_download "Logo - Grype" "templating/static/img/grype.png" 'https://anchore.com/wp-content/uploads/2021/11/image-111.png' "latest"
-simple_check_and_download "Logo - Syft" "templating/static/img/syft.png" 'https://user-images.githubusercontent.com/5199289/136844524-1527b09f-c5cb-4aa9-be54-5aa92a6086c1.png' "latest"
-simple_check_and_download "Logo - IBM WAMT" "templating/static/img/ibm.jpg" 'https://avatars.githubusercontent.com/u/28316667?s=200&v=4' "latest"
-simple_check_and_download "Logo - Insider" "templating/static/img/insider.png" 'https://avatars.githubusercontent.com/u/53912687?s=200&v=4' "latest"
-simple_check_and_download "Logo - Microsoft" "templating/static/img/microsoft.png" 'https://avatars.githubusercontent.com/u/6154722?s=200&v=4' "latest"
-simple_check_and_download "Logo - OWASP" "templating/static/img/owasp.svg" 'https://owasp.org/assets/images/logo.svg' "latest"
-simple_check_and_download "Logo - PMD" "templating/static/img/pmd.png" 'https://avatars.githubusercontent.com/u/1958157?s=200&v=4' "latest"
-simple_check_and_download "Logo - Scan" "templating/static/img/scan-light.png" 'https://avatars.githubusercontent.com/u/21226431?s=200&v=4' "latest"
-simple_check_and_download "Logo - ScanCode" "templating/static/img/scancode.png" 'https://avatars.githubusercontent.com/u/10789967?s=200&v=4' "latest"
-simple_check_and_download "Logo - Trivy" "templating/static/img/trivy.svg" 'https://raw.githubusercontent.com/aquasecurity/trivy-docker-extension/main/trivy.svg' "latest"
-simple_check_and_download "Logo - Windup" "templating/static/img/windup.png" 'https://avatars.githubusercontent.com/u/4266383?s=200&v=4' "latest"
-
-# https://devicon.dev/
-simple_check_and_download "Icon - C#" "templating/static/img/icon-csharp.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg' "latest"
-simple_check_and_download "Icon - Java" "templating/static/img/icon-java.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg' "latest"
-simple_check_and_download "Icon - JavaScript" "templating/static/img/icon-javascript.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg' "latest"
-simple_check_and_download "Icon - Python" "templating/static/img/icon-python.svg" 'https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg' "latest"
-# https://icons.getbootstrap.com/
-simple_check_and_download "Icon - Other" "templating/static/img/icon-other.svg" 'https://icons.getbootstrap.com/assets/icons/patch-question-fill.svg' "latest"
+pushd "${SCRIPT_PATH}/../../dist/containerized/external-assets-downloader" &>/dev/null
+IMG_NAME="external-assets-downloader:1.0"
+${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" . &>/dev/null
+${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm  -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img" --name Downloader "${IMG_NAME}"
+popd &>/dev/null
 
 # https://github.com/vmware/clarity
 if [ -f "${DIST_STATIC}/fonts/Metropolis-Light.ttf" ]; then

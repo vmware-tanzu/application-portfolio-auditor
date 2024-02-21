@@ -20,6 +20,10 @@
 #  -> used by 13__grype__02__extract.sh
 #  -> used by 14__trivy__01__anaylsis.sh
 #  -> used by 14__trivy__02__extract.sh
+#  -> used by 15__osv__01__anaylsis.sh
+#  -> used by 15__osv__02__extract.sh
+#  -> used by 16__archeo__01__anaylsis.sh
+#  -> used by 16__archeo__02__extract.sh
 #
 # LIST_JAVA_BIN: list of binary Java applications
 #  -> used by 01__fernflower_decompile.sh

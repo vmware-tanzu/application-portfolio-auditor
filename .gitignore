@@ -45,3 +45,4 @@ py_env
 reports/*
 /tmp/
 /work-in-progress/
+node_modules

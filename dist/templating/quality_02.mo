@@ -6,6 +6,7 @@ function numberWithDots(x) {
 }
 
 // Start > 0 to avoid black numbers
+var maxValueArcheo = 1
 var maxValuePMD = 1
 var maxValueCPDFragments = 1
 var maxValueCPDLines = 1
@@ -25,13 +26,14 @@ function computeMaxValues(data) {
   var indexPMD = 0
   var indexScancode = 0
   var indexMAI = 0
+  var indexArcheo = 0
 
   for (i = 1; i < columns.length; ++i) {
     if(columns[i].startsWith('PMD rules')) { indexPMD=i; }
     if(columns[i].startsWith('ScanCode')) { indexScancode=i; }
     if(columns[i].startsWith('MAI')) { indexMAI=i; }
+    if(columns[i].startsWith('Archeo')) { indexArcheo=i; }
   }
-
   if(indexPMD!=0) {
     maxValuePMD = maxValueSimpleColumn(data,'PMD violations');
     maxValueCPDFragments = maxValueSimpleColumn(data,'Copy-pasted fragments');
@@ -45,11 +47,18 @@ function computeMaxValues(data) {
   if(indexMAI!=0) {
     maxValueMAITags = maxValueSimpleColumn(data,'MAI unique tags');
   }
+  if(indexArcheo!=0) {
+    maxValueArcheo = maxValueSimpleColumn(data,'Archeo Findings');
+  }
+
 }
 
 function drawTable(data) {
 
   // Logarithmic color scale - https://bl.ocks.org/jonsadka/5054e6a53e25a7582d4d73d3958fbbf9
+  const logScaleArcheo = d3.scaleSymlog().domain([0, maxValueArcheo])
+  const colorScaleArcheo = d3.scaleSequential((c) => d3.interpolateGreens(logScaleArcheo(c)))
+
   const logScalePMD = d3.scaleSymlog().domain([0, maxValuePMD])
   const colorScalePMD = d3.scaleSequential((c) => d3.interpolateGreens(logScalePMD(c)))
 
@@ -146,7 +155,9 @@ function drawTable(data) {
           } else { return "" }
         } else { return "" }
       } else {
-        if (d.name.startsWith("PMD")) {
+        if (d.name.startsWith("Archeo")) {
+          return d ? colorScaleArcheo(d.value) : "";
+        } else if (d.name.startsWith("PMD")) {
           return d ? colorScalePMD(d.value) : "";
         } else if (d.name.startsWith("Copy-pasted fragments")) {
           return d ? colorScaleCPDFragments(d.value) : "";
@@ -168,8 +179,10 @@ function drawTable(data) {
     .style("color", function(d) {
       if (isNaN(d.value)) {
         return "#212529";
+      } else if (d.name.startsWith("Archeo")) {
+        return d ? ( logScaleArcheo(maxValueArcheo) > 1.5*logScaleArcheo(d.value) ? "#212529" : "white") : "#212529";
       } else if (d.name.startsWith("PMD")) {
-          return d ? ( logScalePMD(maxValuePMD) > 1.5*logScalePMD(d.value) ? "#212529" : "white") : "#212529";
+        return d ? ( logScalePMD(maxValuePMD) > 1.5*logScalePMD(d.value) ? "#212529" : "white") : "#212529";
       } else if (d.name.startsWith("Copy-pasted fragments")) {
         return d ? ( logScaleCPDFragments(maxValueCPDFragments) > 1.5*logScaleCPDFragments(d.value) ? "#212529" : "white") : "#212529";
       } else if (d.name.startsWith("Copy-pasted lines")) {
@@ -195,6 +208,8 @@ function drawTable(data) {
         return '';
       } else if (d.name.includes("Applications")) {
         return '';
+      } else if (d.name.includes("Archeo")) {
+        return "./16__Archeo/"+d.app+".html";
       } else if (d.name.includes("PMD")) {
         return "./07__PMD/pmd/{{APP_GROUP}}__"+d.app+"_pmd.html";
       } else if (d.name.includes("Copy-pasted")) {

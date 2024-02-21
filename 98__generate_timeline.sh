@@ -57,6 +57,9 @@ function main() {
 		# Get the first group
 		APP_GROUP=$(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d -print -quit)
 		# Log files
+		RUN_LOG="./run.log"
+		FERNFLOWER_LOG="./01__Fernflower.log"
+		UNPACK_LOG="./01__unpack_sources.log"
 		CSA_LOG="./02__CSA.log"
 		WINDUP_LOG="./03__WINDUP.log"
 		WAMT_LOG="./04__WAMT.log"
@@ -65,14 +68,13 @@ function main() {
 		PMD_LOG="./07__PMD.log"
 		LANGUAGES_LOG="./08__LINGUIST.log"
 		FSB_LOG="./09__FindSecBugs.log"
+		MAI_LOG="./10__MAI.log"
 		SLSCAN_LOG="./11__SLSCAN.log"
 		INSIDER_LOG="./12__INSIDER.log"
 		GRYPE_LOG="./13__GRYPE.log"
 		TRIVY_LOG="./14__TRIVY.log"
-		MAI_LOG="./10__MAI.log"
-		RUN_LOG="./run.log"
-		FERNFLOWER_LOG="./01__Fernflower.log"
-		UNPACK_LOG="./01__unpack_sources.log"
+		OSV_LOG="./15__OSV.log"
+		ARCHEO_LOG="./16__ARCHEO.log"
 
 		# Initiate the JSON file
 		echo "[]" >"${TIMELINE_JSON}"
@@ -114,6 +116,10 @@ function main() {
 		add_entry "${CAT_EXTRACTION}" "13__grype__extract.sh" "${GRYPE_LOG}" "13__grype"
 		add_entry "${CAT_ANALYSIS}" "14__trivy__analysis.sh" "${TRIVY_LOG}" "14__trivy"
 		add_entry "${CAT_EXTRACTION}" "14__trivy__extract.sh" "${TRIVY_LOG}" "14__trivy"
+		add_entry "${CAT_ANALYSIS}" "15__osv__analysis.sh" "${OSV_LOG}" "15__osv"
+		add_entry "${CAT_EXTRACTION}" "15__osv__extract.sh" "${OSV_LOG}" "15__osv"
+		add_entry "${CAT_ANALYSIS}" "16__archeo__analysis.sh" "${ARCHEO_LOG}" "16__archeo"
+		add_entry "${CAT_EXTRACTION}" "16__archeo__extract.sh" "${ARCHEO_LOG}" "16__archeo"
 		add_entry "${CAT_PREPARATION}" "97__generate_reports.sh" "${RUN_LOG}" "98__generate_reports"
 
 		rm -f "${TIMELINE_JSON_TMP}"

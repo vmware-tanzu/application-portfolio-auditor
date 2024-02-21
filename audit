@@ -46,8 +46,8 @@ function usage() {
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
-	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [-x | --wamt] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
-	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [-l | --languages] [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
+	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [--archeo] [-x | --wamt] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
+	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [--osv] [-l | --languages] [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
 	echo -e "    [-r | --reports] [-z | --zip] [-k | --k8] [--cf] [-t | --timestamp] [-b | --debug] [-v | --version] [-h | --help]"
 	echo -e ""
 	echo -e "    ${B}Select applications${N}  ---------------------------------------------------------------------------------------------"
@@ -69,6 +69,7 @@ function usage() {
 	echo -e "                    ${B}-i${N}, ${B}--insider${N}                  Decompile and run the Insider analysis"
 	echo -e "                    ${B}-e${N}, ${B}--grype${N}                    Run the Syft and Grype analysis"
 	echo -e "                    ${B}-y${N}, ${B}--trivy${N}                    Run the Trivy analysis"
+	echo -e "                    ${B}--osv${N}                          Run the OSV analysis"
 	echo -e ""
 	echo -e "        ${B}Languages${N}   ${B}-l${N}, ${B}--languages${N}                Decompile and run the Linguist and CLOC analysis"
 	echo -e ""
@@ -76,6 +77,7 @@ function usage() {
 	echo -e ""
 	echo -e "        ${B}Quality${N}     ${B}-p${N}, ${B}--pmd${N}                      Decompile and run the PMD Code analysis"
 	echo -e "                    ${B}-m${N}, ${B}--mai${N}                      Decompile and run the Microsoft Application Inspector analysis"
+	echo -e "                    ${B}--archeo${N}                       Run the Archeo analysis"
 	echo -e ""
 	echo -e "    ${B}Configure generated reports${N}  -------------------------------------------------------------------------------------"
 	echo -e "        ${B}-z${N}, ${B}--zip${N}                      Zip the generated reports"
@@ -146,7 +148,7 @@ printf "${ORANGE}%s" ''
 if ! params="$(
 	"${GETOPT_COMMAND}" \
 		-o hbd:apwfnxog:reylsmivt:ckz \
-		-l setup,help,debug,pre-analysis,package-discovery,windup,wamt,fsb,slscan,insider,grype,trivy,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
+		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fsb,slscan,insider,grype,trivy,osv,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
 		--name "$(basename "${0}")" \
 		-- \
 		"${@}"
@@ -172,11 +174,13 @@ export SLSCAN_ACTIVE="false"
 export INSIDER_ACTIVE="false"
 export GRYPE_ACTIVE="false"
 export TRIVY_ACTIVE="false"
+export OSV_ACTIVE="false"
 export REPORT_ACTIVE="false"
 export LANGUAGES_ACTIVE="false"
 export SCANCODE_ACTIVE="false"
 export PMD_ACTIVE="false"
 export MAI_ACTIVE="false"
+export ARCHEO_ACTIVE="false"
 export VERSION_ACTIVE="false"
 export USAGE_ACTIVE="false"
 export PACKAGE_CF="false"
@@ -253,6 +257,10 @@ while true; do
 		OWASP_ACTIVE="true"
 		shift
 		;;
+	--osv)
+		OSV_ACTIVE="true"
+		shift
+		;;
 	-a | --all)
 		UNPACK_SOURCE="true"
 		DECOMPILE_SOURCE="true"
@@ -263,6 +271,7 @@ while true; do
 		OWASP_ACTIVE="true"
 		FSB_ACTIVE="true"
 		SCANCODE_ACTIVE="true"
+		ARCHEO_ACTIVE="true"
 		PMD_ACTIVE="true"
 		LANGUAGES_ACTIVE="true"
 		MAI_ACTIVE="true"
@@ -270,6 +279,7 @@ while true; do
 		INSIDER_ACTIVE="true"
 		GRYPE_ACTIVE="true"
 		TRIVY_ACTIVE="true"
+		OSV_ACTIVE="true"
 		shift
 		;;
 	-r | --reports | --report)
@@ -298,6 +308,10 @@ while true; do
 		MAI_ACTIVE="true"
 		UNPACK_SOURCE="true"
 		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	--archeo)
+		ARCHEO_ACTIVE="true"
 		shift
 		;;
 	-t)
@@ -363,6 +377,7 @@ elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
 	echo -e "-> Scancode v.${SCANCODE_VERSION}"
 	echo -e "-> PMD v.${PMD_VERSION}"
 	echo -e "-> Microsoft Application Inspector v.${MAI_VERSION}"
+	echo -e "-> Archeo v.${TOOL_VERSION}"
 	echo -e "-> OWASP Dependency-Check v.${OWASP_DC_VERSION}"
 	echo -e "-> Find Security Bug v.${FSB_VERSION}"
 	echo -e "-> SAST-Scan (slscan) v.${SLSCAN_VERSION}"
@@ -370,6 +385,7 @@ elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
 	echo -e "-> Grype v.${GRYPE_VERSION}"
 	echo -e "-> Syft v.${SYFT_VERSION}"
 	echo -e "-> Trivy v.${TRIVY_VERSION}"
+	echo -e "-> OSV v.${OSV_VERSION}"
 	exit
 
 elif [[ ! $# -eq 0 && -n "${1}" &&  "${1}" != "run" ]]; then
@@ -434,10 +450,12 @@ if [[ "${REPORT_ACTIVE}" == "false" &&
 	"${INSIDER_ACTIVE}" == "false" &&
 	"${GRYPE_ACTIVE}" == "false" &&
 	"${TRIVY_ACTIVE}" == "false" &&
+	"${OSV_ACTIVE}" == "false" &&
 	"${LANGUAGES_ACTIVE}" == "false" &&
 	"${SCANCODE_ACTIVE}" == "false" &&
 	"${PMD_ACTIVE}" == "false" &&
-	"${MAI_ACTIVE}" == "false" ]]; then
+	"${MAI_ACTIVE}" == "false" &&
+	"${ARCHEO_ACTIVE}" == "false" ]]; then
 	echo -e "${ORANGE}No active tool - please select at least one!${N}"
 	echo ""
 	usage
@@ -638,8 +656,19 @@ SCRIPTS=(
 	SCRIPTS+=(14__trivy__analysis.sh 14__trivy__extract.sh)
 }
 
-# Re-extract all results
-# { SCRIPTS+=(02__csa__02__extract.sh 03__windup__03__extract.sh 04__wamt__02__extract.sh 05__owasp_dc__02__extract.sh 06__scancode__02__extract.sh 07__pmd__02__extract.sh 08__linguist_and_cloc__02__extract.sh 09__findsecbugs__02__extract.sh 10__mai__extract.sh 11__slscan__extract.sh 12__insider__extract.sh 13__grype__analysis.sh 14__trivy__analysis.sh); }
+# OSV analysis
+[[ "${OSV_ACTIVE}" == "true" ]] && {
+	log_console "-> OSV v.${OSV_VERSION}"
+	log_console "-> Syft v.${SYFT_VERSION}"
+	SCRIPTS+=(15__osv__analysis.sh 15__osv__extract.sh)
+}
+
+# Archeo analysis
+[[ "${ARCHEO_ACTIVE}" == "true" ]] && {
+	log_console "-> Archeo v.${TOOL_VERSION}"
+	log_console "-> Syft v.${SYFT_VERSION}"
+	SCRIPTS+=(16__archeo__analysis.sh 16__archeo__extract.sh)
+}
 
 # Generates and package summary report with links
 [[ "${PRE_ANALYSIS_ACTIVE}" == "false" ]] && { SCRIPTS+=(97__generate_reports.sh 98__generate_timeline.sh 99__package_reports.sh); }
