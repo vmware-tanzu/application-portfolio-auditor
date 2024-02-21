@@ -126,13 +126,19 @@ function check_support() {
 
 	if [[ -n "${SUPPORT_END_OSS:-}" ]]; then
 		if [[ "${TODAY}" > "${SUPPORT_END_OSS}" ]]; then
-			# Support expired
-			DESCRIPTION="${LINK_SPRING_PROJECT} expired since ${SUPPORT_END_OSS} (OSS) and ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
-			SEVERITY='High'
+			if [[ "${TODAY}" > "${SUPPORT_END_COMMERCIAL}" ]]; then
+				# OSS and Commercial supports expired
+				DESCRIPTION="${LINK_SPRING_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
+				SEVERITY='Critical'
+			else
+				# OSS support expired, Commercial available.
+				DESCRIPTION="${LINK_SPRING_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and available till ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
+				SEVERITY='High'
+			fi
 		else
 			# Add a warning if the support ends in less than one year
 			ONE_YEAR_FROM_TODAY="$(($(date +%Y) + 1))-$(date +%m-%d)"
-			DESCRIPTION="${LINK_SPRING_PROJECT} ends on ${SUPPORT_END_OSS} (OSS) or ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH} "
+			DESCRIPTION="${LINK_SPRING_PROJECT} will end on ${SUPPORT_END_OSS} (OSS) or ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH} "
 			if [[ "${ONE_YEAR_FROM_TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 				SEVERITY='Medium'
 			else
@@ -189,10 +195,10 @@ function generate_csv() {
 
 				# e.g. 'org.springframework'
 				E_GROUP=$(echo "${ENTRY}" | cut -d '/' -f2)
-				
+
 				# e.g. 'spring-aop'
 				E_PACKAGE=$(echo "${ENTRY}" | cut -d '/' -f3 | cut -d '@' -f1)
-				
+
 				E_VERSION_FULL=''
 				E_VERSION=''
 				E_VERSION_SHORT=''
@@ -207,10 +213,10 @@ function generate_csv() {
 						fi
 					fi
 				fi
-				
+
 				# e.g. 'org.springframework:spring-aop'
 				LIB="${E_GROUP}:${E_PACKAGE}"
-				
+
 				####### Unsupported Libraries
 				DETECTED_SPRING_PROJECT=''
 				if [[ -n "${E_VERSION_SHORT:-}" && "${E_GROUP}" == "org.springframework"* ]]; then
@@ -416,7 +422,7 @@ function generate_csv() {
 				LIB_COUNT=$(echo "$VERSIONS" | wc -l)
 				if [[ ${LIB_COUNT} -gt 1 ]]; then
 					LIB="${LIBRARY//\//:}"
-					log_finding "${ARCHEO_APP_CSV}" "${LIB}" "Multiple" "Duplicates" "High" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
+					log_finding "${ARCHEO_APP_CSV}" "${LIB}" "Multiple" "Duplicates" "Medium" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
 				fi
 			done <<<"$LIBRARIES"
 		fi
@@ -425,7 +431,7 @@ function generate_csv() {
 		COUNT_FINDINGS="n/a"
 		if [ -f "${ARCHEO_APP_CSV}" ]; then
 			# Count all entries excepted the Info ones
-			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${ARCHEO_APP_CSV}"|grep -v ',Info,') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${ARCHEO_APP_CSV}" | grep -v ',Info,') | tr -d ' ' | cut -d'/' -f 1)
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_FINDINGS}" >>"${RESULT_FILE}"
 
