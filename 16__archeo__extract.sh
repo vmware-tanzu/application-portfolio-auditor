@@ -16,7 +16,8 @@ SEPARATOR=","
 TODAY="$(date +%Y-%m-%d)"
 CONF_DIR="${CURRENT_DIR}/conf/archeo"
 
-declare -A SPRING_PROJECT_MAP=(
+declare -A PROJECT_ID_MAP=(
+	["micrometer-io"]="Micrometer"
 	["spring-amqp"]="Spring AMQP"
 	["spring-authorization-server"]="Spring Authorization Server"
 	["spring-batch"]="Spring Batch"
@@ -93,15 +94,15 @@ function log_finding() {
 }
 
 function check_support() {
-	local BRANCH COMMERCIAL_ENFORCED_END COMMERCIAL_POLICY_END CSV_FILE DESCRIPTION E_VERSION E_VERSION_FULL E_VERSION_SHORT LIBRARY LINK_SPRING_PROJECT OSS_ENFORCED_END OSS_POLICY_END QUERY QUERY_FILTER SEVERITY SPRING_PROJECT SUPPORT_END_COMMERCIAL SUPPORT_END_OSS SUPPORT_INFO_FILE
+	local BRANCH COMMERCIAL_ENFORCED_END COMMERCIAL_POLICY_END CSV_FILE DESCRIPTION E_VERSION E_VERSION_FULL E_VERSION_SHORT LIBRARY LINKED_PROJECT OSS_ENFORCED_END OSS_POLICY_END QUERY QUERY_FILTER SEVERITY PROJECT_ID SUPPORT_END_COMMERCIAL SUPPORT_END_OSS SUPPORT_INFO_FILE
 
-	SPRING_PROJECT="$1"
+	PROJECT_ID="$1"
 	CSV_FILE="$2"
 	LIBRARY="$3"
 	E_VERSION_SHORT="$4"
 	E_VERSION_FULL="$5"
 
-	SUPPORT_INFO_FILE="${CONF_DIR}/${SPRING_PROJECT}__support-data.json"
+	SUPPORT_INFO_FILE="${CONF_DIR}/${PROJECT_ID}__support-data.json"
 
 	QUERY_FILTER=' | [.branch, if .commercialPolicyEnd == "" then "_" else .commercialPolicyEnd end, if .commercialEnforcedEnd == "" then "_" else .commercialEnforcedEnd end, if .ossPolicyEnd == "" then "_" else .ossPolicyEnd end, if .ossEnforcedEnd == "" then "_" else .ossEnforcedEnd end] | @tsv'
 	QUERY='.[] | select(.branch | startswith("'${E_VERSION_SHORT}'"))'
@@ -119,26 +120,31 @@ function check_support() {
 		SUPPORT_END_COMMERCIAL="${COMMERCIAL_POLICY_END#_}"
 	fi
 
-	#log_console_info "> SPRING_PROJECT: ${SPRING_PROJECT} ${E_VERSION_SHORT} - SUPPORT_END_OSS: $SUPPORT_END_OSS & SUPPORT_END_COMMERCIAL: $SUPPORT_END_COMMERCIAL"
-	#log_console_info ">>>> COMMERCIAL_POLICY_END: $COMMERCIAL_POLICY_END - COMMERCIAL_ENFORCED_END: $COMMERCIAL_ENFORCED_END - OSS_POLICY_END: $OSS_POLICY_END - OSS_ENFORCED_END: $OSS_ENFORCED_END"
+	log_console_info "> PROJECT_ID: ${PROJECT_ID} ${E_VERSION_SHORT} - SUPPORT_END_OSS: $SUPPORT_END_OSS & SUPPORT_END_COMMERCIAL: $SUPPORT_END_COMMERCIAL"
+	log_console_info ">>>> COMMERCIAL_POLICY_END: $COMMERCIAL_POLICY_END - COMMERCIAL_ENFORCED_END: $COMMERCIAL_ENFORCED_END - OSS_POLICY_END: $OSS_POLICY_END - OSS_ENFORCED_END: $OSS_ENFORCED_END"
 
-	LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} support</a>"
+	if [[ "${PROJECT_ID}" == "spring"* ]]; then
+		URL="https://spring.io/projects/${PROJECT_ID}#support"
+	else
+		URL="https://micrometer.io/support/"
+	fi
+	LINKED_PROJECT="<a href='${URL}' rel='noreferrer' target='_blank'>${PROJECT_ID_MAP[$PROJECT_ID]} support</a>"
 
 	if [[ -n "${SUPPORT_END_OSS:-}" ]]; then
 		if [[ "${TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 			if [[ "${TODAY}" > "${SUPPORT_END_COMMERCIAL}" ]]; then
 				# OSS and Commercial supports expired
-				DESCRIPTION="${LINK_SPRING_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
+				DESCRIPTION="${LINKED_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
 				SEVERITY='Critical'
 			else
 				# OSS support expired, Commercial available.
-				DESCRIPTION="${LINK_SPRING_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and available till ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
+				DESCRIPTION="${LINKED_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and available till ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
 				SEVERITY='High'
 			fi
 		else
 			# Add a warning if the support ends in less than one year
 			ONE_YEAR_FROM_TODAY="$(($(date +%Y) + 1))-$(date +%m-%d)"
-			DESCRIPTION="${LINK_SPRING_PROJECT} will end on ${SUPPORT_END_OSS} (OSS) or ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH} "
+			DESCRIPTION="${LINKED_PROJECT} will end on ${SUPPORT_END_OSS} (OSS) or ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH} "
 			if [[ "${ONE_YEAR_FROM_TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 				SEVERITY='Medium'
 			else
@@ -149,7 +155,7 @@ function check_support() {
 		# Search the lower supported OSS version. Note: 'sort_by' filters the minimum supported OSS version
 		local EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0])'
 		read -r BRANCH COMMERCIAL_POLICY_END COMMERCIAL_ENFORCED_END OSS_POLICY_END OSS_ENFORCED_END <<<"$(jq -r "${EXTENDED_QUERY}${QUERY_FILTER}" "${SUPPORT_INFO_FILE}")"
-		DESCRIPTION="${LINK_SPRING_PROJECT} OSS expired (< ${BRANCH})"
+		DESCRIPTION="${LINKED_PROJECT} OSS expired (< ${BRANCH})"
 		SEVERITY='Critical'
 	fi
 
@@ -218,159 +224,163 @@ function generate_csv() {
 				LIB="${E_GROUP}:${E_PACKAGE}"
 
 				####### Unsupported Libraries
-				DETECTED_SPRING_PROJECT=''
-				if [[ -n "${E_VERSION_SHORT:-}" && "${E_GROUP}" == "org.springframework"* ]]; then
-					# Check support for Spring Framework (https://spring.io/projects/spring-framework#support)
-					if [[ "${E_GROUP}" == "org.springframework" ]]; then
-						DETECTED_SPRING_PROJECT='spring-framework'
+				DETECTED_PROJECT=''
+				if [[ -n "${E_VERSION_SHORT:-}" ]]; then
+					if [[ "${E_GROUP}" == "io.micrometer" ]]; then
+						DETECTED_PROJECT="micrometer-io"
+					elif [[ "${E_GROUP}" == "org.springframework"* ]]; then
+						# Check support for Spring Framework (https://spring.io/projects/spring-framework#support)
+						if [[ "${E_GROUP}" == "org.springframework" ]]; then
+							DETECTED_PROJECT='spring-framework'
 
-					# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
-					elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
-						DETECTED_SPRING_PROJECT='spring-boot'
+						# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
+						elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
+							DETECTED_PROJECT='spring-boot'
 
-					# Check support for Spring Session (https://spring.io/projects/spring-session#support)
-					elif [[ "${E_GROUP}" == "org.springframework.session"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-session'
+						# Check support for Spring Session (https://spring.io/projects/spring-session#support)
+						elif [[ "${E_GROUP}" == "org.springframework.session"* ]]; then
+							DETECTED_PROJECT='spring-session'
 
-					# Check support for Spring Data (https://spring.io/projects/spring-data#support)
-					elif [[ "${E_GROUP}" == "org.springframework.data"* ]]; then
-						if [[ "${LIB}" == *"cassandra"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-cassandra'
-						elif [[ "${LIB}" == *"envers"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-envers'
-						elif [[ "${LIB}" == *"gemfire"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-gemfire'
-						elif [[ "${LIB}" == *"geode"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-geode'
-						elif [[ "${LIB}" == *"jdbc"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-jdbc'
-						elif [[ "${LIB}" == *"jpa"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-jpa'
-						elif [[ "${LIB}" == *"ldap"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-ldap'
-						elif [[ "${LIB}" == *"mongodb"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-mongodb'
-						elif [[ "${LIB}" == *"r2dbc"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-r2dbc'
-						elif [[ "${LIB}" == *"redis"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-redis'
-						elif [[ "${LIB}" == *"rest"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-data-rest'
+						# Check support for Spring Data (https://spring.io/projects/spring-data#support)
+						elif [[ "${E_GROUP}" == "org.springframework.data"* ]]; then
+							if [[ "${LIB}" == *"cassandra"* ]]; then
+								DETECTED_PROJECT='spring-data-cassandra'
+							elif [[ "${LIB}" == *"envers"* ]]; then
+								DETECTED_PROJECT='spring-data-envers'
+							elif [[ "${LIB}" == *"gemfire"* ]]; then
+								DETECTED_PROJECT='spring-data-gemfire'
+							elif [[ "${LIB}" == *"geode"* ]]; then
+								DETECTED_PROJECT='spring-data-geode'
+							elif [[ "${LIB}" == *"jdbc"* ]]; then
+								DETECTED_PROJECT='spring-data-jdbc'
+							elif [[ "${LIB}" == *"jpa"* ]]; then
+								DETECTED_PROJECT='spring-data-jpa'
+							elif [[ "${LIB}" == *"ldap"* ]]; then
+								DETECTED_PROJECT='spring-data-ldap'
+							elif [[ "${LIB}" == *"mongodb"* ]]; then
+								DETECTED_PROJECT='spring-data-mongodb'
+							elif [[ "${LIB}" == *"r2dbc"* ]]; then
+								DETECTED_PROJECT='spring-data-r2dbc'
+							elif [[ "${LIB}" == *"redis"* ]]; then
+								DETECTED_PROJECT='spring-data-redis'
+							elif [[ "${LIB}" == *"rest"* ]]; then
+								DETECTED_PROJECT='spring-data-rest'
+							else
+								DETECTED_PROJECT='spring-data'
+							fi
+
+						# Check support for Spring Batch (https://spring.io/projects/spring-batch#support)
+						elif [[ "${E_GROUP}" == "org.springframework.batch"* ]]; then
+							DETECTED_PROJECT='spring-batch'
+
+						# Check support for Spring Security (https://spring.io/projects/spring-security#support)
+						elif [[ "${E_GROUP}" == "org.springframework.security"* ]]; then
+							if [[ "${LIB}" == *"kerberos"* ]]; then
+								DETECTED_PROJECT='spring-security-kerberos'
+							else
+								DETECTED_PROJECT='spring-security'
+							fi
+
+						# Check support for Spring HATEOAS (https://spring.io/projects/spring-hateoas#support)
+						elif [[ "${E_GROUP}" == "org.springframework.hateoas"* ]]; then
+							DETECTED_PROJECT='spring-hateoas'
+
+						# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
+						elif [[ "${E_GROUP}" == "org.springframework.cloud"* ]]; then
+							if [[ "${LIB}" == *"spring-cloud-app-broker"* ]]; then
+								DETECTED_PROJECT='spring-cloud-app-broker'
+							elif [[ "${LIB}" == *"bus"* ]]; then
+								DETECTED_PROJECT='spring-cloud-bus'
+							elif [[ "${LIB}" == *"circuitbreaker"* || "${E_PACKAGE}" == "hystrix" ]]; then
+								DETECTED_PROJECT='spring-cloud-circuitbreaker'
+							elif [[ "${LIB}" == *"cli"* ]]; then
+								DETECTED_PROJECT='spring-cloud-cli'
+							elif [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
+								DETECTED_PROJECT='spring-cloud-commons'
+							elif [[ "${LIB}" == *"config"* ]]; then
+								DETECTED_PROJECT='spring-cloud-config'
+							elif [[ "${LIB}" == *"consul"* ]]; then
+								DETECTED_PROJECT='spring-cloud-consul'
+							elif [[ "${LIB}" == *"contract"* ]]; then
+								DETECTED_PROJECT='spring-cloud-contract'
+							elif [[ "${E_PACKAGE}" == "spring-cloud-dataflow"* ]]; then
+								DETECTED_PROJECT='spring-cloud-dataflow'
+							elif [[ "${E_PACKAGE}" == "spring-cloud-function"* ]]; then
+								DETECTED_PROJECT='spring-cloud-function'
+							elif [[ "${E_PACKAGE}" == "spring-cloud-gateway"* ]]; then
+								DETECTED_PROJECT='spring-cloud-gateway'
+							elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
+								DETECTED_PROJECT='spring-cloud-kubernetes'
+							elif [[ "${E_PACKAGE}" == *"netflix"* || "${E_PACKAGE}" == *"hystrix"* ]]; then
+								DETECTED_PROJECT='spring-cloud-netflix'
+							elif [[ "${E_PACKAGE}" == *"spring-cloud-open-service-broker"* ]]; then
+								DETECTED_PROJECT='spring-cloud-open-service-broker'
+							elif [[ "${E_PACKAGE}" == *"openfeign"* ]]; then
+								DETECTED_PROJECT='spring-cloud-openfeign'
+							elif [[ "${LIB}" == *"security"* ]]; then
+								DETECTED_PROJECT='spring-cloud-security'
+							elif [[ "${E_PACKAGE}" == *"spring-cloud-skipper"* ]]; then
+								DETECTED_PROJECT='spring-cloud-skipper'
+							elif [[ "${LIB}" == *"sleuth"* ]]; then
+								DETECTED_PROJECT='spring-cloud-sleuth'
+							elif [[ "${LIB}" == *"spring-cloud-stream-applications"* ]]; then
+								DETECTED_PROJECT='spring-cloud-stream-applications'
+							elif [[ "${LIB}" == *"spring-cloud-stream"* ]]; then
+								DETECTED_PROJECT='spring-cloud-stream'
+							elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
+								DETECTED_PROJECT='spring-cloud-task'
+							elif [[ "${LIB}" == *"vault"* ]]; then
+								DETECTED_PROJECT='spring-cloud-vault'
+							elif [[ "${LIB}" == *"zookeeper"* ]]; then
+								DETECTED_PROJECT='spring-cloud-zookeeper'
+							else
+								log_console_info "Unknown Spring Cloud library: ${LIB}:${E_VERSION_FULL}"
+							fi
+
+						elif [[ "${E_GROUP}" == "org.springframework.pulsar"* ]]; then
+							DETECTED_PROJECT='spring-pulsar'
+
+						elif [[ "${E_GROUP}" == "org.springframework.restdocs"* ]]; then
+							DETECTED_PROJECT='spring-restdocs'
+
+						elif [[ "${E_GROUP}" == "org.springframework.statemachine"* ]]; then
+							DETECTED_PROJECT='spring-statemachine'
+
+						elif [[ "${E_GROUP}" == "org.springframework.webflow"* ]]; then
+							DETECTED_PROJECT='spring-webflow'
+
+						elif [[ "${E_GROUP}" == "org.springframework.ws"* ]]; then
+							DETECTED_PROJECT='spring-ws'
+
+						elif [[ "${E_GROUP}" == "org.springframework.integration"* ]]; then
+							DETECTED_PROJECT='spring-integration'
+
+						elif [[ "${E_GROUP}" == "org.springframework.shell"* ]]; then
+							DETECTED_PROJECT='spring-shell'
+
+						elif [[ "${E_GROUP}" == "org.springframework.ldap"* ]]; then
+							DETECTED_PROJECT='spring-ldap'
+
+						elif [[ "${E_GROUP}" == "org.springframework.kafka"* ]]; then
+							DETECTED_PROJECT='spring-kafka'
+
+						elif [[ "${E_GROUP}" == "org.springframework.graphql"* ]]; then
+							DETECTED_PROJECT='spring-graphql'
+
+						elif [[ "${E_GROUP}" == "org.springframework.credhub"* ]]; then
+							DETECTED_PROJECT='spring-credhub'
+
+						elif [[ "${E_GROUP}" == "org.springframework.amqp"* ]]; then
+							DETECTED_PROJECT='spring-amqp'
+
 						else
-							DETECTED_SPRING_PROJECT='spring-data'
+							log_console_info "Unknown Spring library: ${LIB}:${E_VERSION_FULL}"
 						fi
-
-					# Check support for Spring Batch (https://spring.io/projects/spring-batch#support)
-					elif [[ "${E_GROUP}" == "org.springframework.batch"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-batch'
-
-					# Check support for Spring Security (https://spring.io/projects/spring-security#support)
-					elif [[ "${E_GROUP}" == "org.springframework.security"* ]]; then
-						if [[ "${LIB}" == *"kerberos"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-security-kerberos'
-						else
-							DETECTED_SPRING_PROJECT='spring-security'
-						fi
-
-					# Check support for Spring HATEOAS (https://spring.io/projects/spring-hateoas#support)
-					elif [[ "${E_GROUP}" == "org.springframework.hateoas"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-hateoas'
-
-					# Check support for Spring Cloud (https://spring.io/projects/spring-cloud)
-					elif [[ "${E_GROUP}" == "org.springframework.cloud"* ]]; then
-						if [[ "${LIB}" == *"spring-cloud-app-broker"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-app-broker'
-						elif [[ "${LIB}" == *"bus"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-bus'
-						elif [[ "${LIB}" == *"circuitbreaker"* || "${E_PACKAGE}" == "hystrix" ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-circuitbreaker'
-						elif [[ "${LIB}" == *"cli"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-cli'
-						elif [[ "${E_PACKAGE}" == "spring-cloud-commons" || "${E_PACKAGE}" == "spring-cloud-context" ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-commons'
-						elif [[ "${LIB}" == *"config"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-config'
-						elif [[ "${LIB}" == *"consul"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-consul'
-						elif [[ "${LIB}" == *"contract"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-contract'
-						elif [[ "${E_PACKAGE}" == "spring-cloud-dataflow"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-dataflow'
-						elif [[ "${E_PACKAGE}" == "spring-cloud-function"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-function'
-						elif [[ "${E_PACKAGE}" == "spring-cloud-gateway"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-gateway'
-						elif [[ "${E_PACKAGE}" == *"kubernetes"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-kubernetes'
-						elif [[ "${E_PACKAGE}" == *"netflix"* || "${E_PACKAGE}" == *"hystrix"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-netflix'
-						elif [[ "${E_PACKAGE}" == *"spring-cloud-open-service-broker"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-open-service-broker'
-						elif [[ "${E_PACKAGE}" == *"openfeign"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-openfeign'
-						elif [[ "${LIB}" == *"security"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-security'
-						elif [[ "${E_PACKAGE}" == *"spring-cloud-skipper"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-skipper'
-						elif [[ "${LIB}" == *"sleuth"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-sleuth'
-						elif [[ "${LIB}" == *"spring-cloud-stream-applications"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-stream-applications'
-						elif [[ "${LIB}" == *"spring-cloud-stream"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-stream'
-						elif [[ "${E_PACKAGE}" == *"spring-cloud-task"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-task'
-						elif [[ "${LIB}" == *"vault"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-vault'
-						elif [[ "${LIB}" == *"zookeeper"* ]]; then
-							DETECTED_SPRING_PROJECT='spring-cloud-zookeeper'
-						else
-							log_console_info "Unknown Spring Cloud library: ${LIB}:${E_VERSION_FULL}"
-						fi
-
-					elif [[ "${E_GROUP}" == "org.springframework.pulsar"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-pulsar'
-
-					elif [[ "${E_GROUP}" == "org.springframework.restdocs"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-restdocs'
-
-					elif [[ "${E_GROUP}" == "org.springframework.statemachine"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-statemachine'
-
-					elif [[ "${E_GROUP}" == "org.springframework.webflow"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-webflow'
-
-					elif [[ "${E_GROUP}" == "org.springframework.ws"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-ws'
-
-					elif [[ "${E_GROUP}" == "org.springframework.integration"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-integration'
-
-					elif [[ "${E_GROUP}" == "org.springframework.shell"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-shell'
-
-					elif [[ "${E_GROUP}" == "org.springframework.ldap"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-ldap'
-
-					elif [[ "${E_GROUP}" == "org.springframework.kafka"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-kafka'
-
-					elif [[ "${E_GROUP}" == "org.springframework.graphql"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-graphql'
-
-					elif [[ "${E_GROUP}" == "org.springframework.credhub"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-credhub'
-
-					elif [[ "${E_GROUP}" == "org.springframework.amqp"* ]]; then
-						DETECTED_SPRING_PROJECT='spring-amqp'
-
-					else
-						log_console_info "Unknown Spring library: ${LIB}:${E_VERSION_FULL}"
 					fi
 				fi
 
-				if [[ -n "${DETECTED_SPRING_PROJECT:-}" ]]; then
-					check_support "${DETECTED_SPRING_PROJECT}" "${ARCHEO_APP_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
+				if [[ -n "${DETECTED_PROJECT:-}" ]]; then
+					check_support "${DETECTED_PROJECT}" "${ARCHEO_APP_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
 				fi
 
 				local LIB_TYPE=''
@@ -443,7 +453,7 @@ function generate_csv() {
 # Download all latest JSON files containing Spring Support information
 download_spring_project_support_files() {
 	mkdir -p "${CONF_DIR}"
-	for KEY in "${!SPRING_PROJECT_MAP[@]}"; do
+	for KEY in "${!PROJECT_ID_MAP[@]}"; do
 		FILENAME="${CONF_DIR}/${KEY}__support-data.json"
 		if [ ! -f "${FILENAME}" ]; then
 			URL="https://spring.io/page-data/projects/$KEY/page-data.json"
