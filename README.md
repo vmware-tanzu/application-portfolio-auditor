@@ -1,6 +1,6 @@
 # Application Portfolio Auditor
 
-`Application Portfolio Auditor` is an open-source assessment tool that automates and simplifies the audit of large sets of applications. By leveraging up to 15 analysis tools, it generates comprehensive reports helping you to quickly gain insights on your applications and build an effective application modernization roadmap.
+`Application Portfolio Auditor` is an open-source assessment tool that automates and simplifies the audit of large sets of applications. By leveraging up to 17 analysis tools, it generates comprehensive reports helping you to quickly gain insights on your applications and build an effective application modernization roadmap.
 
 Key features:
 

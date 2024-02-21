@@ -10,7 +10,7 @@ This project consists of a set of utility shell scripts automating the analysis 
 
 - **Wide variety of applications supported**: Covers most modern programming languages (Java, Python, .NET, NodeJS) and analyzes as well source as compiled binaries.
 
-- **Combined intelligence:** Harnesses and combines insights of up to 15 free and open-source application analysis tools.
+- **Combined intelligence:** Harnesses and combines insights of up to 17 free and open-source application analysis tools.
 
 - **Portable results**: Exports reports as exploded directory, ZIP files, Kubernetes or Cloud-Foundry deployments.
 
@@ -18,9 +18,9 @@ This project consists of a set of utility shell scripts automating the analysis 
 
     * Cloud-readiness ([Cloud Suitability Analyzer](https://github.com/vmware-tanzu/cloud-suitability-analyzer/) + [Windup](https://github.com/windup/windup) + [WAMT](https://www.ibm.com/support/pages/websphere-application-server-migration-toolkit))
 
-    * Security ([OWASP Dependency-Check](https://www.owasp.org/index.php/OWASP_Dependency_Check) + [Find Security Bugs](https://find-sec-bugs.github.io/) + [Insider SAST](https://github.com/insidersec/insider) + [ShiftLeft SAST Scan](https://github.com/ShiftLeftSecurity/sast-scan) + [Syft](https://github.com/anchore/syft) + [Grype](https://github.com/anchore/grype) + [Trivy](https://github.com/aquasecurity/trivy)) 
+    * Security ([OWASP Dependency-Check](https://www.owasp.org/index.php/OWASP_Dependency_Check) + [Find Security Bugs](https://find-sec-bugs.github.io/) + [Insider SAST](https://github.com/insidersec/insider) + [ShiftLeft SAST Scan](https://github.com/ShiftLeftSecurity/sast-scan) + [Syft](https://github.com/anchore/syft) + [Grype](https://github.com/anchore/grype) + [Trivy](https://github.com/aquasecurity/trivy) + [OSV](https://github.com/google/osv.dev)) 
 
-    * Quality ([PMD](https://pmd.github.io/) + [ScanCode Toolkit](https://github.com/nexB/scancode-toolkit) +  [Microsoft Application Inspector](https://github.com/Microsoft/ApplicationInspector))
+    * Quality ([PMD](https://pmd.github.io/) + [ScanCode Toolkit](https://github.com/nexB/scancode-toolkit) +  [Microsoft Application Inspector](https://github.com/Microsoft/ApplicationInspector) +  [Archeologist](https://github.com/vmware-tanzu/application-portfolio-auditor))
 
     * Distribution of languages ([GitHub Linguist](https://github.com/github/linguist) + [CLOC](https://github.com/AlDanial/cloc))
 
@@ -42,7 +42,7 @@ Here is a brief description of each command:
 ### Examples
 
 * `$ ./audit -h`: Provide **h**elp by showing all available CLI options.
-* `$ ./audit -a`: Decompile and run **a**ll tools (CSA, Windup, WAMT, OWASP DC, FSB, Linguist, CLOC, Scancode, PMD, MAI, Insider, Syft, Grype, Trivy) to analyze all apps in the `apps` subfolders.
+* `$ ./audit -a`: Decompile and run **a**ll tools (CSA, Windup, WAMT, OWASP DC, FSB, Linguist, CLOC, Scancode, PMD, MAI, Insider, Syft, Grype, Trivy, OSV, Archeologist) to analyze all apps in the `apps` subfolders.
 * `$ ./audit -a -g small`: Decompile and run **a**ll tools to analyze only the apps in the `small` **g**roup (subfolder of `apps` -> `apps/small`)
 * `$ ./audit -a -d /my/apps`: Import, decompile, and run **a**ll tools to analyze only the apps in the `/my/apps` **d**irectory.
 * `$ ./audit -w`: Run **W**indup to analyze all apps in the `apps` subfolders.
@@ -94,6 +94,10 @@ The starting point for any execution of Application Portfolio Auditor is the `au
 * `13__grype__extract.sh`: Extract the Grype analysis results to a CSV file.
 * `14__trivy__analysis.sh`: Analysis of all applications using Trivy.
 * `14__trivy__extract.sh`: Extract the Trivy analysis results to a CSV file.
+* `15__osv__analysis.sh`: Analysis of all applications using OSV.
+* `15__osv__extract.sh`: Extract the OSV analysis results to a CSV file.
+* `16__archeo__analysis.sh`: Analysis of all applications using Archeologist.
+* `16__archeo__extract.sh`: Extract the Archeologist analysis results to a CSV file.
 * `97__generate_reports.sh`: Generate HTML reports linking all generated results.
 * `98__generate_timeline.sh`: Generate a timeline of the analysis.
 * `99__package_reports.sh`: Package resulting reports as a zip file, cloud-foundry or Kubernetes deployment.
@@ -169,6 +173,10 @@ reports
     ├── 13__GRYPE__medium
     ├── 14__TRIVY.log
     ├── 14__TRIVY__medium
+    ├── 15__OSV.log
+    ├── 15__OSV
+    ├── 16__Archeo.log
+    ├── 16__Archeo
     ├── 98__generate_timeline.log
     ├── 98__timeline.log
     ├── 99__results__all.csv
