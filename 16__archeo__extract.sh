@@ -404,9 +404,6 @@ function generate_csv() {
 					# https://mvnrepository.com/search?q=aspectjweaver
 					LIB_TYPE="AspectJ Weaver"
 					;;
-				*ant*)
-					LIB_TYPE="ant"
-					;;
 				esac
 				if [[ -n "${LIB_TYPE:-}" ]]; then
 					# Cut everything after last '@'
