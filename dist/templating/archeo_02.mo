@@ -49,6 +49,7 @@
             case "High": return "#ff8800";
             case "Medium": return "#e9c600";
             case "Low": return "#5fbb31";
+            case "Info": return "#0096ff";
             case "Unknown": return "#747474";
             default: return "";
           }

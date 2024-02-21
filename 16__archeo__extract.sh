@@ -93,7 +93,7 @@ function log_finding() {
 }
 
 function check_support() {
-	local SPRING_PROJECT CSV_FILE LIBRARY E_VERSION E_VERSION_SHORT E_VERSION_FULL SUPPORT_INFO_FILE QUERY BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS DESCRIPTION SEVERITY
+	local BRANCH COMMERCIAL_ENFORCED_END COMMERCIAL_POLICY_END CSV_FILE DESCRIPTION E_VERSION E_VERSION_FULL E_VERSION_SHORT LIBRARY LINK_SPRING_PROJECT OSS_ENFORCED_END OSS_POLICY_END QUERY QUERY_FILTER SEVERITY SPRING_PROJECT SUPPORT_END_COMMERCIAL SUPPORT_END_OSS SUPPORT_INFO_FILE
 
 	SPRING_PROJECT="$1"
 	CSV_FILE="$2"
@@ -103,33 +103,51 @@ function check_support() {
 
 	SUPPORT_INFO_FILE="${CONF_DIR}/${SPRING_PROJECT}__support-data.json"
 
-	QUERY='.[] |select(.branch | startswith("'${E_VERSION_SHORT}'")) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
-	read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<<"$(jq -r "${QUERY}" "${SUPPORT_INFO_FILE}")"
+	QUERY_FILTER=' | [.branch, if .commercialPolicyEnd == "" then "_" else .commercialPolicyEnd end, if .commercialEnforcedEnd == "" then "_" else .commercialEnforcedEnd end, if .ossPolicyEnd == "" then "_" else .ossPolicyEnd end, if .ossEnforcedEnd == "" then "_" else .ossEnforcedEnd end] | @tsv'
+	QUERY='.[] | select(.branch | startswith("'${E_VERSION_SHORT}'"))'
+	read -r BRANCH COMMERCIAL_POLICY_END COMMERCIAL_ENFORCED_END OSS_POLICY_END OSS_ENFORCED_END <<<"$(jq -r "${QUERY}${QUERY_FILTER}" "${SUPPORT_INFO_FILE}")"
 
-	local LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} OSS support</a>"
+	if [[ -n "${OSS_ENFORCED_END:-}" && "${OSS_ENFORCED_END}" != "_" ]]; then
+		SUPPORT_END_OSS="${OSS_ENFORCED_END}"
+	else
+		SUPPORT_END_OSS="${OSS_POLICY_END#_}"
+	fi
 
-	if [[ -n "${SUPPORT_END_OSS}" ]]; then
+	if [[ -n "${COMMERCIAL_ENFORCED_END:-}" && "${COMMERCIAL_ENFORCED_END}" != "_" ]]; then
+		SUPPORT_END_COMMERCIAL="${COMMERCIAL_ENFORCED_END}"
+	else
+		SUPPORT_END_COMMERCIAL="${COMMERCIAL_POLICY_END#_}"
+	fi
+
+	#log_console_info "> SPRING_PROJECT: ${SPRING_PROJECT} ${E_VERSION_SHORT} - SUPPORT_END_OSS: $SUPPORT_END_OSS & SUPPORT_END_COMMERCIAL: $SUPPORT_END_COMMERCIAL"
+	#log_console_info ">>>> COMMERCIAL_POLICY_END: $COMMERCIAL_POLICY_END - COMMERCIAL_ENFORCED_END: $COMMERCIAL_ENFORCED_END - OSS_POLICY_END: $OSS_POLICY_END - OSS_ENFORCED_END: $OSS_ENFORCED_END"
+
+	LINK_SPRING_PROJECT="<a href='https://spring.io/projects/${SPRING_PROJECT}#support' rel='noreferrer' target='_blank'>${SPRING_PROJECT_MAP[$SPRING_PROJECT]} support</a>"
+
+	if [[ -n "${SUPPORT_END_OSS:-}" ]]; then
 		if [[ "${TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 			# Support expired
-			DESCRIPTION="${LINK_SPRING_PROJECT} expired since ${SUPPORT_END_OSS} (${BRANCH})"
-			SEVERITY='Critical'
+			DESCRIPTION="${LINK_SPRING_PROJECT} expired since ${SUPPORT_END_OSS} (OSS) and ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
+			SEVERITY='High'
 		else
 			# Add a warning if the support ends in less than one year
 			ONE_YEAR_FROM_TODAY="$(($(date +%Y) + 1))-$(date +%m-%d)"
+			DESCRIPTION="${LINK_SPRING_PROJECT} ends on ${SUPPORT_END_OSS} (OSS) or ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH} "
 			if [[ "${ONE_YEAR_FROM_TODAY}" > "${SUPPORT_END_OSS}" ]]; then
-				DESCRIPTION="${LINK_SPRING_PROJECT} ends on ${SUPPORT_END_OSS} (${BRANCH})"
-				SEVERITY='High'
+				SEVERITY='Medium'
+			else
+				SEVERITY='Info'
 			fi
 		fi
 	else
 		# Search the lower supported OSS version. Note: 'sort_by' filters the minimum supported OSS version
-		local EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0]) | [.branch, .commercialPolicyEnd, .ossPolicyEnd] | @tsv'
-		read -r BRANCH SUPPORT_END_COMMERCIAL SUPPORT_END_OSS <<<"$(jq -r "${EXTENDED_QUERY}" "${SUPPORT_INFO_FILE}")"
-		DESCRIPTION="${LINK_SPRING_PROJECT} expired (< ${BRANCH})"
+		local EXTENDED_QUERY='([ .[] | select(.ossPolicyEnd > "'${TODAY}'") ] | sort_by(.branch)[0])'
+		read -r BRANCH COMMERCIAL_POLICY_END COMMERCIAL_ENFORCED_END OSS_POLICY_END OSS_ENFORCED_END <<<"$(jq -r "${EXTENDED_QUERY}${QUERY_FILTER}" "${SUPPORT_INFO_FILE}")"
+		DESCRIPTION="${LINK_SPRING_PROJECT} OSS expired (< ${BRANCH})"
 		SEVERITY='Critical'
 	fi
 
-	if [[ -n "${SEVERITY}" ]]; then
+	if [[ -n "${SEVERITY:-}" ]]; then
 		log_finding "${CSV_FILE}" "${LIBRARY}" "${E_VERSION_FULL}" "Supportability" "${SEVERITY}" "${DESCRIPTION}"
 	fi
 }
@@ -181,10 +199,10 @@ function generate_csv() {
 				# e.g. '5.1.9.RELEASE'
 				if [[ "${ENTRY}" == *'@'* ]]; then
 					E_VERSION_FULL=$(echo "${ENTRY}" | cut -d '@' -f2)
-					if [[ -n "${E_VERSION_FULL}" ]]; then
+					if [[ -n "${E_VERSION_FULL:-}" ]]; then
 						# e.g. '5.1.9'
 						E_VERSION=$(echo "${E_VERSION_FULL}" | tr -d '[:alpha:]' | tr -d '-' | sed 's/\.$//')
-						if [[ -n "${E_VERSION}" ]]; then
+						if [[ -n "${E_VERSION:-}" ]]; then
 							E_VERSION_SHORT=$(echo "${E_VERSION}" | awk -F '.' '{printf "%s.%s", $1, $2}')
 						fi
 					fi
@@ -195,13 +213,13 @@ function generate_csv() {
 				
 				####### Unsupported Libraries
 				DETECTED_SPRING_PROJECT=''
-				if [[ -n "${E_VERSION_SHORT}" && "${E_GROUP}" == "org.springframework"* ]]; then
+				if [[ -n "${E_VERSION_SHORT:-}" && "${E_GROUP}" == "org.springframework"* ]]; then
 					# Check support for Spring Framework (https://spring.io/projects/spring-framework#support)
 					if [[ "${E_GROUP}" == "org.springframework" ]]; then
 						DETECTED_SPRING_PROJECT='spring-framework'
 
 					# Check support for Spring Boot (https://spring.io/projects/spring-boot#support) - Alternatives: https://endoflife.date/spring-boot / https://endoflife.date/api/spring-boot.json
-					elif [[ "${E_GROUP}" == "org.springframework.boot"* ]]; then
+					elif [[ "${E_GROUP}" == "org.springframework.boot" ]]; then
 						DETECTED_SPRING_PROJECT='spring-boot'
 
 					# Check support for Spring Session (https://spring.io/projects/spring-session#support)
@@ -345,7 +363,7 @@ function generate_csv() {
 					fi
 				fi
 
-				if [[ -n "${DETECTED_SPRING_PROJECT}" ]]; then
+				if [[ -n "${DETECTED_SPRING_PROJECT:-}" ]]; then
 					check_support "${DETECTED_SPRING_PROJECT}" "${ARCHEO_APP_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
 				fi
 
@@ -374,7 +392,7 @@ function generate_csv() {
 					LIB_TYPE="ant"
 					;;
 				esac
-				if [[ -n "${LIB_TYPE}" ]]; then
+				if [[ -n "${LIB_TYPE:-}" ]]; then
 					# Cut everything after last '@'
 					ENTRY_TRIM="${ENTRY%%@*}"
 					# Cut everything before first '/'
@@ -406,7 +424,8 @@ function generate_csv() {
 		###### 2. Add the aggregate findings count to the CSV file
 		COUNT_FINDINGS="n/a"
 		if [ -f "${ARCHEO_APP_CSV}" ]; then
-			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${ARCHEO_APP_CSV}") | tr -d ' ' | cut -d'/' -f 1)
+			# Count all entries excepted the Info ones
+			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${ARCHEO_APP_CSV}"|grep -v ',Info,') | tr -d ' ' | cut -d'/' -f 1)
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_FINDINGS}" >>"${RESULT_FILE}"
 
