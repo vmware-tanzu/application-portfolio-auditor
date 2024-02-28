@@ -70,7 +70,7 @@ function analyze_group() {
 	GROUP=$(basename "${1}")
 	log_analysis_message "group '${GROUP}'"
 
-	export OUT_DIR_ARCHEO="${REPORTS_DIR}/${STEP}__Archeo"
+	export OUT_DIR_ARCHEO="${REPORTS_DIR}/${STEP}__ARCHEO"
 
 	mkdir -p "${OUT_DIR_ARCHEO}"
 

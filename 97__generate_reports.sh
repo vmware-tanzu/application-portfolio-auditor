@@ -114,8 +114,8 @@ function export_vars() {
 	OSV_URL="./15__OSV/"
 	OSV_LOG="./15__OSV.log"
 
-	ARCHEO_URL="./16__Archeo/"
-	ARCHEO_LOG="./16__Archeo.log"
+	ARCHEO_URL="./16__ARCHEO/"
+	ARCHEO_LOG="./16__ARCHEO.log"
 
 	CSA_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'csa.db' | grep -c 'CSA' || true)
 	if ((CSA_REPORT > 0)); then
@@ -274,7 +274,7 @@ function export_vars() {
 		export HAS_OSV_REPORT=''
 	fi
 
-	ARCHEO_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__quality__archeo.csv' | grep -c 'Archeo' || true)
+	ARCHEO_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__quality__archeo.csv' | grep -c 'ARCHEO' || true)
 	if ((ARCHEO_REPORT > 0)); then
 		export HAS_ARCHEO_REPORT=TRUE
 		HAS_QUALITY_OR_LANGUAGE_REPORT=TRUE

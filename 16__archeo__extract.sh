@@ -168,7 +168,7 @@ function generate_csv() {
 	APP_DIR_INCOMING=${1}
 	GROUP=$(basename "${APP_DIR_INCOMING}")
 
-	APP_DIR_OUT="${REPORTS_DIR}/${STEP}__Archeo"
+	APP_DIR_OUT="${REPORTS_DIR}/${STEP}__ARCHEO"
 	RESULT_FILE="${APP_DIR_OUT}/_results__quality__archeo.csv"
 
 	if [[ ! -d "${APP_DIR_OUT}" ]]; then
@@ -177,7 +177,7 @@ function generate_csv() {
 		exit
 	fi
 
-	export LOG_FILE="${REPORTS_DIR}/${STEP}__Archeo.log"
+	export LOG_FILE="${REPORTS_DIR}/${STEP}__ARCHEO.log"
 	log_extract_message "group '${GROUP}'"
 
 	rm -f "${RESULT_FILE}"

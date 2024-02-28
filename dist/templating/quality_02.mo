@@ -209,7 +209,7 @@ function drawTable(data) {
       } else if (d.name.includes("Applications")) {
         return '';
       } else if (d.name.includes("Archeo")) {
-        return "./16__Archeo/"+d.app+".html";
+        return "./16__ARCHEO/"+d.app+".html";
       } else if (d.name.includes("PMD")) {
         return "./07__PMD/pmd/{{APP_GROUP}}__"+d.app+"_pmd.html";
       } else if (d.name.includes("Copy-pasted")) {

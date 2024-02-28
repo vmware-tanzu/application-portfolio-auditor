@@ -61,7 +61,7 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../16__Archeo/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="{{TOOL_VERSION}}"></a>
+          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="{{TOOL_VERSION}}"></a>
           <div>
             <h5 class="mt-0 mb-1">Archeologist <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
             Find unsupported and unnecessary ancient libraries in your applications. (<a href="{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
