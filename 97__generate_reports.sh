@@ -44,7 +44,7 @@ REPORT_VARIABLES=(
 	"HAS_QUALITY_REPORT" "TOOLS_QUALITY_COUNT" "HAS_MULTIPLE_QUALITY_TOOLS" "HAS_PMD_REPORT" "PMD_URL" "PMD_LOG" "HAS_FSB_REPORT" "FSB_URL" "FSB_LOG" "HAS_MAI_REPORT" "MAI_URL" "MAI_LOG" "HAS_ARCHEO_REPORT" "ARCHEO_URL" "ARCHEO_LOG"
 
 	# Security
-	"HAS_SECURITY_REPORT" "TOOLS_SECURITY_COUNT" "HAS_SECURITY_REPORT_TABLE" "HAS_MULTIPLE_SECURITY_TOOLS" "SCANCODE_URL" "SCANCODE_LOG" "SLSCAN_URL" "SLSCAN_LOG" "INSIDER_URL" "INSIDER_LOG" "ODC_URL" "ODC_LOG" "GRYPE_URL" "GRYPE_LOG" "TRIVY_URL" "TRIVY_LOG" "HAS_SCANCODE_REPORT" "HAS_ODC_REPORT" "HAS_SLSCAN_REPORT" "HAS_INSIDER_REPORT" "HAS_GRYPE_REPORT" "HAS_TRIVY_REPORT" "HAS_OSV_REPORT" "OSV_URL" "OSV_LOG"
+	"HAS_SECURITY_REPORT" "TOOLS_SECURITY_COUNT" "HAS_SECURITY_REPORT_TABLE" "HAS_MULTIPLE_SECURITY_TOOLS" "SCANCODE_URL" "SCANCODE_LOG" "SLSCAN_URL" "SLSCAN_LOG" "INSIDER_URL" "INSIDER_LOG" "ODC_URL" "ODC_LOG" "GRYPE_URL" "GRYPE_LOG" "TRIVY_URL" "TRIVY_LOG" "HAS_SCANCODE_REPORT" "HAS_ODC_REPORT" "HAS_SLSCAN_REPORT" "HAS_INSIDER_REPORT" "HAS_GRYPE_REPORT" "HAS_TRIVY_REPORT" "HAS_OSV_REPORT" "OSV_URL" "OSV_LOG" "HAS_BEARER_REPORT" "BEARER_URL" "BEARER_LOG"
 
 	# Language
 	"TOOLS_LANGUAGE_COUNT" "HAS_MULTIPLE_LANGUAGE_TOOLS" "LANGUAGES_URL" "LANGUAGES_LOG" "HAS_LANGUAGES_REPORT"
@@ -116,6 +116,9 @@ function export_vars() {
 
 	ARCHEO_URL="./16__ARCHEO/"
 	ARCHEO_LOG="./16__ARCHEO.log"
+
+	BEARER_URL="./17__BEARER/"
+	BEARER_LOG="./17__BEARER.log"
 
 	CSA_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'csa.db' | grep -c 'CSA' || true)
 	if ((CSA_REPORT > 0)); then
@@ -272,6 +275,16 @@ function export_vars() {
 		TOOLS_SECURITY_COUNT=$((TOOLS_SECURITY_COUNT + 1))
 	else
 		export HAS_OSV_REPORT=''
+	fi
+
+	BEARER_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__security__bearer.csv' | grep -c 'BEARER' || true)
+	if ((BEARER_REPORT > 0)); then
+		export HAS_BEARER_REPORT=TRUE
+		HAS_SECURITY_REPORT=TRUE
+		TOOLS_COUNT=$((TOOLS_COUNT + 1))
+		TOOLS_SECURITY_COUNT=$((TOOLS_SECURITY_COUNT + 1))
+	else
+		export HAS_BEARER_REPORT=''
 	fi
 
 	ARCHEO_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__quality__archeo.csv' | grep -c 'ARCHEO' || true)
@@ -457,6 +470,7 @@ function generate_security_csv() {
 	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}/results_extracted.csv"
 	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}/results_extracted.csv"
 	export OSV_CSV_FILE="${REPORTS_DIR}/15__OSV/_results__security__osv.csv"
+	export BEARER_CSV_FILE="${REPORTS_DIR}/17__BEARER/_results__security__bearer.csv"
 
 	# Debug info to compare the result counts
 	#echo "LANG_CSV     - $(cat $LANG_CSV | wc -l |  tr -d ' \t') entries - $LANG_CSV"
@@ -523,6 +537,15 @@ function generate_security_csv() {
 			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
 		else
 			sort_wo_header "${OSV_CSV_FILE}" >"${TMP_CSV}"
+		fi
+	fi
+
+	if [[ -f "${BEARER_CSV_FILE}" ]]; then
+		if [[ -f "${TMP_CSV}" ]]; then
+			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${BEARER_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
+			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
+		else
+			sort_wo_header "${BEARER_CSV_FILE}" >"${TMP_CSV}"
 		fi
 	fi
 
@@ -955,7 +978,7 @@ function generate_reports() {
 	fi
 
 	source "${DIST_DIR}/rules.counts"
-	export ARCHEO_RULES CSA_RULES CLOC_RULES FSB_RULES GRYPE_RULES INSIDER_RULES LINGUIST_RULES MAI_RULES ODC_RULES OSV_RULES PMD_RULES SCANCODE_RULES SLSCAN_RULES TRIVY_RULES WAMT_RULES WINDUP_RULES
+	export ARCHEO_RULES CSA_RULES CLOC_RULES FSB_RULES GRYPE_RULES INSIDER_RULES LINGUIST_RULES MAI_RULES ODC_RULES OSV_RULES BEARER_RULES PMD_RULES SCANCODE_RULES SLSCAN_RULES TRIVY_RULES WAMT_RULES WINDUP_RULES
 	${MUSTACHE} "${TEMPLATE_DIR}/info_rules.mo" >"${INFO_RULES_REPORT}"
 
 	# Merging all results in one summary CSV file (${SUMMARY_CSV})

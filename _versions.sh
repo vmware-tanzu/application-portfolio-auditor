@@ -7,7 +7,7 @@
 ##############################################################################################################
 
 # Current version of Application Portfolio Auditor
-export TOOL_VERSION='2.1.0'
+export TOOL_VERSION='2.1.1'
 
 # Java version used for Bagger and Fernflower
 export JAVA_VERSION='20'
@@ -43,6 +43,7 @@ export SYFT_VERSION='0.105.1'
 export GRYPE_VERSION='0.74.7'
 export TRIVY_VERSION='0.49.1'
 export OSV_VERSION='1.6.2'
+export BEARER_VERSION='1.40.1'
 
 # Other
 export DONET_RUNTIME_VERSION='8.0.2-alpine3.19'

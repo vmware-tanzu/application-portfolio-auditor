@@ -1,7 +1,7 @@
 const dataUri = "data:text/plain;base64," + btoa(longText);
 
 // Potentially displayed columns
-const toolColumns = ['OWASPVulns', 'OWASPVulnLibs', 'FSBBugs', 'FSBTotalBugs', 'SLScanVulns', 'InsiderVulns', 'GrypeVulns', 'TrivyVulns', 'OSVVulns']
+const toolColumns = ['OWASPVulns', 'OWASPVulnLibs', 'FSBBugs', 'FSBTotalBugs', 'SLScanVulns', 'InsiderVulns', 'GrypeVulns', 'TrivyVulns', 'OSVVulns', 'BearerVulns']
 
 const maxValues = {}
 const logScales = {}
@@ -39,6 +39,7 @@ function computeMaxValues(data) {
     if(columns[i].startsWith('Grype')) { hasColumn['GrypeVulns'] = true; }
     if(columns[i].startsWith('Trivy')) { hasColumn['TrivyVulns'] = true; }
     if(columns[i].startsWith('OSV')) { hasColumn['OSVVulns'] = true; }
+    if(columns[i].startsWith('Bearer')) { hasColumn['BearerVulns'] = true; }
   }
 
   if(hasColumn['OWASPVulns']) {
@@ -63,6 +64,7 @@ function computeMaxValues(data) {
   computeMaxValueSimpleColumn(data, 'GrypeVulns', 'Grype vulns')
   computeMaxValueSimpleColumn(data, 'TrivyVulns', 'Trivy vulns')
   computeMaxValueSimpleColumn(data, 'OSVVulns', 'OSV vulns')
+  computeMaxValueSimpleColumn(data, 'BearerVulns', 'Bearer vulns')
 }
 
 // Get color
@@ -87,6 +89,7 @@ function drawTable(data) {
   colorScales['GrypeVulns'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['GrypeVulns'](c)) )
   colorScales['TrivyVulns'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['TrivyVulns'](c)) )
   colorScales['OSVVulns'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['OSVVulns'](c)) )
+  colorScales['BearerVulns'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['BearerVulns'](c)) )
 
   var sortAscending = true;
   var table = d3.select('#page-wrap').append('table');
@@ -164,6 +167,7 @@ function drawTable(data) {
       if (d.name.startsWith("Grype")) { return colorScales['GrypeVulns'](d.value); }
       if (d.name.startsWith("Trivy")) { return colorScales['TrivyVulns'](d.value); }
       if (d.name.startsWith("OSV")) { return colorScales['OSVVulns'](d.value); }
+      if (d.name.startsWith("Bearer")) { return colorScales['BearerVulns'](d.value); }
       return "";
     })
     .style("color", function(d) {
@@ -187,6 +191,8 @@ function drawTable(data) {
         return getColor(d,'TrivyVulns');
       } else if (d.name.startsWith("OSV")) {
         return getColor(d,'OSVVulns');
+      } else if (d.name.startsWith("Bearer")) {
+        return getColor(d,'BearerVulns');
       } else {
         return "#212529";
       }
@@ -214,6 +220,8 @@ function drawTable(data) {
         return "./14__TRIVY__{{APP_GROUP}}/"+d.app+".html";
       } else if (d.name.includes("OSV")) {
         return "./15__OSV/"+d.app+"_osv.txt";
+      } else if (d.name.includes("Bearer")) {
+        return "./17__BEARER/"+d.app+"_security_bearer.html";
       } else {
         return '';
       }
