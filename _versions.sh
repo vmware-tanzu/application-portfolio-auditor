@@ -18,7 +18,7 @@ export JAVA_VERSION='20'
 #export WINDUP_VERSION='6.3.0' - Visualization of new version is a step back.
 export WINDUP_VERSION='6.1.11'
 export CSA_VERSION='4.1.12'
-export WAMT_VERSION='23.0.0.5'
+export WAMT_VERSION='24.0.0.1'
 
 # Languages
 export LINGUIST_VERSION='7.28.0'
