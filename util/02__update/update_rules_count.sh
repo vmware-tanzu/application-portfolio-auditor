@@ -120,6 +120,16 @@ rm -f main.tar.gz
 echo "14 - Trivy:${RULES_TRIVY}"
 popd &>/dev/null
 
+###### 15 - OSV
+# Todo
+
+###### 16 - Archeo
+# Todo
+
+###### 17 - Bearer
+# Todo - Retrieve from https://docs.bearer.com/reference/rules/
+
+
 cat >"${DIST_DIR}/rules.counts" <<EOF
 ODC_RULES=${RULES_OWASP}
 SCANCODE_RULES=${RULES_SCANCODE}
@@ -135,4 +145,7 @@ WINDUP_RULES=${RULES_WINDUP}
 WAMT_RULES=${RULES_WAMT}
 CSA_RULES=${RULES_CSA}
 TRIVY_RULES=${RULES_TRIVY}
+OSV_RULES=108137
+ARCHEO_RULES=55
+BEARER_RULES=360
 EOF

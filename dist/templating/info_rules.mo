@@ -78,7 +78,7 @@
     <br/>
     <div class="row">
       <h4 class="panel-title">Rules available for each tool</h4>
-      <p style="margin-bottom: 0px;">Logarithmic treemap visualizing the number of rules per tool sorted by category: <span style="color:#DC3545">security</span>, <span style="color:#1F8637">quality</span>,  <span style="color:#0081D1">cloud-readiness</span>. <span class="badge bg-secondary">{{TOOLS_COUNT}}</span> out of <span class="badge bg-secondary">15</span> tools used.</p>
+      <p style="margin-bottom: 0px;">Logarithmic treemap visualizing the number of rules per tool sorted by category: <span style="color:#DC3545">security</span>, <span style="color:#1F8637">quality</span>,  <span style="color:#0081D1">cloud-readiness</span>. <span class="badge bg-secondary">{{TOOLS_COUNT}}</span> out of <span class="badge bg-secondary">18</span> tools used.</p>
       <div id="rules_summary"></div>
     </div>
   </div>
@@ -183,6 +183,12 @@
               "active":{{#HAS_OSV_REPORT}}true{{/HAS_OSV_REPORT}}{{^HAS_OSV_REPORT}}false{{/HAS_OSV_REPORT}},
               "value":{{ OSV_RULES }},
               "url":"https://osv.dev/"
+            },
+            {
+              "name":"Bearer",
+              "active":{{#HAS_BEARER_REPORT}}true{{/HAS_BEARER_REPORT}}{{^HAS_BEARER_REPORT}}false{{/HAS_BEARER_REPORT}},
+              "value":{{ BEARER_RULES }},
+              "url":"https://github.com/Bearer/bearer"
             }
           ]
         },
@@ -196,14 +202,15 @@
               "url":"https://github.com/AlDanial/cloc"
             },
             {
-              "name":"GitHub Linguist",
+              "name":"GitHub",
+              "name_ext":"Linguist",
               "active":{{#HAS_LANGUAGES_REPORT}}true{{/HAS_LANGUAGES_REPORT}}{{^HAS_LANGUAGES_REPORT}}false{{/HAS_LANGUAGES_REPORT}},
               "value":{{ LINGUIST_RULES }},
               "url":"https://github.com/github/linguist"
             },
             {
-              "name":"Microsoft App",
-              "name_ext":"Inspector",
+              "name":"Microsoft",
+              "name_ext":"App Inspector",
               "active":{{#HAS_MAI_REPORT}}true{{/HAS_MAI_REPORT}}{{^HAS_MAI_REPORT}}false{{/HAS_MAI_REPORT}},
               "value":{{ MAI_RULES }},
               "url":"https://github.com/Microsoft/ApplicationInspector"
@@ -216,7 +223,8 @@
               "url":"https://github.com/nexB/scancode-toolkit"
             },
             {
-              "name":"PMD Analyzer",
+              "name":"PMD",
+              "name_ext":"Analyzer",
               "active":{{#HAS_PMD_REPORT}}true{{/HAS_PMD_REPORT}}{{^HAS_PMD_REPORT}}false{{/HAS_PMD_REPORT}},
               "value":{{ PMD_RULES }},
               "url":"https://pmd.github.io/"
