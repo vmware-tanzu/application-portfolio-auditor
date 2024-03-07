@@ -42,14 +42,14 @@ function analyze() {
 				APP_NAME_SHORT="${APP_NAME%.*}"
 			fi
 
-			RESULT_FILE_SECURITY_BEARER="${OUT_DIR_BEARER}/${APP_NAME}_security_bearer.html"
+			RESULT_FILE_SECURITY_BEARER="${OUT_DIR_BEARER}/${APP_NAME_SHORT}_security_bearer.html"
 			#RESULT_FILE_PRIVACY_BEARER="${OUT_DIR_BEARER}/${APP_NAME}_privacy_bearer.html"
 			if [[ -z "${PREFIX}" ]]; then
 				log_console_error "Invalid application: '${APP}'"
 			else
 				## Run -Bearer- to generate HTML security report
 				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
-					-v "${APP_FOLDER}:/src" \
+					-v "${APP_FOLDER}/src/${APP_NAME_SHORT}:/src/${APP_NAME_SHORT}" \
 					-e SYFT_CHECK_FOR_APP_UPDATE=false \
 					"${CONTAINER_IMAGE_NAME_BEARER}" \
 					scan -f html --scanner=secrets,sast --hide-progress-bar --parallel=${THREADS} --report security "/src" 2>>"${LOG_FILE}" >"${RESULT_FILE_SECURITY_BEARER}"

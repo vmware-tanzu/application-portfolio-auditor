@@ -37,16 +37,20 @@ function generate_csv() {
 		BEARER_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_security_bearer.html"
 
 		if [[ -f "${BEARER_OUTPUT}" ]]; then
-			COUNT_CRITICAL=$(grep -m 1 '<span class="critical">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-			COUNT_HIGH=$(grep -m 1 '<span class="high">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-			COUNT_MEDIUM=$(grep -m 1 '<span class="medium">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-			COUNT_LOW=$(grep -m 1 '<span class="low">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-			[[ -z "${COUNT_CRITICAL}" || -e "${COUNT_CRITICAL}" ]] && COUNT_CRITICAL=0
-			[[ -z "${COUNT_HIGH}" || -e "${COUNT_HIGH}" ]] && COUNT_HIGH=0
-			[[ -z "${COUNT_MEDIUM}" || -e "${COUNT_MEDIUM}" ]] && COUNT_MEDIUM=0
-			[[ -z "${COUNT_LOW}" || -e "${COUNT_LOW}" ]] && COUNT_LOW=0
-			COUNT_TOTAL=$((COUNT_CRITICAL + COUNT_HIGH + COUNT_MEDIUM + COUNT_LOW))
-			echo "${APP_NAME}${SEPARATOR}${COUNT_TOTAL}" >>"${RESULT_FILE}"
+			if grep -q "The security report is not yet available for your application." "${BEARER_OUTPUT}"; then
+				echo "${APP_NAME}${SEPARATOR}n/a" >>"${RESULT_FILE}"
+			else
+				COUNT_CRITICAL=$(grep -m 1 '<span class="critical">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_HIGH=$(grep -m 1 '<span class="high">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_MEDIUM=$(grep -m 1 '<span class="medium">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_LOW=$(grep -m 1 '<span class="low">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				[[ -z "${COUNT_CRITICAL}" || -e "${COUNT_CRITICAL}" ]] && COUNT_CRITICAL=0
+				[[ -z "${COUNT_HIGH}" || -e "${COUNT_HIGH}" ]] && COUNT_HIGH=0
+				[[ -z "${COUNT_MEDIUM}" || -e "${COUNT_MEDIUM}" ]] && COUNT_MEDIUM=0
+				[[ -z "${COUNT_LOW}" || -e "${COUNT_LOW}" ]] && COUNT_LOW=0
+				COUNT_TOTAL=$((COUNT_CRITICAL + COUNT_HIGH + COUNT_MEDIUM + COUNT_LOW))
+				echo "${APP_NAME}${SEPARATOR}${COUNT_TOTAL}" >>"${RESULT_FILE}"
+			fi
 		else
 			echo "${APP_NAME}${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
