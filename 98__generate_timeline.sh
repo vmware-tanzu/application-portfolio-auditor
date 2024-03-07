@@ -75,6 +75,7 @@ function main() {
 		TRIVY_LOG="./14__TRIVY.log"
 		OSV_LOG="./15__OSV.log"
 		ARCHEO_LOG="./16__ARCHEO.log"
+		BEARER_LOG="./17__BEARER.log"
 
 		# Initiate the JSON file
 		echo "[]" >"${TIMELINE_JSON}"
@@ -120,6 +121,8 @@ function main() {
 		add_entry "${CAT_EXTRACTION}" "15__osv__extract.sh" "${OSV_LOG}" "15__osv"
 		add_entry "${CAT_ANALYSIS}" "16__archeo__analysis.sh" "${ARCHEO_LOG}" "16__archeo"
 		add_entry "${CAT_EXTRACTION}" "16__archeo__extract.sh" "${ARCHEO_LOG}" "16__archeo"
+		add_entry "${CAT_ANALYSIS}" "17__bearer__analysis.sh" "${BEARER_LOG}" "17__bearer"
+		add_entry "${CAT_EXTRACTION}" "17__bearer__extract.sh" "${BEARER_LOG}" "17__bearer"
 		add_entry "${CAT_PREPARATION}" "97__generate_reports.sh" "${RUN_LOG}" "98__generate_reports"
 
 		rm -f "${TIMELINE_JSON_TMP}"

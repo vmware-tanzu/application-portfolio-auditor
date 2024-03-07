@@ -46,9 +46,9 @@ function usage() {
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
-	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [--archeo] [-x | --wamt] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
+	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [--archeo] [-x | --wamt] [-b | --bearer] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
 	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [--osv] [-l | --languages] [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
-	echo -e "    [-r | --reports] [-z | --zip] [-k | --k8] [--cf] [-t | --timestamp] [-b | --debug] [-v | --version] [-h | --help]"
+	echo -e "    [-r | --reports] [-z | --zip] [-k | --k8] [--cf] [-t | --timestamp] [--debug] [-v | --version] [-h | --help]"
 	echo -e ""
 	echo -e "    ${B}Select applications${N}  ---------------------------------------------------------------------------------------------"
 	echo -e "        ${B}-d${N}, ${B}--import-dir${N} <dir>         Import and analyze apps in <dir> (sub-folder of 'apps')"
@@ -70,6 +70,7 @@ function usage() {
 	echo -e "                    ${B}-e${N}, ${B}--grype${N}                    Run the Syft and Grype analysis"
 	echo -e "                    ${B}-y${N}, ${B}--trivy${N}                    Run the Trivy analysis"
 	echo -e "                    ${B}--osv${N}                          Run the OSV analysis"
+	echo -e "                    ${B}-b${N}, ${B}--bearer${N}                   Run the Bearer analysis"
 	echo -e ""
 	echo -e "        ${B}Languages${N}   ${B}-l${N}, ${B}--languages${N}                Decompile and run the Linguist and CLOC analysis"
 	echo -e ""
@@ -89,7 +90,7 @@ function usage() {
 	echo -e "    ${B}Advanced options${N}  ------------------------------------------------------------------------------------------------"
 	echo -e "        ${B}--pre-analysis${N}                 Run a pre-configuration analysis"
 	echo -e "        ${B}--package-discovery${N}            Run the Windup package discovery. Used to configure a Windup analysis"
-	echo -e "        ${B}-b${N}, ${B}--debug${N}                    Enable debug mode"
+	echo -e "        ${B}--debug${N}                        Enable debug mode"
 	echo -e "        ${B}-v${N}, ${B}--version${N}                  Display the version numbers"
 	echo -e "        ${B}-h${N}, ${B}--help${N}                     Show this help message"
 	exit 2
@@ -148,7 +149,7 @@ printf "${ORANGE}%s" ''
 if ! params="$(
 	"${GETOPT_COMMAND}" \
 		-o hbd:apwfnxog:reylsmivt:ckz \
-		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fsb,slscan,insider,grype,trivy,osv,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
+		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fsb,slscan,insider,grype,trivy,osv,bearer,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
 		--name "$(basename "${0}")" \
 		-- \
 		"${@}"
@@ -181,6 +182,7 @@ export SCANCODE_ACTIVE="false"
 export PMD_ACTIVE="false"
 export MAI_ACTIVE="false"
 export ARCHEO_ACTIVE="false"
+export BEARER_ACTIVE="false"
 export VERSION_ACTIVE="false"
 export USAGE_ACTIVE="false"
 export PACKAGE_CF="false"
@@ -280,6 +282,7 @@ while true; do
 		GRYPE_ACTIVE="true"
 		TRIVY_ACTIVE="true"
 		OSV_ACTIVE="true"
+		BEARER_ACTIVE="true"
 		shift
 		;;
 	-r | --reports | --report)
@@ -314,6 +317,12 @@ while true; do
 		ARCHEO_ACTIVE="true"
 		shift
 		;;
+	-b | --bearer)
+		BEARER_ACTIVE="true"
+		UNPACK_SOURCE="true"
+		DECOMPILE_SOURCE="true"
+		shift
+		;;
 	-t)
 		TIMESTAMP="${2}"
 		TIMESTAMP_SET="true"
@@ -327,7 +336,7 @@ while true; do
 		IMPORT_DIR="${2}"
 		shift 2
 		;;
-	-b | --debug)
+	--debug)
 		DEBUG="true"
 		shift
 		;;
@@ -386,6 +395,7 @@ elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
 	echo -e "-> Syft v.${SYFT_VERSION}"
 	echo -e "-> Trivy v.${TRIVY_VERSION}"
 	echo -e "-> OSV v.${OSV_VERSION}"
+	echo -e "-> Bearer v.${BEARER_VERSION}"
 	exit
 
 elif [[ ! $# -eq 0 && -n "${1}" &&  "${1}" != "run" ]]; then
@@ -451,6 +461,7 @@ if [[ "${REPORT_ACTIVE}" == "false" &&
 	"${GRYPE_ACTIVE}" == "false" &&
 	"${TRIVY_ACTIVE}" == "false" &&
 	"${OSV_ACTIVE}" == "false" &&
+	"${BEARER_ACTIVE}" == "false" &&
 	"${LANGUAGES_ACTIVE}" == "false" &&
 	"${SCANCODE_ACTIVE}" == "false" &&
 	"${PMD_ACTIVE}" == "false" &&
@@ -668,6 +679,12 @@ SCRIPTS=(
 	log_console "-> Archeo v.${TOOL_VERSION}"
 	log_console "-> Syft v.${SYFT_VERSION}"
 	SCRIPTS+=(16__archeo__analysis.sh 16__archeo__extract.sh)
+}
+
+# Bearer analysis
+[[ "${BEARER_ACTIVE}" == "true" ]] && {
+	log_console "-> Bearer v.${BEARER_VERSION}"
+	SCRIPTS+=(17__bearer__analysis.sh 17__bearer__extract.sh)
 }
 
 # Generates and package summary report with links

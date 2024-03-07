@@ -122,7 +122,7 @@ function weave() {
 	# Add all java binary applications to ${LIST_JAVA_BIN}
 	find "${1}" -maxdepth 1 -mindepth 1 -type f -name '*.[ejgrhw]ar' >"${LIST_JAVA_BIN}"
 
-	# Add decompiled Java apps tp ${LIST_JAVA_SRC}
+	# Add decompiled Java apps to ${LIST_JAVA_SRC}
 	while read -r APP; do
 		APP_NAME=$(basename "${APP}")
 		echo "${SRC_DIR}/${APP_NAME}" >>"${LIST_JAVA_SRC}"
