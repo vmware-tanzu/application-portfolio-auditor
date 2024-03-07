@@ -387,6 +387,12 @@ if [[ "${ARCHEO_ACTIVE}" == "true" ]]; then
 	check_container_engine "anchore/syft:v${SYFT_VERSION}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
 fi
 
+# 17
+if [[ "${BEARER_ACTIVE}" == "true" ]]; then
+	log_console_step "Step 17 - Check Bearer prerequisites"
+	check_container_engine "bearer/bearer:v${BEARER_VERSION}" "${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
+fi
+
 # 99
 if [[ -z "$(command -v zip)" ]]; then
 	if [[ "${IS_MAC}" == "true" ]]; then
