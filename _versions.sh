@@ -43,7 +43,7 @@ export SYFT_VERSION='1.0.1'
 export GRYPE_VERSION='0.74.7'
 export TRIVY_VERSION='0.49.1'
 export OSV_VERSION='1.7.0'
-export BEARER_VERSION='1.40.1'
+export BEARER_VERSION='1.41.0'
 
 # Other
 export DONET_RUNTIME_VERSION='8.0.2-alpine3.19'
