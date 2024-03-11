@@ -24,14 +24,15 @@ MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 export LOG_FILE="${REPORTS_DIR}/${STEP}__generate_timeline.log"
 
 function add_entry() {
-	local CATEGORY="$1"
-	local ENTRY_FILTER="$2"
-	local LOG_URL="$3"
-	local ENTRY_LABEL="${4-$(echo "${ENTRY_FILTER}" | cut -d"." -f 1)}"
+	local -r CATEGORY="$1"
+	local -r ENTRY_FILTER="$2"
+	local -r LOG_URL="$3"
+	local -r ENTRY_LABEL="${4-$(echo "${ENTRY_FILTER}" | cut -d"." -f 1)}"
 
 	if [ -n "${ENTRY_FILTER}" ] && [ -n "${CATEGORY}" ]; then
-		START=$(grep "${ENTRY_FILTER}" "${TIMELINE_LOG}" | grep "${START_TAG}" | cut -d" " -f 2 | tr -d '[]')
-		END=$(grep "${ENTRY_FILTER}" "${TIMELINE_LOG}" | grep "${END_TAG}" | cut -d" " -f 2 | tr -d '[]')
+		local -r TIMELINE_ENTRY=$(grep "${ENTRY_FILTER}" "${TIMELINE_LOG}")
+		local -r START=$(echo "${TIMELINE_ENTRY}" | grep "${START_TAG}" | cut -d" " -f 2 | tr -d '[]')
+		local -r END=$(echo "${TIMELINE_ENTRY}" | grep "${END_TAG}" | cut -d" " -f 2 | tr -d '[]')
 
 		if [ -n "${START}" ] && [ -n "${END}" ]; then
 			START_DATE=$(echo "${START}" | awk -F_ '{printf "%s-%s-%sT%s:%s:%s.000Z",$1,$2,$3,$5,$6,$7}')
@@ -55,27 +56,27 @@ function main() {
 	if [[ -f "${TIMELINE_LOG}" ]]; then
 
 		# Get the first group
-		APP_GROUP=$(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d -print -quit)
+		local -r APP_GROUP=$(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d -print -quit)
 		# Log files
-		RUN_LOG="./run.log"
-		FERNFLOWER_LOG="./01__Fernflower.log"
-		UNPACK_LOG="./01__unpack_sources.log"
-		CSA_LOG="./02__CSA.log"
-		WINDUP_LOG="./03__WINDUP.log"
-		WAMT_LOG="./04__WAMT.log"
-		ODC_LOG="./05__OWASP_DC__${APP_GROUP}.log"
-		SCANCODE_LOG="./06__SCANCODE.log"
-		PMD_LOG="./07__PMD.log"
-		LANGUAGES_LOG="./08__LINGUIST.log"
-		FSB_LOG="./09__FindSecBugs.log"
-		MAI_LOG="./10__MAI.log"
-		SLSCAN_LOG="./11__SLSCAN.log"
-		INSIDER_LOG="./12__INSIDER.log"
-		GRYPE_LOG="./13__GRYPE.log"
-		TRIVY_LOG="./14__TRIVY.log"
-		OSV_LOG="./15__OSV.log"
-		ARCHEO_LOG="./16__ARCHEO.log"
-		BEARER_LOG="./17__BEARER.log"
+		local -r RUN_LOG="./run.log"
+		local -r FERNFLOWER_LOG="./01__Fernflower.log"
+		local -r UNPACK_LOG="./01__unpack_sources.log"
+		local -r CSA_LOG="./02__CSA.log"
+		local -r WINDUP_LOG="./03__WINDUP.log"
+		local -r WAMT_LOG="./04__WAMT.log"
+		local -r ODC_LOG="./05__OWASP_DC__${APP_GROUP}.log"
+		local -r SCANCODE_LOG="./06__SCANCODE.log"
+		local -r PMD_LOG="./07__PMD.log"
+		local -r LANGUAGES_LOG="./08__LINGUIST.log"
+		local -r FSB_LOG="./09__FindSecBugs.log"
+		local -r MAI_LOG="./10__MAI.log"
+		local -r SLSCAN_LOG="./11__SLSCAN.log"
+		local -r INSIDER_LOG="./12__INSIDER.log"
+		local -r GRYPE_LOG="./13__GRYPE.log"
+		local -r TRIVY_LOG="./14__TRIVY.log"
+		local -r OSV_LOG="./15__OSV.log"
+		local -r ARCHEO_LOG="./16__ARCHEO.log"
+		local -r BEARER_LOG="./17__BEARER.log"
 
 		# Initiate the JSON file
 		echo "[]" >"${TIMELINE_JSON}"
@@ -128,7 +129,7 @@ function main() {
 		rm -f "${TIMELINE_JSON_TMP}"
 
 		# Generate timeline report
-		REPORT_VARS="${REPORTS_DIR}/98__report_vars.sh"
+		local -r REPORT_VARS="${REPORTS_DIR}/98__report_vars.sh"
 		source "${REPORT_VARS}"
 		{
 			${MUSTACHE} "${TEMPLATE_DIR}/info_timeline_01.mo"
