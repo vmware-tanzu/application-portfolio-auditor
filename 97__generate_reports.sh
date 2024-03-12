@@ -408,6 +408,23 @@ function add_language_column() {
 	rm -f "${TMP_CSV}.lang" "${TMP_CSV}.tmp.tmp"
 }
 
+function concatenate_csv() {
+	CSV=${1}
+	TMP_CSV=${2}
+	if [[ -f "${CSV}" ]]; then
+		# Checking whether the temporary file exists or not
+		if [[ -f "${TMP_CSV}" ]]; then
+			# Concatenating content of current CSV with TMP_CSV
+			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${CSV}" | cut -d "${SEPARATOR}" -f2-) >"${TMP_CSV}.tmp"
+			# Moving temporary file back to original name
+			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
+		else
+			# If TMP_CSV doesn't exist, we copy the content of current CSV file to it.
+			sort_wo_header "${CSV}" >"${TMP_CSV}"
+		fi
+	fi
+}
+
 # Generate the CSV file for the cloud.html page
 function generate_cloud_csv() {
 	TMP_CSV=${1}
@@ -481,73 +498,11 @@ function generate_security_csv() {
 	#echo "GRYPE_CSV_FILE      - $(cat $GRYPE_CSV_FILE | wc -l |  tr -d ' \t') entries - $GRYPE_CSV_FILE"
 	#echo "TRIVY_CSV_FILE      - $(cat $TRIVY_CSV_FILE | wc -l |  tr -d ' \t') entries - $TRIVY_CSV_FILE"
 
-	if [[ -f "${ODC_CSV_FILE}" ]]; then
-		# Sort the file without moving the header
-		sort_wo_header "${ODC_CSV_FILE}" >"${TMP_CSV}"
-	fi
+	CSV_FILES=("${ODC_CSV_FILE}" "${FSB_CSV_FILE}" "${SLSCAN_CSV_FILE}" "${INSIDER_CSV_FILE}" "${GRYPE_CSV_FILE}" "${TRIVY_CSV_FILE}" "${OSV_CSV_FILE}" "${BEARER_CSV_FILE}")
 
-	if [[ -f "${FSB_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${FSB_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${FSB_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${SLSCAN_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${SLSCAN_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${SLSCAN_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${INSIDER_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${INSIDER_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${INSIDER_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${GRYPE_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${GRYPE_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${GRYPE_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${TRIVY_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${TRIVY_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${TRIVY_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${OSV_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${OSV_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${OSV_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${BEARER_CSV_FILE}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${BEARER_CSV_FILE}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${BEARER_CSV_FILE}" >"${TMP_CSV}"
-		fi
-	fi
+	for CSV in "${CSV_FILES[@]}"; do
+		concatenate_csv "${CSV}" "${TMP_CSV}"
+	done
 
 	if [[ -f "${TMP_CSV}" ]]; then
 		add_language_column "${APP_GROUP}" "${TMP_CSV}"
@@ -565,36 +520,11 @@ function generate_quality_csv() {
 	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE__${APP_GROUP}/results_extracted.csv"
 	export MAI_CSV="${REPORTS_DIR}/10__MAI/${APP_GROUP}__results_extracted.csv"
 
-	if [[ -f "${ARCHEO_CSV}" ]]; then
-		sort_wo_header "${ARCHEO_CSV}" >"${TMP_CSV}"
-	fi
+	CSV_FILES=("${ARCHEO_CSV}" "${PMD_CSV}" "${SCANCODE_CSV}" "${MAI_CSV}")
 
-	if [[ -f "${PMD_CSV}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${PMD_CSV}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${PMD_CSV}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${SCANCODE_CSV}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${SCANCODE_CSV}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${SCANCODE_CSV}" >"${TMP_CSV}"
-		fi
-	fi
-
-	if [[ -f "${MAI_CSV}" ]]; then
-		if [[ -f "${TMP_CSV}" ]]; then
-			paste -d "${SEPARATOR}" "${TMP_CSV}" <(sort_wo_header "${MAI_CSV}" | cut -d "${SEPARATOR}" -f2-) >>"${TMP_CSV}.tmp"
-			mv "${TMP_CSV}.tmp" "${TMP_CSV}"
-		else
-			sort_wo_header "${MAI_CSV}" >"${TMP_CSV}"
-		fi
-	fi
+	for CSV in "${CSV_FILES[@]}"; do
+		concatenate_csv "${CSV}" "${TMP_CSV}"
+	done
 
 	if [[ -f "${TMP_CSV}" ]]; then
 		add_language_column "${APP_GROUP}" "${TMP_CSV}"
@@ -674,7 +604,7 @@ function generate_trivy_html() {
 
 	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 
-	# The URL patterns are split in smaller groups because the leght of the regex sed can handle is limited.
+	# The URL patterns are split in smaller groups because the lenght of the regex sed can handle is limited.
 	# shellcheck disable=SC2034
 	declare -A URL_PATTERN_MAP_1=(
 		['almalinux']='Alma Linux'
