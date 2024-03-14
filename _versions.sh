@@ -17,18 +17,18 @@ export JAVA_VERSION='20'
 # Migration & cloud readiness
 #export WINDUP_VERSION='6.3.0' - Visualization of new version is a step back.
 export WINDUP_VERSION='6.1.11'
-export CSA_VERSION='4.1.12'
+export CSA_VERSION='4.1.13'
 export WAMT_VERSION='24.0.0.1'
 
 # Languages
-export LINGUIST_VERSION='7.28.0'
+export LINGUIST_VERSION='7.29.0'
 export CLOC_VERSION='1.98'
 
 # License & Authors
 export SCANCODE_VERSION='32.0.8'
 
 # Code quality / bugs
-export MAI_VERSION='1.9.21'
+export MAI_VERSION='1.9.22'
 export PMD_VERSION='6.55.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
@@ -43,14 +43,14 @@ export SYFT_VERSION='1.0.1'
 export GRYPE_VERSION='0.74.7'
 export TRIVY_VERSION='0.49.1'
 export OSV_VERSION='1.7.0'
-export BEARER_VERSION='1.41.0'
+export BEARER_VERSION='1.42.0'
 
 # Other
 export DONET_RUNTIME_VERSION='8.0.2-alpine3.19'
 export MUSTACHE_VERSION='3.0.4'
 export NGINX_VERSION='1.25.4'
 export NIST_MIRROR_VERSION='1.6.0'
-export D3_VERSION='7.8.5'
+export D3_VERSION='7.9.0'
 export JQUERY_VERSION='3.7.1'
 export BOOTSTRAP_VERSION='5.3.3'
 export BOOTSTRAP_ICONS_VERSION='1.11.3'
