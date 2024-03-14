@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # This file has been adapted based on https://github.com/jeremylong/DependencyCheck/blob/main/Dockerfile
-FROM golang:1.20.6-alpine AS go
+FROM golang:1.22.1-alpine AS go
 
 FROM azul/zulu-openjdk-alpine:20 AS jlink
 
