@@ -85,7 +85,7 @@ EOF
 
 	set +e
 	#(time ${CSA} analyze --database-dir=${APP_DIR_OUT} --config-file=${APP_CONF} --output-dir=${APP_DIR_OUT} --analyze-archives --db-name=appfoundry) >> ${LOG_FILE} 2>&1
-	(time ${CSA} analyze --database-dir="${APP_DIR_OUT}" --config-file="${APP_CONF}" --output-dir="${APP_DIR_OUT}" --display-rule-metrics --display-ignored-files --rules-dir="${TMP_RULES_DIR}") >>"${LOG_FILE}" 2>&1
+	(time ${CSA} analyze --database-dir="${APP_DIR_OUT}" --config-file="${APP_CONF}" --output-dir="${APP_DIR_OUT}" --display-rule-metrics --display-ignored-files --rules-dir="${TMP_RULES_DIR}" --export=csv,html --export-dir="${APP_DIR_OUT}" --export-file-name="export") >>"${LOG_FILE}" 2>&1
 	set -e
 
 }
