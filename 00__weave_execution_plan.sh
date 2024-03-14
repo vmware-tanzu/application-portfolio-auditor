@@ -84,7 +84,7 @@ function identify() {
 
 function sort_files() {
 	for FILE in "$@"; do
-		sort -o "${FILE}" "${FILE}"
+		sort -f -o "${FILE}" "${FILE}"
 	done
 }
 
@@ -162,7 +162,7 @@ function weave() {
 		sort_files "${LIST_OWASP_DC}"
 	fi
 
-	sort_files "${LIST_ALL}" "${LANG_MAP_CSV}" "${LIST_JAVA_SRC}" "${LIST_JAVA_BIN}" "${LIST_PYTHON}" "${LIST_JAVASCRIPT}" "${LIST_DOTNET}" "${LIST_OTHER}"
+	sort_files "${LIST_ALL_INIT}" "${LIST_ALL}" "${LANG_MAP_CSV}" "${LIST_JAVA_SRC}" "${LIST_JAVA_SRC_INIT}" "${LIST_JAVA_BIN}" "${LIST_PYTHON}" "${LIST_JAVASCRIPT}" "${LIST_DOTNET}" "${LIST_OTHER}"
 
 	COUNT_JAVA_BIN_APPS=$(count_lines "${LIST_JAVA_BIN}")
 	COUNT_JAVA_APPS=$(count_lines "${LIST_JAVA_SRC}")
