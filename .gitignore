@@ -26,6 +26,7 @@ dist/bagger/.settings
 dist/bagger/.classpath
 dist/bagger/.project
 dist/containerized/*.zip
+dist/containerized_security_reports/_trivy_scan__oci*
 dist/owasp_data/*
 dist/grype_cache/*
 dist/trivy_cache/*

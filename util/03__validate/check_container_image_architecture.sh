@@ -21,11 +21,20 @@ readonly TMP_DIR="/tmp/d_tmp"
 function main {
 	rm -Rf ${TMP_DIR}
 	while read -r IMG; do
-
 		mkdir -p ${TMP_DIR}
 		tar -xf "${IMG}" -C ${TMP_DIR} $(tar -tf "${IMG}" | grep -E '\.json$')
-		IMG_NAME=$(jq -M '.[].RepoTags[0]' ${TMP_DIR}/manifest.json | tr -d '"')
-		IMG_PLATFORM=$(jq -M '.architecture' $(find ${TMP_DIR} | grep -E '.{64}\.json$') | tr -d '"')
+		local IMG_NAME=$(jq -M '.[].RepoTags[0]' ${TMP_DIR}/manifest.json | tr -d '"')
+		local IMG_PLATFORM
+
+		if [[ -f "${TMP_DIR}/index.json" ]]; then
+			IMG_PLATFORM=$(jq -M '.manifests[0].platform.architecture' "${TMP_DIR}/index.json" | tr -d '"')
+		else
+			local IMG_PLATFORM_JSON=$(find ${TMP_DIR} | grep -E '.{64}\.json$')
+			if [[ ! -z "${IMG_PLATFORM_JSON}" ]]; then
+
+				IMG_PLATFORM=$(jq -M '.architecture' "${IMG_PLATFROM_JSON}" | tr -d '"')
+			fi
+		fi
 
 		if [[ "${ARCH}_${IMG_PLATFORM}" == "arm64_arm64" ]] || [[ "${ARCH}_${IMG_PLATFORM}" == "x86_64_amd64" ]]; then
 			echo -e "${GREEN}${IMG_PLATFORM}${NORMAL} - ${IMG_NAME}"
@@ -34,7 +43,7 @@ function main {
 		fi
 		rm -Rf ${TMP_DIR}
 
-	done < <(find "${DIST_DIR}" -maxdepth 1 -mindepth 1 -type f -name '*.img' | sort)
+	done < <(find "${DIST_DIR}" -maxdepth 1 -mindepth 1 -type f -name 'oci*.img' | sort)
 }
 
 main

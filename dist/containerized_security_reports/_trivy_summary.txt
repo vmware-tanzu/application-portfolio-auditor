@@ -1,0 +1,55 @@
+
+oci__bearer_1.43.0.img
+Total: 11 (UNKNOWN: 0, LOW: 2, MEDIUM: 9, HIGH: 0, CRITICAL: 0)
+
+oci__findsecbugs_1.12.0.img
+Total: 43 (UNKNOWN: 0, LOW: 25, MEDIUM: 18, HIGH: 0, CRITICAL: 0)
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+
+oci__grype_0.74.7.img
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+oci__insider_3.0.0.img
+Total: 50 (UNKNOWN: 0, LOW: 2, MEDIUM: 10, HIGH: 34, CRITICAL: 4)
+
+oci__linguist_7.29.0.img
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+oci__mai_1.9.22.img
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+oci__osv_1.7.0.img
+Total: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 1, CRITICAL: 0)
+
+oci__owasp-dependency-check_8.4.3.img
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+Total: 14 (UNKNOWN: 0, LOW: 1, MEDIUM: 6, HIGH: 6, CRITICAL: 1)
+
+oci__sast-scan_2.1.1.img
+Total: 1265 (UNKNOWN: 0, LOW: 489, MEDIUM: 735, HIGH: 41, CRITICAL: 0)
+Total: 34 (UNKNOWN: 0, LOW: 1, MEDIUM: 12, HIGH: 20, CRITICAL: 1)
+Total: 12 (UNKNOWN: 0, LOW: 0, MEDIUM: 10, HIGH: 0, CRITICAL: 2)
+Total: 31 (UNKNOWN: 0, LOW: 2, MEDIUM: 18, HIGH: 10, CRITICAL: 1)
+Total: 11 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 6, CRITICAL: 0)
+Total: 13 (UNKNOWN: 0, LOW: 0, MEDIUM: 4, HIGH: 9, CRITICAL: 0)
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 1, CRITICAL: 0)
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+Total: 14 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 8, CRITICAL: 1)
+
+oci__scancode-toolkit_32.0.8.img
+Total: 543 (UNKNOWN: 9, LOW: 199, MEDIUM: 219, HIGH: 114, CRITICAL: 2)
+Total: 21 (UNKNOWN: 0, LOW: 3, MEDIUM: 13, HIGH: 5, CRITICAL: 0)
+
+oci__syft_1.0.1.img
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+oci__trivy_0.49.1.img
+Total: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 0)
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 3, HIGH: 1, CRITICAL: 0)
+
+oci__wamt_24.0.0.1.img
+Total: 196 (UNKNOWN: 0, LOW: 89, MEDIUM: 102, HIGH: 5, CRITICAL: 0)
+
+oci__windup_6.1.11.img
+Total: 41 (UNKNOWN: 0, LOW: 25, MEDIUM: 16, HIGH: 0, CRITICAL: 0)
+Total: 114 (UNKNOWN: 0, LOW: 5, MEDIUM: 50, HIGH: 46, CRITICAL: 13)
