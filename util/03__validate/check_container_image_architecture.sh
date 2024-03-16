@@ -30,9 +30,8 @@ function main {
 			IMG_PLATFORM=$(jq -M '.manifests[0].platform.architecture' "${TMP_DIR}/index.json" | tr -d '"')
 		else
 			local IMG_PLATFORM_JSON=$(find ${TMP_DIR} | grep -E '.{64}\.json$')
-			if [[ ! -z "${IMG_PLATFORM_JSON}" ]]; then
-
-				IMG_PLATFORM=$(jq -M '.architecture' "${IMG_PLATFROM_JSON}" | tr -d '"')
+			if [[ -n "${IMG_PLATFORM_JSON}" ]]; then
+				IMG_PLATFORM=$(jq -M '.architecture' "${IMG_PLATFORM_JSON}" | tr -d '"')
 			fi
 		fi
 

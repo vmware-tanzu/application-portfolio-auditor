@@ -29,10 +29,10 @@ function main {
 	rm -Rf "${OUT_DIR}"
 	mkdir -p "${OUT_DIR}"
 	while read -r IMG; do
-		local IMG_NAME=$(basename ${IMG})
+		local IMG_NAME=$(basename "${IMG}")
 		local OUT_FILE="${OUT_DIR}/_trivy_scan__${IMG_NAME}.txt"
 		trivy image --input "${IMG}" --no-progress --scanners "vuln,config,secret" --quiet -f table >"${OUT_FILE}"
-		printf "\n${IMG_NAME}\n" >>"${SUMMARY_FILE}"
+		printf '\n%s\n' "${IMG_NAME}" >>"${SUMMARY_FILE}"
 		grep "^Total: " "${OUT_FILE}" >>"${SUMMARY_FILE}"
 	done < <(find "${DIST_DIR}" -maxdepth 1 -mindepth 1 -type f -name 'oci__*.img' | sort)
 
