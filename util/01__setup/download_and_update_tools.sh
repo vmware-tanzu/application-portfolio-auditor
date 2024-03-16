@@ -723,12 +723,13 @@ download_container_image 'OSV' "v${OSV_VERSION}" "ghcr.io/google/osv-scanner" "o
 ##############################################################################################################
 # 17 Bearer
 ##############################################################################################################
-# Load the correct Bearer container image
-echo_console_tool_info "17 - Bearer v${BEARER_VERSION}"
-DIST_BEARER="${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
-find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
-download_container_image 'Bearer' "v${BEARER_VERSION}" "bearer/bearer" "oci__bearer_${BEARER_VERSION}.img"
-
+# Load the correct Bearer container image (only for amd64)
+if [[ "${ARCH}" == "x86_64" ]]; then
+	echo_console_tool_info "17 - Bearer v${BEARER_VERSION}"
+	DIST_BEARER="${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
+	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
+	download_container_image 'Bearer' "v${BEARER_VERSION}" "bearer/bearer" "oci__bearer_${BEARER_VERSION}.img"
+fi
 
 ##############################################################################################################
 # 99 Reports - Update imported static content

@@ -687,8 +687,14 @@ SCRIPTS=(
 
 # Bearer analysis
 [[ "${BEARER_ACTIVE}" == "true" ]] && {
-	log_console "-> Bearer v.${BEARER_VERSION}"
-	SCRIPTS+=(17__bearer__analysis.sh 17__bearer__extract.sh)
+	if [[ "${ARCH}" != "x86_64" ]]; then
+		# Disable Bearer if architecture not "amd64"
+		log_warning "-> Bearer v.${BEARER_VERSION} is not supported on ARM64. It will be skipped."
+		BEARER_ACTIVE="false"
+	else
+		log_console "-> Bearer v.${BEARER_VERSION}"
+		SCRIPTS+=(17__bearer__analysis.sh 17__bearer__extract.sh)
+	fi
 }
 
 # Generates and package summary report with links
