@@ -9,16 +9,19 @@
 # Directories
 readonly DIST_DIR="$(dirname "${BASH_SOURCE[0]}")/../../dist"
 readonly OUT_DIR="${DIST_DIR}/containerized_security_reports"
-
 readonly SUMMARY_FILE="${OUT_DIR}/_trivy_summary.txt"
+
+# Colors
+readonly RED='\033[0;31m'
+readonly NORMAL='\033[0m'
 
 function main {
 
 	if [[ -z "$(command -v trivy)" ]]; then
 		if [[ "${IS_MAC}" == "true" ]]; then
-			log_console_error "Local 'trivy' installation is not available. Please install it ([MacOS] '$ brew install trivy') to use this functionality."
+			echo -e "${RED}Local 'trivy' installation is not available. Please install it ([MacOS] '$ brew install trivy') to use this functionality.${NORMAL}"
 		else
-			log_console_error "Local 'trivy' installation is not available. Please install it to use this functionality."
+			echo -e "${RED}Local 'trivy' installation is not available. Please install it to use this functionality.${NORMAL}"
 		fi
 		exit 1
 	fi
