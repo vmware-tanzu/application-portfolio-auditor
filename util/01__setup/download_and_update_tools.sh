@@ -31,10 +31,6 @@ export DIST_BIN="${HOME_DIR}/bin"
 # shellcheck source=/dev/null
 source "${HOME_DIR}/_versions.sh"
 
-# Basis Dotnet runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-## curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
-DOTNET_RUNTIME_TAG="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
-
 # Determining platform architecture for the build
 ARCH="$(uname -m)"
 export DOCKER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
@@ -407,9 +403,9 @@ else
 	pushd "${SCRIPT_PATH}/../../dist/containerized/owasp-dependency-check" &>/dev/null
 
 	if [[ "${DOCKER_ARCH}" == "arm64" ]]; then
-		export DOTNET_RUNTIME="${DOTNET_RUNTIME_TAG}-${DOCKER_ARCH}v8"
+		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}v8"
 	else
-		export DOTNET_RUNTIME="${DOTNET_RUNTIME_TAG}-${DOCKER_ARCH}"
+		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
 	fi
 
 	${MUSTACHE} "Dockerfile.owasp-dc.mo" >"Dockerfile"
@@ -629,9 +625,9 @@ else
 	pushd "${SCRIPT_PATH}/../../dist/containerized/mai" &>/dev/null
 
 	if [[ "${DOCKER_ARCH}" == "arm64" ]]; then
-		export DOTNET_RUNTIME="${DOTNET_RUNTIME_TAG}-${DOCKER_ARCH}v8"
+		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}v8"
 	else
-		export DOTNET_RUNTIME="${DOTNET_RUNTIME_TAG}-${DOCKER_ARCH}"
+		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
 	fi
 	${MUSTACHE} "Dockerfile.mai.mo" >"Dockerfile"
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
