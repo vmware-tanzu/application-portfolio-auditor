@@ -10,7 +10,7 @@ RUN apk add --no-cache --upgrade bash && \
     sed -i '/MAX_METASPACE_SIZE"/,$d' /windup/bin/windup-cli && \
     cat /windup-cli-append >> /windup/bin/windup-cli
 
-FROM eclipse-temurin:11-jre
+FROM {{IMG_ECLIPSE_TEMURIN_11}}
 RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 COPY --from=build /windup /windup
 ENTRYPOINT [ "/windup/bin/windup-cli" ]

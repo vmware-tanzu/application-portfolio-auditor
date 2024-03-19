@@ -6,6 +6,6 @@ RUN apk add --no-cache --upgrade bash && \
     apk add unzip sed && \
     unzip -o /findsecbugs-cli-{{FSB_VERSION}}.zip -d /
 
-FROM eclipse-temurin:11-jre
+FROM {{IMG_ECLIPSE_TEMURIN_11}}
 COPY --from=build /findsecbugs-cli /findsecbugs-cli
 ENTRYPOINT [ "/findsecbugs-cli/findsecbugs.sh" ]

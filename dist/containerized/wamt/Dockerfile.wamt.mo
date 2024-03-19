@@ -6,6 +6,6 @@ RUN apk add --no-cache --upgrade bash && \
     apk add unzip sed && \
     unzip -o /wamt-{{WAMT_VERSION}}.zip -d /
 
-FROM eclipse-temurin:20-jre
+FROM {{IMG_ECLIPSE_TEMURIN_21}}
 COPY --from=build /wamt /wamt
 ENTRYPOINT [ "java", "-Duser.language=en", "-jar", "/wamt/binaryAppScanner.jar" ]

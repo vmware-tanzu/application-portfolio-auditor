@@ -47,7 +47,6 @@ export BEARER_VERSION='1.43.0'
 
 # Supporting frameworks
 export MUSTACHE_VERSION='3.0.4'
-export NGINX_VERSION='1.25.4'
 export NIST_MIRROR_VERSION='1.6.0'
 export D3_VERSION='7.9.0'
 export JQUERY_VERSION='3.7.1'
@@ -57,8 +56,13 @@ export TIMELINES_CHART_VERSION='2.12.1'
 
 # Supporting container images 
 
-# Basis Dotnet runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-## curl -fsSL 'https://mcr.microsoft.com/v2/dotnet/runtime/tags/list' |grep 'alpine'| grep -v 'preview' | grep -v 'amd64'|grep -v 'arm' |sort|tail -1|tr -d ' ,"'
+# Basis Nginx runtime
+export NGINX_VERSION='1.25.4'
+export IMG_NGINX="nginx:${NGINX_VERSION}-alpine3.18"
+
+# Base .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
 export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 
+export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
+export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre-alpine"
