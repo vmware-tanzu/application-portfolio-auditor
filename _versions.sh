@@ -56,11 +56,11 @@ export TIMELINES_CHART_VERSION='2.12.1'
 
 # Supporting container images 
 
-# Basis Nginx runtime
+## Nginx runtime
 export NGINX_VERSION='1.25.4'
 export IMG_NGINX="nginx:${NGINX_VERSION}-alpine3.18"
 
-# Base .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
+## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
 export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 
