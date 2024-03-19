@@ -54,10 +54,10 @@ function generate_cf_deployment() {
 
 	declare MANIFEST
 	# Generate a sidecar if some CSA report has been successfully generated
-	if [[ -f "${REPORTS_DIR}/02__CSA/csa.db" ]]; then
+	if [[ -f "${REPORTS_DIR}/02__CSA/db/csa.db" ]]; then
 		MANIFEST=manifest-all.yml.mo
 		cp -fp "${INSTALL_DIR}/cloud-suitability-analyzer/csa-l" "${REPORTS_DIR_CF_CSA}/."
-		cp -fp "${REPORTS_DIR}/02__CSA/csa.db" "${REPORTS_DIR_CF_CSA}/."
+		cp -fp "${REPORTS_DIR}/02__CSA/db/csa.db" "${REPORTS_DIR_CF_CSA}/."
 		rm -Rf "${REPORTS_DIR_CF_PUBLIC}/02__CSA"
 		rm -Rf "${REPORTS_DIR_CF_PUBLIC}/launch_csa_ui.sh"
 	else
@@ -102,14 +102,14 @@ function generate_k8_deployment() {
 	cp -Rfp "${TEMPLATE_DIR_K8}/deploy" "${REPORTS_DIR_K8}/."
 
 	# Generate a sidecar if some CSA report has been successfully generated
-	if [[ -f "${REPORTS_DIR}/02__CSA/csa.db" ]]; then
+	if [[ -f "${REPORTS_DIR}/02__CSA/db/csa.db" ]]; then
 		# Setting up Dockerfile
 		${MUSTACHE} "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo" >"${REPORTS_DIR_K8_DEPLOY}/Dockerfile"
 
 		# Setting up CSA
 		cp -fp "${TEMPLATE_DIR_K8}/reports/docker-serve-reports.sh" "${REPORTS_DIR_K8_REPORTS}/"
 		cp -fp "${INSTALL_DIR}/cloud-suitability-analyzer/csa-l" "${REPORTS_DIR_K8_REPORTS}/"
-		cp -fp "${REPORTS_DIR}/02__CSA/csa.db" "${REPORTS_DIR_K8_REPORTS}/"
+		cp -fp "${REPORTS_DIR}/02__CSA/db/csa.db" "${REPORTS_DIR_K8_REPORTS}/"
 		rm -Rf "${REPORTS_DIR_K8_PUBLIC}/02__CSA"
 		rm -Rf "${REPORTS_DIR_K8_PUBLIC}/launch_csa_ui.sh"
 	else

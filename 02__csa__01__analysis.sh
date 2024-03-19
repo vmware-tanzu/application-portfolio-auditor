@@ -26,6 +26,7 @@ CUSTOM_BINS_FILE="${CONF_DIR}/custom-bins.yaml"
 TMP_BINS_FILE="${CONF_DIR}/tmp-bins.yaml"
 VERSION=${CSA_VERSION}
 APP_DIR_OUT=${REPORTS_DIR}/${STEP}__CSA
+DB_DIR_OUT=${REPORTS_DIR}/${STEP}__CSA/db
 LOG_FILE=${APP_DIR_OUT}.log
 LAUNCH_UI_SCRIPT=${APP_DIR_OUT}/../launch_csa_ui.sh
 
@@ -80,20 +81,18 @@ EOF
 
 	log_console_info "Configuration completed: '${APP_CONF}'"
 
-	# Executes the analysis
+	# Execute the analysis
 	log_console_step "Cloud Suitability Analyzer execution ..."
 
 	set +e
-	#(time ${CSA} analyze --database-dir=${APP_DIR_OUT} --config-file=${APP_CONF} --output-dir=${APP_DIR_OUT} --analyze-archives --db-name=appfoundry) >> ${LOG_FILE} 2>&1
-	(time ${CSA} analyze --database-dir="${APP_DIR_OUT}" --config-file="${APP_CONF}" --output-dir="${APP_DIR_OUT}" --display-rule-metrics --display-ignored-files --rules-dir="${TMP_RULES_DIR}" --export=csv,html --export-dir="${APP_DIR_OUT}" --export-file-name="export") >>"${LOG_FILE}" 2>&1
+	(time ${CSA} analyze --database-dir="${DB_DIR_OUT}" --config-file="${APP_CONF}" --output-dir="${APP_DIR_OUT}" --display-rule-metrics --display-ignored-files --rules-dir="${TMP_RULES_DIR}" --export=csv,html --export-dir="${APP_DIR_OUT}/export" --export-file-name="export") >>"${LOG_FILE}" 2>&1
 	set -e
-
 }
 
 function import_bins() {
 	if [[ ! -f "${DEFAULT_BINS_FILE}" ]]; then
 		log_console_step "Export Cloud Suitability Analyzer Default Bins"
-		"${CSA}" bins export --database-dir="${APP_DIR_OUT}" --output-dir="${CONF_DIR}" >>"${LOG_FILE}" 2>&1 || true
+		"${CSA}" bins export --database-dir="${DB_DIR_OUT}" --output-dir="${CONF_DIR}" >>"${LOG_FILE}" 2>&1 || true
 		mv "${CONF_DIR}"/bins.yaml "${DEFAULT_BINS_FILE}"
 	fi
 
@@ -111,7 +110,7 @@ function import_bins() {
 	} >>"${TMP_BINS_FILE}"
 
 	log_console_step "Import Cloud Suitability Analyzer Bins"
-	"${CSA}" bins import --database-dir="${APP_DIR_OUT}" "${TMP_BINS_FILE}" >>"${LOG_FILE}" 2>&1 || true
+	"${CSA}" bins import --database-dir="${DB_DIR_OUT}" "${TMP_BINS_FILE}" >>"${LOG_FILE}" 2>&1 || true
 }
 
 function count_rules() {
@@ -130,7 +129,7 @@ function import_rules() {
 	COUNT_DEFAULT_RULES=$(count_rules "${DEFAULT_RULES_DIR}")
 	if ((COUNT_DEFAULT_RULES == 0)); then
 		log_console_step "Export Cloud Suitability Analyzer Default Rules"
-		"${CSA}" rules export --database-dir="${APP_DIR_OUT}" --rules-dir="${DEFAULT_RULES_DIR}" >>"${LOG_FILE}" 2>&1 || true
+		"${CSA}" rules export --database-dir="${DB_DIR_OUT}" --rules-dir="${DEFAULT_RULES_DIR}" >>"${LOG_FILE}" 2>&1 || true
 		COUNT_DEFAULT_RULES=$(count_rules "${DEFAULT_RULES_DIR}")
 	fi
 
@@ -147,14 +146,14 @@ function import_rules() {
 	fi
 
 	log_console_step "Import Cloud Suitability Analyzer Rules"
-	"${CSA}" rules import --database-dir="${APP_DIR_OUT}" --rules-dir="${TMP_RULES_DIR}" >>"${LOG_FILE}" 2>&1 || true
+	"${CSA}" rules import --database-dir="${DB_DIR_OUT}" --rules-dir="${TMP_RULES_DIR}" >>"${LOG_FILE}" 2>&1 || true
 }
 
 function main() {
 
 	log_tool_info "Cloud Suitability Analyzer (CSA) v${VERSION}"
 
-	mkdir -p "${APP_DIR_OUT}"
+	mkdir -p "${DB_DIR_OUT}"
 
 	import_bins
 	import_rules
@@ -180,7 +179,7 @@ if [[ "\$(uname -s)" == "Darwin" ]]; then
 else
 	CSA=\${CSA_DIR}/csa-l
 fi
-\${CSA} ui --database-dir=./${STEP}__CSA
+\${CSA} ui --database-dir=./${STEP}__CSA/db
 EOF
 	chmod +x "${LAUNCH_UI_SCRIPT}"
 
@@ -188,7 +187,7 @@ EOF
 	log_console_success "CSA analysis completed."
 	log_console_info " Log file: '${LOG_FILE}'"
 	log_console_info " To see the results ... "
-	log_console_info "    1) execute: ${CSA} ui --database-dir=${APP_DIR_OUT}"
+	log_console_info "    1) execute: ${CSA} ui --database-dir=${DB_DIR_OUT}"
 	log_console_info "    2) and open http://localhost:3001"
 
 }

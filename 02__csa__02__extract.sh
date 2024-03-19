@@ -11,7 +11,7 @@ STEP=$(get_step)
 SEPARATOR=","
 S="${SEPARATOR}"
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__CSA"
-DB_LOCATION="${APP_DIR_OUT}/csa.db"
+DB_LOCATION="${APP_DIR_OUT}/db/csa.db"
 MISSING_FILE="${APP_DIR_OUT}__results_missing.csv"
 RESULT_BAGGER_FILE="${APP_DIR_OUT}__results_extracted_bagger.csv"
 RESULT_FILE="${APP_DIR_OUT}__results_extracted.csv"
@@ -45,7 +45,7 @@ function main() {
 		rm -Rf "${BAGGER_DB_TMP}"
 		mkdir -p "${BAGGER_DB_TMP}"
 		set +e
-		java "${JAVA_OPTS_TMP}" -jar "${INSTALL_DIR}"/bagger__${JAVA_VERSION}.jar "${DB_LOCATION}" "${RESULT_BAGGER_FILE}" "${S}"
+		java "${JAVA_OPTS_TMP}" -jar "${INSTALL_DIR}/bagger__${JAVA_VERSION}.jar" "${DB_LOCATION}" "${RESULT_BAGGER_FILE}" "${S}"
 		set -e
 		rm -Rf "${BAGGER_DB_TMP}"
 	else
@@ -59,7 +59,7 @@ function main() {
 
 	# Add missing entries
 	touch "${RESULT_BAGGER_FILE}" "${MISSING_FILE}"
-	cat "${RESULT_BAGGER_FILE}" "${MISSING_FILE}" | sort | uniq >"${RESULT_FILE}"
+	cat "${RESULT_BAGGER_FILE}" "${MISSING_FILE}" | sort -f | uniq >"${RESULT_FILE}"
 }
 
 main

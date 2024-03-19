@@ -120,7 +120,7 @@ function export_vars() {
 	BEARER_URL="./17__BEARER/"
 	BEARER_LOG="./17__BEARER.log"
 
-	CSA_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'csa.db' | grep -c 'CSA' || true)
+	CSA_REPORT=$(find "${REPORTS_DIR}" -maxdepth 3 -mindepth 3 -type f -name 'csa.db' | grep -c 'CSA' || true)
 	if ((CSA_REPORT > 0)); then
 		export HAS_CSA_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -446,7 +446,7 @@ function generate_cloud_csv() {
 	if [[ -f "${WINDUP_CSV}" ]]; then
 		if [[ -f "${CSA_CSV}" ]]; then
 			echo "Applications${SEPARATOR}CSA tech score" >"${CSA_CSV}.tmp"
-			grep "${APP_GROUP}" "${CSA_CSV}" | cut -d "${SEPARATOR}" -f2,4 | sort | uniq >>"${CSA_CSV}.tmp"
+			grep "${APP_GROUP}" "${CSA_CSV}" | cut -d "${SEPARATOR}" -f2,4 | sort -f | uniq >>"${CSA_CSV}.tmp"
 
 			# Merge Windup and CSA results
 			paste -d "${SEPARATOR}" "${CSA_CSV}.tmp" <(cut -d "${SEPARATOR}" -f2- "${WINDUP_CSV}") | tr -d '\t' >>"${TMP_CSV}"
@@ -457,7 +457,7 @@ function generate_cloud_csv() {
 		fi
 	elif [[ -f "${CSA_CSV}" ]]; then
 		echo "Applications${SEPARATOR}CSA tech score" >"${TMP_CSV}"
-		grep "${APP_GROUP}" "${CSA_CSV}" | cut -d "${SEPARATOR}" -f2,4 | sort | uniq >>"${TMP_CSV}"
+		grep "${APP_GROUP}" "${CSA_CSV}" | cut -d "${SEPARATOR}" -f2,4 | sort -f | uniq >>"${TMP_CSV}"
 	fi
 
 	if [[ -f "${WAMT_CSV}" ]]; then

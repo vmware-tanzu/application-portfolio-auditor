@@ -54,7 +54,7 @@ export BOOTSTRAP_VERSION='5.3.3'
 export BOOTSTRAP_ICONS_VERSION='1.11.3'
 export TIMELINES_CHART_VERSION='2.12.1'
 
-# Supporting container images 
+# Supporting container images
 
 ## Nginx runtime
 export NGINX_VERSION='1.25.4'
