@@ -13,7 +13,7 @@ oci__insider_3.0.0.img
 Total: 50 (UNKNOWN: 0, LOW: 2, MEDIUM: 10, HIGH: 34, CRITICAL: 4)
 
 oci__linguist_7.29.0.img
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 oci__mai_1.9.22.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
@@ -22,11 +22,11 @@ oci__osv_1.7.0.img
 Total: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 1, CRITICAL: 0)
 
 oci__owasp-dependency-check_8.4.3.img
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 Total: 14 (UNKNOWN: 0, LOW: 1, MEDIUM: 6, HIGH: 6, CRITICAL: 1)
 
 oci__sast-scan_2.1.1.img
-Total: 1278 (UNKNOWN: 0, LOW: 501, MEDIUM: 736, HIGH: 41, CRITICAL: 0)
+Total: 1294 (UNKNOWN: 0, LOW: 507, MEDIUM: 746, HIGH: 41, CRITICAL: 0)
 Total: 34 (UNKNOWN: 0, LOW: 1, MEDIUM: 12, HIGH: 20, CRITICAL: 1)
 Total: 12 (UNKNOWN: 0, LOW: 0, MEDIUM: 10, HIGH: 0, CRITICAL: 2)
 Total: 31 (UNKNOWN: 0, LOW: 2, MEDIUM: 18, HIGH: 10, CRITICAL: 1)
