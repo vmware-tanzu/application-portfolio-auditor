@@ -8,7 +8,7 @@ Key features:
 
 - **Hardened by default**: Systematically validates prerequisites and pre-configures analysis tools following best practices.
 
-- **Wide variety of applications supported**: Covers most modern programming languages (Java, Python, .NET, NodeJS) and analyzes as well source as compiled binaries.
+- **Wide variety of applications supported**: Covers most modern programming languages (Java, Python, .NET, NodeJS) and analyzes as well source code as compiled binaries.
 
 - **Combined intelligence:** Harnesses and combines insights of up to 15 free and open-source application analysis tools.
 
@@ -31,6 +31,11 @@ $ cd application-portfolio-auditor
 $ ./audit setup
 ```
 > Note: This command automates the installation of all required prerequisites. It automatically configures based on the detected operating system (MacOS, Ubuntu, or CentOS) and requires sudo rights. The process may take several minutes to complete.
+
+> Hint: If you are experiencing issues during the installation, please make sure that your local user has full access to the installation folder:
+```bash
+sudo chown -R $(id -u):$(id -g) "application-portfolio-auditor"
+```
 
 3. Retrieve necessary tools and frameworks:
 ```bash
