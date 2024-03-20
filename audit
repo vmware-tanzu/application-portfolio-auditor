@@ -97,6 +97,58 @@ function usage() {
 	exit 2
 }
 
+function run_short_scripts() {
+	# Check which utility subscript should be executed
+	SHORT_SCRIPTS=()
+	export RUN_LOG=/dev/null
+	export TIMELINE_LOG=/dev/null
+	export LOG_FILE=/dev/null
+
+	case "${1}" in
+	setup)
+		if [[ "${IS_MAC}" == "true" ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_macos.sh' 'util/01__setup/download_and_update_tools.sh')
+		elif [[ -e "/etc/centos-release" || -e "/etc/redhat-release" ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_centos.sh' 'util/01__setup/download_and_update_tools.sh')
+		elif [[ $(command -v lsb_release) && $(lsb_release -d |grep 'Ubuntu') ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_ubuntu.sh' 'util/01__setup/download_and_update_tools.sh')
+		else
+			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS"
+			exit 1
+		fi
+		;;
+	check| check_updates| check_update| check_versions| check_version)
+		SHORT_SCRIPTS+=('util/02__update/check_latest_versions.sh')
+		;;
+	update| upgrade| download)
+		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh')
+		;;
+	package| dist| distribution| release)
+		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh' 'util/00__release/bundle_scripts.sh')
+		;;
+	validate| valid)
+		SHORT_SCRIPTS+=('util/03__validate/check_container_image_architecture.sh' 'util/03__validate/check_container_image_security.sh')
+		;;
+	*)
+		log_console_error "Unsupported 'Application Portfolio Auditor' command ('${1}') - Supported ones: 'setup', 'check', 'update', 'package', 'run'"
+		exit	
+		;;
+	esac
+
+	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N} (${1} - ${ARCH} - ${CONTAINER_ENGINE})\n"
+
+	for SCRIPT in "${SHORT_SCRIPTS[@]}"; do
+		log_tool_start "${SCRIPT}"
+		echo -e ""
+		# shellcheck source=/dev/null
+		exec "${SCRIPT}" 2>&1 | tee -a "${RUN_LOG}"
+		if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit; fi
+		echo -e ""
+		log_tool_end "${SCRIPT}"
+	done
+	exit
+}
+
 GETOPT_COMMAND=""
 
 export HAS_INTERNET_CONNECTION="false"
@@ -122,8 +174,8 @@ if [[ "${SHELL_USED}" != "bash" ]]; then
 	if [[ "$(uname -s)" == "Darwin" ]]; then
 		log_console_error "Shell in use is not Bash ('${SHELL_USED}'). Please switch to Bash v4+ for example on MacOS:
 	$ brew install bash
-	$ sudo bash -c 'echo /usr/local/Cellar/bash/5.1.18/bin/bash >> /etc/shells'
-	$ sudo chsh -s /usr/local/Cellar/bash/5.1.18/bin/bash ${USER}"
+	$ sudo bash -c 'echo $(brew --cellar)/bash/5.2.26/bin/bash >> /etc/shells'
+	$ sudo chsh -s $(brew --cellar)/bash/5.2.26/bin/bash ${USER}"
 	else
 		log_console_error "Shell in use is not Bash ('${SHELL_USED}'). Please switch to Bash v4+."
 	fi
@@ -132,15 +184,23 @@ fi
 
 if [[ "${IS_MAC}" == "true" ]]; then
 	if [[ -n "$(command -v brew)" ]]; then
-		GETOPT_COMMAND=$(find "$(brew --cellar)/gnu-getopt" -maxdepth 3 -mindepth 3 -iname "getopt" -type f -exec echo {} \;)
+		BREW_GNU_GETOPT_DIR="$(brew --cellar)/gnu-getopt"
+		if [[ -d "${BREW_GNU_GETOPT_DIR}" ]]; then
+			GETOPT_COMMAND=$(find "${BREW_GNU_GETOPT_DIR}" -maxdepth 3 -mindepth 3 -iname "getopt" -type f -exec echo {} \;)
+		fi
 	else
 		GETOPT_COMMAND=/usr/local/opt/gnu-getopt/bin/getopt
 	fi
 	if [ ! -f "${GETOPT_COMMAND}" ]; then
 		export LOG_FILE=/dev/null
-		log_console_error "'gnu-getopt' not found. Please make sure it is installed for example on MacOS:
-	$ brew install gnu-getopt"
-		exit 2
+		if [[ "${1:-}" == 'setup' ]]; then
+			# Run setup script even if getopt is not available
+			run_short_scripts 'setup'
+		else
+			log_console_error "'gnu-getopt' not found. Please make sure it is installed for example on MacOS:
+		$ brew install gnu-getopt"
+			exit 2
+		fi
 	fi
 else
 	GETOPT_COMMAND=getopt
@@ -400,55 +460,9 @@ elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
 	exit
 
 elif [[ ! $# -eq 0 && -n "${1}" &&  "${1}" != "run" ]]; then
-	# Check which utility subscript should be executed
-	SHORT_SCRIPTS=()
-	export RUN_LOG=/dev/null
-	export TIMELINE_LOG=/dev/null
-	export LOG_FILE=/dev/null
 
-	case "${1}" in
-	setup)
-		if [[ "${IS_MAC}" == "true" ]]; then
-			SHORT_SCRIPTS+=('util/01__setup/setup_macos.sh' 'util/01__setup/download_and_update_tools.sh')
-		elif [[ -e "/etc/centos-release" || -e "/etc/redhat-release" ]]; then
-			SHORT_SCRIPTS+=('util/01__setup/setup_centos.sh' 'util/01__setup/download_and_update_tools.sh')
-		elif [[ $(command -v lsb_release) && $(lsb_release -d |grep 'Ubuntu') ]]; then
-			SHORT_SCRIPTS+=('util/01__setup/setup_ubuntu.sh' 'util/01__setup/download_and_update_tools.sh')
-		else
-			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS"
-			exit 1
-		fi
-		;;
-	check| check_updates| check_update| check_versions| check_version)
-		SHORT_SCRIPTS+=('util/02__update/check_latest_versions.sh')
-		;;
-	update| upgrade| download)
-		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh')
-		;;
-	package| dist| distribution| release)
-		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh' 'util/00__release/bundle_scripts.sh')
-		;;
-	validate| valid)
-		SHORT_SCRIPTS+=('util/03__validate/check_container_image_architecture.sh' 'util/03__validate/check_container_image_security.sh')
-		;;
-	*)
-		log_console_error "Unsupported 'Application Portfolio Auditor' command ('${1}') - Supported ones: 'setup', 'check', 'update', 'package', 'run'"
-		exit	
-		;;
-	esac
+	run_short_scripts "${1}"
 
-	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N} (${1} - ${ARCH} - ${CONTAINER_ENGINE})\n"
-
-	for SCRIPT in "${SHORT_SCRIPTS[@]}"; do
-		log_tool_start "${SCRIPT}"
-		echo -e ""
-		# shellcheck source=/dev/null
-		exec "${SCRIPT}" 2>&1 | tee -a "${RUN_LOG}"
-		if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit; fi
-		echo -e ""
-		log_tool_end "${SCRIPT}"
-	done
-	exit
 fi
 
 # Check if an analysis tool has been selected

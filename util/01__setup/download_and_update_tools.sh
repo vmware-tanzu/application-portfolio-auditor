@@ -805,7 +805,7 @@ mkdir -p "${DIST_STATIC}/img/"
 pushd "${SCRIPT_PATH}/../../dist/containerized/external-assets-downloader" &>/dev/null
 IMG_NAME="external-assets-downloader:1.0"
 ${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" . &>/dev/null
-${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm  -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img" --name Downloader "${IMG_NAME}"
+${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img" --name Downloader "${IMG_NAME}"
 popd &>/dev/null
 
 # https://github.com/vmware/clarity

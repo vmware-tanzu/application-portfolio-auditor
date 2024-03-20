@@ -23,10 +23,12 @@ fi
 # Install a compativle Bash version if necessary
 MAJOR_BASH_VERSION=$(echo "${BASH_VERSION}" | cut -d . -f 1)
 if ((MAJOR_BASH_VERSION < 4)); then
+	echo '>>> Installing: bash (latest)'
 	brew install bash
 	# Set latest bash as default
 	BASH_VERSION=$(brew list --versions bash | sort | tail -1 | cut -d ' ' -f 2)
-	BASH_LINK="/usr/local/Cellar/bash/${BASH_VERSION}/bin/bash"
+	BASH_LINK="$(brew --cellar)/bash/${BASH_VERSION}/bin/bash"
+
 	SHELLS="/etc/shells"
 	if ! grep -q "${BASH_LINK}" "${SHELLS}"; then
 		sudo bash -c "echo ${BASH_LINK} >> /etc/shells"
@@ -36,30 +38,21 @@ else
 	echo ">>> Already installed: bash"
 fi
 
-declare -A required_brew
-required_brew['getopt']='gnu-getopt'
-required_brew['curl']='curl'
-required_brew['wget']='wget'
-required_brew['unzip']='unzip'
-required_brew['jq']='jq'
-required_brew['sha1sum']='md5sha1sum'
-required_brew['git']='git'
+BREW_DEPENDENCIES=('gnu-getopt' 'curl' 'wget' 'unzip' 'maven' 'jq' 'md5sha1sum' 'git')
 
-# Install getopt, curl, wget, bash, jq, md5sha1sum, git
-for i in "${!required_brew[@]}"; do
-	command="${i}"
-	software="${required_brew[$i]}"
-	if type "${command}" >/dev/null; then
-		echo ">>> Already installed: ${software}"
+for DEPENDENCY in "${BREW_DEPENDENCIES[@]}"; do
+	if brew list "${DEPENDENCY}" &>/dev/null; then
+		echo ">>> Already installed: ${DEPENDENCY}"
 	else
-		echo ">>> Installing ${software}"
-		brew install "${software}"
+		echo ">>> Installing: ${DEPENDENCY}"
+		brew install --force -q "${DEPENDENCY}"
 	fi
 done
 
 if type docker >/dev/null; then
 	echo ">>> Already installed: docker"
 else
+	echo ">>> Installing: docker"
 	brew install --cask docker
 	open /Applications/Docker.app
 fi
@@ -69,7 +62,7 @@ SDKMAN_INIT="${HOME}/.sdkman/bin/sdkman-init.sh"
 if [[ -f "${SDKMAN_INIT}" ]]; then
 	echo ">>> Already installed: sdkman"
 else
-	echo "Install sdk"
+	echo ">>> Installing: sdkman"
 	curl -s "https://get.sdkman.io" | bash
 fi
 
