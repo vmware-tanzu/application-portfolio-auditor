@@ -32,10 +32,7 @@ $ ./audit setup
 ```
 > Note: This command automates the installation of all required prerequisites. It automatically configures based on the detected operating system (MacOS, Ubuntu, or CentOS) and requires sudo rights. The process may take several minutes to complete.
 
-> Hint: If you are experiencing issues during the installation, please make sure that your local user has full access to the installation folder:
-```bash
-sudo chown -R $(id -u):$(id -g) "application-portfolio-auditor"
-```
+> Hint: If you are experiencing issues during the installation, please make sure that your local user has full access to the installation folder: `$ sudo chown -R $(id -u):$(id -g) "application-portfolio-auditor"`
 
 3. Retrieve necessary tools and frameworks:
 ```bash
