@@ -12,11 +12,13 @@ SEPARATOR=","
 S="${SEPARATOR}"
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__CSA"
 DB_LOCATION="${APP_DIR_OUT}/db/csa.db"
-MISSING_FILE="${APP_DIR_OUT}__results_missing.csv"
-RESULT_BAGGER_FILE="${APP_DIR_OUT}__results_extracted_bagger.csv"
-RESULT_FILE="${APP_DIR_OUT}__results_extracted.csv"
-BAGGER_DB_TMP="${APP_DIR_OUT}/tmp"
-JAVA_OPTS_TMP=-Djava.io.tmpdir="${BAGGER_DB_TMP}"
+MISSING_FILE="${APP_DIR_OUT}/results_missing.csv"
+RESULT_BAGGER_FILE_NAME=results_extracted_bagger.csv
+RESULT_BAGGER_FILE="${APP_DIR_OUT}/${RESULT_BAGGER_FILE_NAME}"
+RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
+
+CONTAINER_IMAGE_NAME_CSA_BAGGER="csa-bagger:${CSA_BAGGER_VERSION}"
+
 export LOG_FILE=/dev/null
 
 function check_missing_apps() {
@@ -38,19 +40,20 @@ function check_missing_apps() {
 }
 
 function main() {
-	# Extract results using bagger
-	rm -f "${RESULT_BAGGER_FILE}"
-	if [[ -f "${DB_LOCATION}" ]]; then
-		# Creating "BAGGER_DB_TMP" directory to avoid issues with default tmpdir (https://stackoverflow.com/questions/25389290/sqlite-java-lang-unsatisfiedlinkerror-in-linux)
-		rm -Rf "${BAGGER_DB_TMP}"
-		mkdir -p "${BAGGER_DB_TMP}"
-		set +e
-		java "${JAVA_OPTS_TMP}" -jar "${INSTALL_DIR}/bagger__${JAVA_VERSION}.jar" "${DB_LOCATION}" "${RESULT_BAGGER_FILE}" "${S}"
-		set -e
-		rm -Rf "${BAGGER_DB_TMP}"
+
+	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_CSA_BAGGER}") ]]; then
+		# Extract results using bagger
+		rm -f "${RESULT_BAGGER_FILE}"
+		if [[ -f "${DB_LOCATION}" ]]; then
+			set +e
+			${CONTAINER_ENGINE} run --rm -v "${APP_DIR_OUT}:/output" "${CONTAINER_IMAGE_NAME_CSA_BAGGER}" "/output/db/csa.db" "/output/${RESULT_BAGGER_FILE_NAME}" "${S}" 2> >(grep -v "^SLF4J")
+			set -e
+		else
+			log_console_error "CSA database file does not exist: ${DB_LOCATION}"
+			exit
+		fi
 	else
-		log_console_error "CSA database file does not exist: ${DB_LOCATION}"
-		exit
+		log_console_error "CSA result extraction canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_CSA_BAGGER}'"
 	fi
 
 	# Check missing entries

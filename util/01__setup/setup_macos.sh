@@ -38,7 +38,7 @@ else
 	echo ">>> Already installed: bash"
 fi
 
-BREW_DEPENDENCIES=('gnu-getopt' 'curl' 'wget' 'unzip' 'maven' 'jq' 'md5sha1sum' 'git')
+BREW_DEPENDENCIES=('gnu-getopt' 'curl' 'wget' 'unzip' 'jq' 'md5sha1sum' 'git')
 
 for DEPENDENCY in "${BREW_DEPENDENCIES[@]}"; do
 	if brew list "${DEPENDENCY}" &>/dev/null; then

@@ -172,7 +172,6 @@ mkdir -p "${DIST_DIR}"
 TOOLS=(
 	"cloud-suitability-analyzer-${CSA_VERSION}.zip"
 	"fernflower__${JAVA_VERSION}.jar"
-	"bagger__${JAVA_VERSION}.jar"
 	"pmd-bin-${PMD_VERSION}.zip"
 )
 for TOOL in "${TOOLS[@]}"; do
@@ -284,6 +283,12 @@ if [[ "${DECOMPILE_SOURCE}" == "true" ]]; then
 		fi
 		ARE_PREREQUISITES_MET=false
 	fi
+fi
+
+# 02
+if [[ "${CSA_ACTIVE}" == "true" ]]; then
+	log_console_step "Step 02 - Check CSA prerequisites"
+	check_container_engine "csa-bagger:${CSA_BAGGER_VERSION}" "${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
 fi
 
 # 03

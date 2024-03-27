@@ -433,7 +433,7 @@ function generate_cloud_csv() {
 	rm -f "${TMP_CSV}"
 
 	#export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
-	export CSA_CSV="${REPORTS_DIR}/02__CSA__results_extracted.csv"
+	export CSA_CSV="${REPORTS_DIR}/02__CSA/results_extracted.csv"
 	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__${APP_GROUP}__results_extracted.csv"
 	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/${APP_GROUP}___results_extracted.csv"
 

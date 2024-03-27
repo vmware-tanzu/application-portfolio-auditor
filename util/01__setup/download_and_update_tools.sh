@@ -265,16 +265,24 @@ else
 fi
 
 # 02 CSA - Bagger build
-echo_console_tool_info "02 - CSA v${CSA_VERSION} - Bagger"
-if [ -f "${DIST_DIR}/bagger__${JAVA_VERSION}.jar" ]; then
-	echo "[INFO] 'Bagger' is already available"
+echo_console_tool_info "02 - CSA Bagger v${CSA_BAGGER_VERSION} - Bagger"
+DIST_CSA_BAGGER="${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
+if [ -f "${DIST_CSA_BAGGER}" ]; then
+	echo "[INFO] 'CSA Bagger' (${CSA_BAGGER_VERSION}) is already available"
 else
-	check_java_version
-	echo "Compiling & packaging 'Bagger'"
-	mvn -v >/dev/null 2>&1 || { echo >&2 "[ERROR] Maven is required for Bagger, but not installed."; }
-	mvn -f "${DIST_DIR}/bagger" clean package assembly:single -Djava.version="${JAVA_VERSION}"
-	check_built_java_version "${DIST_DIR}/bagger/target/classes/io/pivotal//Bagger.class"
-	cp "${DIST_DIR}"/bagger/target/*-with-dependencies.jar "${DIST_DIR}/bagger__${JAVA_VERSION}.jar"
+	IMG_NAME="csa-bagger:${CSA_BAGGER_VERSION}"
+	mkdir -p "${DIST_DIR}/containerized/csa-bagger"
+
+	# Delete previous versions
+	find "${DIST_DIR}" -type f -iname 'oci__csa*bagger*.img' -delete
+	find "${DIST_DIR}" -type f -iname 'bagger_*.jar' -delete
+
+	# Build container image
+	pushd "${SCRIPT_PATH}/../../dist/containerized/csa-bagger" &>/dev/null
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
+	popd &>/dev/null
+
+	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_CSA_BAGGER}"
 fi
 
 ##############################################################################################################
