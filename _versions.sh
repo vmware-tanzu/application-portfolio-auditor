@@ -15,7 +15,6 @@ export JAVA_VERSION='20'
 # List of the versions for all tools in use.
 
 # Migration & cloud readiness
-#export WINDUP_VERSION='6.3.0' - Visualization of new version is a step back.
 export WINDUP_VERSION='6.1.11'
 export CSA_VERSION='4.1.13'
 export CSA_BAGGER_VERSION='1.0.1'
@@ -26,7 +25,7 @@ export LINGUIST_VERSION='7.29.0'
 export CLOC_VERSION='1.98'
 
 # License & Authors
-export SCANCODE_VERSION='32.0.8'
+export SCANCODE_VERSION='32.1.0'
 
 # Code quality / bugs
 export MAI_VERSION='1.9.22'
@@ -39,11 +38,11 @@ export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='1.0.1'
+export SYFT_VERSION='1.1.0'
 export GRYPE_VERSION='0.74.7'
-export TRIVY_VERSION='0.50.0'
+export TRIVY_VERSION='0.50.1'
 export OSV_VERSION='1.7.0'
-export BEARER_VERSION='1.43.0'
+export BEARER_VERSION='1.43.1'
 
 # Supporting frameworks
 export MUSTACHE_VERSION='3.0.4'
