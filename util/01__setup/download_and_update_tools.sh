@@ -496,19 +496,17 @@ fi
 # 07 PMD
 ##############################################################################################################
 echo_console_tool_info "07 - PMD v${PMD_VERSION}"
-simple_check_and_download "PMD" "pmd-bin-${PMD_VERSION}.zip" "https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-bin-${PMD_VERSION}.zip" "${PMD_VERSION}"
+PMD_ZIP_NAME="pmd-bin-${PMD_VERSION}.zip"
+PMD_ZIP="${DIST_DIR}/pmd-bin-${PMD_VERSION}.zip"
+if [[ -f "${PMD_ZIP}" ]]; then
+	echo "[INFO] 'PMD' (${PMD_VERSION}) is already available"
+else
+	# Delete previous versions
+	find "${DIST_DIR}/" -type f -maxdepth 1 -mindepth 1 -iname 'pmd-*.zip' -delete
+	find "${DIST_DIR}/" -type f -maxdepth 1 -mindepth 1 -iname 'pmd-*.jar' -delete
 
-# Libraries to fix issues with PMD
-simple_check_and_download "PMD_LIB__commons-compiler" "pmd-missing-commons-compiler-3.1.7.jar" "https://repo1.maven.org/maven2/org/codehaus/janino/commons-compiler/3.1.7/commons-compiler-3.1.7.jar" "3.1.7"
-simple_check_and_download "PMD_LIB__jakarta.activation" "pmd-missing-jakarta.activation-2.0.1.jar" "https://repo1.maven.org/maven2/com/sun/activation/jakarta.activation/2.0.1/jakarta.activation-2.0.1.jar" "2.0.1"
-simple_check_and_download "PMD_LIB__jakarta.activation-api" "pmd-missing-jakarta.activation-api-1.2.2.jar" "https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar" "1.2.2"
-simple_check_and_download "PMD_LIB__jakarta.mail-api" "pmd-missing-jakarta.mail-api-1.6.7.jar" "https://repo1.maven.org/maven2/jakarta/mail/jakarta.mail-api/1.6.7/jakarta.mail-api-1.6.7.jar" "1.6.7"
-simple_check_and_download "PMD_LIB__janino" "pmd-missing-janino-3.1.7.jar" "https://repo1.maven.org/maven2/org/codehaus/janino/janino/3.1.7/janino-3.1.7.jar" "3.1.7"
-simple_check_and_download "PMD_LIB__mailapi" "pmd-missing-mailapi-2.0.1.jar" "https://repo1.maven.org/maven2/com/sun/mail/mailapi/2.0.1/mailapi-2.0.1.jar" "2.0.1"
-
-# Additional security rules
-echo_console_tool_info "07 - PMD v${PMD_VERSION} - GDS rules"
-simple_check_and_download "PMD_GDS" "pmd-gds-${PMD_GDS_VERSION}.jar" "https://github.com/albfernandez/GDS-PMD-Security-Rules/releases/download/v.${PMD_GDS_VERSION}/pmd-gds-${PMD_GDS_VERSION}.jar" "${PMD_GDS_VERSION}"
+	simple_check_and_download "PMD" "pmd-bin-${PMD_VERSION}.zip" "https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip" "${PMD_VERSION}"
+fi
 
 ##############################################################################################################
 # 08 Linguist

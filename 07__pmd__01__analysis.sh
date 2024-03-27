@@ -10,11 +10,12 @@
 ##############################################################################################################
 
 # ------ Feel free to adjust the used RuleSet ( https://pmd.github.io/latest/pmd_rules_java.html )
-RULESETS=category/java/security.xml,category/java/design.xml/AbstractClassWithoutAnyMethod,category/java/design.xml/AvoidThrowingNullPointerException,category/java/design.xml/AvoidThrowingRawExceptionTypes,category/java/design.xml/ClassWithOnlyPrivateConstructorsShouldBeFinal,category/java/errorprone.xml/ConstructorCallsOverridableMethod,category/java/errorprone.xml/EqualsNull,category/java/errorprone.xml/ReturnEmptyArrayRatherThanNull,category/java/multithreading.xml/AvoidUsingVolatile,category/java/multithreading.xml/DoubleCheckedLocking,category/java/performance.xml/AvoidFileStream,rulesets/GDS/SecureCoding.xml
+# Rulesets filtered from https://github.com/pmd/pmd/tree/master/pmd-java/src/main/resources/category/java - Not included: category/java/documentation.xml category/java/codestyle.xml category/java/design.xml
+RULESETS=category/java/bestpractices.xml,category/java/errorprone.xml,category/java/multithreading.xml,category/java/performance.xml,category/java/security.xml
 
 # ------ Do not modify
 VERSION=${PMD_VERSION}
-PMD_RUN=${INSTALL_DIR}/pmd-bin-${VERSION}/bin/run.sh
+PMD_RUN=${INSTALL_DIR}/pmd-bin-${VERSION}/bin/pmd
 STEP=$(get_step)
 APP_DIR_OUT=${REPORTS_DIR}/${STEP}__PMD
 LOG_FILE=${APP_DIR_OUT}.log
@@ -37,17 +38,25 @@ function analyze() {
 			log_analysis_message "app '${APP_NAME}'"
 
 			if [[ "${LANGUAGE}" == "java" ]]; then
-				PMD_OUT=${PMD_DIR_OUT}/${GROUP}__${APP_NAME}_pmd.html
+				PMD_OUT=${PMD_DIR_OUT}/${GROUP}__${APP_NAME}_pmd
 				# Alternative formats: csv summaryhtml
 				set +e
-				(time "${PMD_RUN}" pmd --dir "${APP}" -f summaryhtml --rulesets "${RULESETS}" --fail-on-violation false --short-names >"${PMD_OUT}") >>"${LOG_FILE}" 2>&1
+				set -x
+				(time "${PMD_RUN}" check --no-progress --no-cache -d "${APP}" -f summaryhtml --rulesets "${RULESETS}"  -z '/' --no-fail-on-violation --report-file "${PMD_OUT}.html") >>"${LOG_FILE}" 2>&1
+				set +x
 				set -e
+			fi
+
+			if [[ "${LANGUAGE}" == 'javascript' ]]; then
+				LANGUAGE='ecmascript'
 			fi
 
 			CPD_OUT=${CPD_DIR_OUT}/${GROUP}__${APP_NAME}__cpd.xml
 			# Alternative formats: text xml csv csv_with_linecount_per_file vs
 			set +e
-			(time "${PMD_RUN}" cpd --minimum-tokens 100 --files "${APP}" --format xml --language "${LANGUAGE}" --fail-on-violation false --skip-lexical-errors >"${CPD_OUT}") >>"${LOG_FILE}" 2>&1
+			set -x
+			(time "${PMD_RUN}" cpd --minimum-tokens 100 -d "${APP}" --format xml --language "${LANGUAGE}" -z '/' --no-fail-on-violation --skip-lexical-errors >"${CPD_OUT}") >>"${LOG_FILE}" 2>&1
+			set +x
 			set -e
 		done <"${APP_LIST}"
 

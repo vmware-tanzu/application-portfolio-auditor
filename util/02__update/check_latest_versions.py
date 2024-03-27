@@ -23,8 +23,8 @@ class Color:
     NORMAL = '\033[0m'
 
 # Tool names used to retrieve versions from OS environment variables
-tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FSB', 'GRYPE', 'INSIDER', 
-    'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC', 'PMD_GDS',
+tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FSB', 'GRYPE',
+    'INSIDER', 'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
     'PMD', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
 results = {}
@@ -174,7 +174,6 @@ if __name__ == '__main__':
         # Section for application analysis tools
         (print_bold_message, '', r'', 'Application Analysis Tools', '', None),
         (check_github, 'pmd/pmd', r'.*pmd_releases/(.+)', 'PMD', PMD_VERSION, None),
-        (check_github, 'albfernandez/GDS-PMD-Security-Rules', r'.*/tag/v\.(.+)', 'PMD GDS', PMD_GDS_VERSION, None),
         (check_github, 'jeremylong/DependencyCheck', r'.*/tag/v(.+)', 'OWASP DC', OWASP_DC_VERSION, '9.0.10'),
         (check_github, 'find-sec-bugs/find-sec-bugs', r'.*/tag/version-(.+)', 'Find Security Bugs', FSB_VERSION, '1.13.0'),
         (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, None),

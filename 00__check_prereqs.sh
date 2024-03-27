@@ -174,7 +174,6 @@ TOOLS=(
 	"fernflower__${JAVA_VERSION}.jar"
 	"bagger__${JAVA_VERSION}.jar"
 	"pmd-bin-${PMD_VERSION}.zip"
-	"pmd-gds-${PMD_GDS_VERSION}.jar"
 )
 for TOOL in "${TOOLS[@]}"; do
 	if [ -f "${DIST_DIR}/${TOOL}" ]; then

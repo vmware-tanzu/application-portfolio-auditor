@@ -71,14 +71,3 @@ if [[ "$(uname)" == "Darwin" ]]; then
 	log_console_step "Disabling Mac OS quarantine flag for for all tools"
 	xattr -r -d com.apple.quarantine "${INSTALL_DIR}" || true
 fi
-
-# Copies GDS-PMD-Security-Rules
-mv "${INSTALL_DIR}/pmd-gds-${PMD_GDS_VERSION}.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."
-
-# Copies additional required libraries for PMD
-mv "${INSTALL_DIR}/pmd-missing-commons-compiler-3.1.7.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."
-mv "${INSTALL_DIR}/pmd-missing-jakarta.activation-2.0.1.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."
-mv "${INSTALL_DIR}/pmd-missing-jakarta.activation-api-1.2.2.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."
-mv "${INSTALL_DIR}/pmd-missing-jakarta.mail-api-1.6.7.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."
-mv "${INSTALL_DIR}/pmd-missing-janino-3.1.7.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."
-mv "${INSTALL_DIR}/pmd-missing-mailapi-2.0.1.jar" "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}/lib/."

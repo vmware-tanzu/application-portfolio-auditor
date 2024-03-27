@@ -29,12 +29,11 @@ export SCANCODE_VERSION='32.0.8'
 
 # Code quality / bugs
 export MAI_VERSION='1.9.22'
-export PMD_VERSION='6.55.0'
+export PMD_VERSION='7.0.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
 
 # Security
-export PMD_GDS_VERSION='2.33.0'
 export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
