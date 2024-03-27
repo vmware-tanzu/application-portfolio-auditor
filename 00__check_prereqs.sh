@@ -172,7 +172,6 @@ mkdir -p "${DIST_DIR}"
 TOOLS=(
 	"cloud-suitability-analyzer-${CSA_VERSION}.zip"
 	"fernflower__${JAVA_VERSION}.jar"
-	"pmd-bin-${PMD_VERSION}.zip"
 )
 for TOOL in "${TOOLS[@]}"; do
 	if [ -f "${DIST_DIR}/${TOOL}" ]; then
@@ -320,6 +319,12 @@ fi
 if [[ "${SCANCODE_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 06 - Check ScanCode prerequisites"
 	check_container_engine 'scancode-toolkit' "${DIST_DIR}/oci__scancode-toolkit_${SCANCODE_VERSION}.img"
+fi
+
+# 07
+if [[ "${PMD_ACTIVE}" == "true" ]]; then
+	log_console_step "Step 07 - Check PMD prerequisites"
+	check_container_engine 'pmd' "${DIST_DIR}/oci__pmd_${PMD_VERSION}.img"
 fi
 
 # 08

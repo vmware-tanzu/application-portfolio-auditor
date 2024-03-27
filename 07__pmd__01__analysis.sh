@@ -22,6 +22,7 @@ LOG_FILE=${APP_DIR_OUT}.log
 PMD_DIR_OUT=${APP_DIR_OUT}/pmd
 CPD_DIR_OUT=${APP_DIR_OUT}/cpd
 ANALYZABLE_APP_FOUND="false"
+CONTAINER_IMAGE_NAME_PMD="pmd:${VERSION}"
 
 function analyze() {
 
@@ -35,15 +36,13 @@ function analyze() {
 
 		while read -r APP; do
 			APP_NAME=$(basename "${APP}")
+			APP_DIR=$(dirname "${APP}")
 			log_analysis_message "app '${APP_NAME}'"
 
 			if [[ "${LANGUAGE}" == "java" ]]; then
-				PMD_OUT=${PMD_DIR_OUT}/${GROUP}__${APP_NAME}_pmd
-				# Alternative formats: csv summaryhtml
+				# Generate the quality report
 				set +e
-				set -x
-				(time "${PMD_RUN}" check --no-progress --no-cache -d "${APP}" -f summaryhtml --rulesets "${RULESETS}"  -z '/' --no-fail-on-violation --report-file "${PMD_OUT}.html") >>"${LOG_FILE}" 2>&1
-				set +x
+				(time ${CONTAINER_ENGINE} run --rm -v "${APP_DIR}:/app" -v "${PMD_DIR_OUT}:/out" "${CONTAINER_IMAGE_NAME_PMD}" check --no-progress --no-cache -d "/app/${APP_NAME}" -f summaryhtml --rulesets "${RULESETS}" --no-fail-on-violation --report-file "/out/${GROUP}__${APP_NAME}_pmd.html") >>"${LOG_FILE}" 2>&1
 				set -e
 			fi
 
@@ -51,12 +50,10 @@ function analyze() {
 				LANGUAGE='ecmascript'
 			fi
 
+			# Generate the copy-paste report
 			CPD_OUT=${CPD_DIR_OUT}/${GROUP}__${APP_NAME}__cpd.xml
-			# Alternative formats: text xml csv csv_with_linecount_per_file vs
 			set +e
-			set -x
-			(time "${PMD_RUN}" cpd --minimum-tokens 100 -d "${APP}" --format xml --language "${LANGUAGE}" -z '/' --no-fail-on-violation --skip-lexical-errors >"${CPD_OUT}") >>"${LOG_FILE}" 2>&1
-			set +x
+			(time ${CONTAINER_ENGINE} run --rm -v "${APP_DIR}:/app" "${CONTAINER_IMAGE_NAME_PMD}" cpd --minimum-tokens 100 -d "/app/${APP_NAME}" --format xml --language "${LANGUAGE}" --no-fail-on-violation --skip-lexical-errors >"${CPD_OUT}") >>"${LOG_FILE}" 2>&1
 			set -e
 		done <"${APP_LIST}"
 
@@ -83,8 +80,13 @@ function analyze_group() {
 
 function main() {
 	log_tool_info "PMD v${VERSION}"
-	mkdir -p "${PMD_DIR_OUT}" "${CPD_DIR_OUT}"
-	for_each_group analyze_group
+	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_PMD}") ]]; then
+		mkdir -p "${PMD_DIR_OUT}" "${CPD_DIR_OUT}"
+		for_each_group analyze_group
+	else
+		log_console_error "PMD analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_PMD}'"
+	fi
+
 }
 
 main

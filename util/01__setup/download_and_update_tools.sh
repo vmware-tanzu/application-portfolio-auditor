@@ -504,16 +504,30 @@ fi
 # 07 PMD
 ##############################################################################################################
 echo_console_tool_info "07 - PMD v${PMD_VERSION}"
-PMD_ZIP_NAME="pmd-bin-${PMD_VERSION}.zip"
-PMD_ZIP="${DIST_DIR}/pmd-bin-${PMD_VERSION}.zip"
-if [[ -f "${PMD_ZIP}" ]]; then
+
+DIST_PMD="${DIST_DIR}/oci__pmd_${PMD_VERSION}.img"
+if [ -f "${DIST_PMD}" ]; then
 	echo "[INFO] 'PMD' (${PMD_VERSION}) is already available"
 else
+	echo "[INFO] Downloading 'PMD'"
+	mkdir -p "${DIST_DIR}/containerized/pmd"
+
 	# Delete previous versions
 	find "${DIST_DIR}/" -type f -maxdepth 1 -mindepth 1 -iname 'pmd-*.zip' -delete
 	find "${DIST_DIR}/" -type f -maxdepth 1 -mindepth 1 -iname 'pmd-*.jar' -delete
+	find "${SCRIPT_PATH}/../../dist/containerized/pmd/" -type f -iname 'pmd-bin-*.zip' ! -name pmd-bin-${PMD_VERSION}.zip -delete
+	simple_check_and_download "PMD" "containerized/pmd/pmd-bin-${PMD_VERSION}.zip" "https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip" "${PMD_VERSION}"
 
-	simple_check_and_download "PMD" "pmd-bin-${PMD_VERSION}.zip" "https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip" "${PMD_VERSION}"
+	# Build container image
+	IMG_NAME="pmd:${PMD_VERSION}"
+	pushd "${SCRIPT_PATH}/../../dist/containerized/pmd" &>/dev/null
+	${MUSTACHE} "Dockerfile.pmd.mo" >"Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
+	rm -f "Dockerfile"
+	popd &>/dev/null
+
+	# Save
+	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_PMD}"
 fi
 
 ##############################################################################################################

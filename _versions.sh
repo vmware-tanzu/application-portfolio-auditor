@@ -64,4 +64,4 @@ export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 
 export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
-export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre-alpine"
+export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"

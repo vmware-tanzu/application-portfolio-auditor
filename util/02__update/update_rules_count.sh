@@ -65,12 +65,13 @@ echo "06 - Scancode: ${RULES_SCANCODE}"
 ###### 07 - PMD
 TMP_DIR="/tmp/pmd"
 rm -Rf "${TMP_DIR}"
-for FILE in "${INSTALL_DIR}/pmd-bin-${PMD_VERSION}"/lib/pmd-*.jar; do
+unzip "${DIST_DIR}/containerized/pmd/pmd-bin-${PMD_VERSION}.zip" -d "${TMP_DIR}" >/dev/null 2>&1
+for FILE in "${TMP_DIR}/pmd-bin-${PMD_VERSION}"/lib/pmd-*.jar; do
 	unzip -d "${TMP_DIR}" "${FILE}" '*.xml' >/dev/null 2>&1
 done
 RULES_PMD=$(ag --nofilename "<rule ref=" "${TMP_DIR}" | grep -v 'deprecated="true"' | sed -e 's/^[ \t]*//' | grep -E "^<rule" | uniq | wc -l | tr -d ' ')
-rm -Rf "${TMP_DIR}"
 echo "07 - PMD: ${RULES_PMD}"
+rm -Rf "${TMP_DIR}"
 
 ###### 08 - Linguist
 RULES_LINGUIST=$(curl --compressed -fsSL https://github.com/github/linguist/tree/master/vendor/grammars | jq -C | grep 'submoduleDisplayName' | grep -v 'CodeMirror' -c)
