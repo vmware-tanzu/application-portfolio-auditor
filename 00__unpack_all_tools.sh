@@ -43,11 +43,6 @@ for TOOL in "${DIST_DIR}"/*.zip; do
 	fi
 done
 
-for TOOL in "${DIST_DIR}"/*.t*gz; do
-	log_console_step "Untarring '$(basename "${TOOL}")'"
-	tar -xzf "${TOOL}" -C "${INSTALL_DIR}" >/dev/null 2>&1
-done
-
 while read -r TOOL; do
 	log_console_step "Copying '$(basename "${TOOL}")'"
 	cp -Rfp "${TOOL}" "${INSTALL_DIR}/." >/dev/null 2>&1

@@ -2,6 +2,9 @@
 oci__bearer_1.43.1.img
 Total: 11 (UNKNOWN: 0, LOW: 2, MEDIUM: 9, HIGH: 0, CRITICAL: 0)
 
+oci__cloc_2.00.img
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
 oci__csa-bagger_1.0.1.img
 Total: 86 (UNKNOWN: 0, LOW: 57, MEDIUM: 23, HIGH: 5, CRITICAL: 1)
 

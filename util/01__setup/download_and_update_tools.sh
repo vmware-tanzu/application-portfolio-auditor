@@ -511,11 +511,27 @@ fi
 # 08 CLOC
 ##############################################################################################################
 echo_console_tool_info "08 - CLOC v${CLOC_VERSION}"
-if [ -f "${DIST_DIR}/cloc-${CLOC_VERSION}.tar.gz" ]; then
+CLOC_DIST="${DIST_DIR}/oci__cloc_${CLOC_VERSION}.img"
+if [ -f "${CLOC_DIST}" ]; then
 	echo "[INFO] 'CLOC' (${CLOC_VERSION}) is already available"
 else
-	find "${DIST_DIR}" -type f -iname 'cloc-*.tar.gz' -delete
-	simple_check_and_download "CLOC" "cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
+	# Delete previous versions
+	find "${SCRIPT_PATH}/../../dist/containerized/cloc/" -type f -iname 'cloc-*.tar.gz' ! -name cloc-${CLOC_VERSION}.tar.gz -delete
+	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'cloc-*.tar.gz' -delete
+	find "${DIST_DIR}" -type f -iname 'oci__cloc_*.img' -delete
+
+	simple_check_and_download "CLOC" "containerized/cloc/cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
+	# Build container image
+	IMG_NAME="cloc:${CLOC_VERSION}"
+	pushd "${SCRIPT_PATH}/../../dist/containerized/cloc" &>/dev/null
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="alpine:latest" \
+		--build-arg CLOC_VERSION="${CLOC_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
+	popd &>/dev/null
+
+	# Save
+	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${CLOC_DIST}"
 fi
 
 ##############################################################################################################

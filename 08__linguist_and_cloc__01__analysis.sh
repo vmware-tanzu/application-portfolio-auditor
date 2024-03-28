@@ -20,9 +20,9 @@ CLOC_TIMEOUT=30
 
 # ------ Do not modify
 VERSION=${LINGUIST_VERSION}
-CLOC=${INSTALL_DIR}/cloc-${CLOC_VERSION}/cloc
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME="crazymax/linguist:${LINGUIST_VERSION}"
+CONTAINER_IMAGE_NAME_LINGUIST="crazymax/linguist:${LINGUIST_VERSION}"
+CONTAINER_IMAGE_NAME_CLOC="cloc:${CLOC_VERSION}"
 
 function linguist() {
 	LANG_FILE="${1}"
@@ -48,7 +48,7 @@ function linguist() {
 			log_console_step "linguist (${REPO_NAME})"
 
 			set +e
-			${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -t --rm -v "${REPO}:/repo:ro" "${CONTAINER_IMAGE_NAME}" >"${LANG_FILE}" 2>&1 | tee -a "${LOG_FILE}"
+			${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -t --rm -v "${REPO}:/repo:ro" "${CONTAINER_IMAGE_NAME_LINGUIST}" >"${LANG_FILE}" 2>&1 | tee -a "${LOG_FILE}"
 			set -e
 		fi
 	fi
@@ -75,7 +75,7 @@ function analyze_dir() {
 	log_console_step "cloc (${REPO_NAME})"
 
 	set +e
-	${CLOC} "${DIR}" --csv --diff-timeout "${CLOC_TIMEOUT}" --timeout "${CLOC_TIMEOUT}" --hide-rate --quiet >"${CLOC_RESULTS}"
+	${CONTAINER_ENGINE} run --rm -v "${DIR}:/repo:ro" "${CONTAINER_IMAGE_NAME_CLOC}" "/repo" --csv --diff-timeout "${CLOC_TIMEOUT}" --timeout "${CLOC_TIMEOUT}" --hide-rate --quiet >"${CLOC_RESULTS}"
 	set -e
 
 	# Parsing CLOC results
@@ -114,17 +114,21 @@ function main() {
 
 	log_tool_info "Linguist v${VERSION} & CLOC v${CLOC_VERSION}"
 
-	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME}")" ]]; then
-		export OUT_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__LINGUIST__results_extracted.csv
-		export OUT_CLOC_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__CLOC__results_extracted.csv
+	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_LINGUIST}") ]]; then
+		if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_CLOC}") ]]; then
+			export OUT_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__LINGUIST__results_extracted.csv
+			export OUT_CLOC_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__CLOC__results_extracted.csv
 
-		rm -Rf "${APP_DIR_OUT}"
-		mkdir -p "${APP_DIR_OUT}"
-		rm -f "${OUT_CSV_FILE}" "${OUT_CLOC_CSV_FILE}"
+			rm -Rf "${APP_DIR_OUT}"
+			mkdir -p "${APP_DIR_OUT}"
+			rm -f "${OUT_CSV_FILE}" "${OUT_CLOC_CSV_FILE}"
 
-		for_each_group analyze
+			for_each_group analyze
+		else
+			log_console_error "Linguist analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_CLOC}'"
+		fi
 	else
-		log_console_error "Container image not loaded: ${CONTAINER_IMAGE_NAME}"
+		log_console_error "Linguist analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_LINGUIST}'"
 	fi
 
 }

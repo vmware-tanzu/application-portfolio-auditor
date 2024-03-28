@@ -19,7 +19,7 @@ export WAMT_VERSION='24.0.0.1'
 
 # Languages
 export LINGUIST_VERSION='7.29.0'
-export CLOC_VERSION='1.98'
+export CLOC_VERSION='2.00'
 
 # License & Authors
 export SCANCODE_VERSION='32.1.0'
