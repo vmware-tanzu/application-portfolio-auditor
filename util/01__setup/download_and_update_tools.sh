@@ -657,11 +657,9 @@ else
 	## https://aquasecurity.github.io/trivy/v0.43/docs/advanced/air-gap/
 	IMG_NAME="trivy:${TRIVY_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/trivy" &>/dev/null
-
-	${MUSTACHE} "Dockerfile.trivy.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-	# Cleanup
-	rm -f "Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg TRIVY_VERSION="${TRIVY_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
 	# Save
