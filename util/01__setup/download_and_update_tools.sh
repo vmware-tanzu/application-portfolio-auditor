@@ -463,9 +463,11 @@ else
 	# Build container image
 	IMG_NAME="pmd:${PMD_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/pmd" &>/dev/null
-	${MUSTACHE} "Dockerfile.pmd.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-	rm -f "Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="alpine:latest" \
+		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}" \
+		--build-arg PMD_VERSION="${PMD_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
 	# Save
