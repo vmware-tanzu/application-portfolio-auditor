@@ -271,10 +271,12 @@ else
 		cp -f windup-cli-${WINDUP_VERSION}.Final-offline.zip.orig windup-cli-${WINDUP_VERSION}.Final-offline.zip
 	fi
 
-	${MUSTACHE} "Dockerfile.windup.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-	# Cleanup
-	rm -f "Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="alpine:latest" \
+		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_11}" \
+		--build-arg WINDUP_VERSION="${WINDUP_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
+
 	popd &>/dev/null
 
 	# Save
