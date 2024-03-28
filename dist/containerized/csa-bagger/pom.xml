@@ -10,7 +10,7 @@
 
     <groupId>io.pivotal.appfoundry</groupId>
     <artifactId>bagger</artifactId>
-    <version>1.0.1</version>
+    <version>${csvBaggerVersion}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

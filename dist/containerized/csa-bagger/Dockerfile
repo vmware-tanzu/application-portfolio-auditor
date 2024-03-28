@@ -8,7 +8,7 @@ ARG CSA_BAGGER_VERSION
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
-RUN mvn clean package assembly:single -DskipTests
+RUN mvn clean package assembly:single -DskipTests -DcsvBaggerVersion=${CSA_BAGGER_VERSION}
 RUN jar xf target/bagger-${CSA_BAGGER_VERSION}.jar
 RUN jdeps --ignore-missing-deps -q  \
     --recursive  \

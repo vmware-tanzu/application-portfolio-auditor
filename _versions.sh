@@ -14,7 +14,7 @@ export TOOL_VERSION='2.1.1'
 # Migration & cloud readiness
 export WINDUP_VERSION='6.1.11'
 export CSA_VERSION='4.1.13'
-export CSA_BAGGER_VERSION='1.0.1'
+export CSA_BAGGER_VERSION='1.0.2'
 export WAMT_VERSION='24.0.0.1'
 
 # Languages
