@@ -2,15 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # This file has been adapted based on https://github.com/jeremylong/DependencyCheck/blob/main/Dockerfile
-FROM golang:1.22.1-alpine AS go
+ARG IMG_GO
+ARG IMG_JLINK
+ARG IMG_DOTNET_RUNTIME
 
-FROM azul/zulu-openjdk-alpine:20 AS jlink
+FROM ${IMG_GO} AS go
 
+FROM ${IMG_JLINK} AS jlink
 RUN "$JAVA_HOME/bin/jlink" --compress=2 --module-path /opt/java/openjdk/jmods --add-modules java.base,java.compiler,java.datatransfer,jdk.crypto.ec,java.desktop,java.instrument,java.logging,java.management,java.naming,java.rmi,java.scripting,java.security.sasl,java.sql,java.transaction.xa,java.xml,jdk.unsupported --output /jlinked
 
-FROM {{DOTNET_RUNTIME}}
-
-ARG VERSION={{OWASP_DC_VERSION}}
+FROM ${IMG_DOTNET_RUNTIME}
+ARG VERSION
 ARG POSTGRES_DRIVER_VERSION=42.2.25
 ARG MYSQL_DRIVER_VERSION=8.0.23
 ARG UID=1000

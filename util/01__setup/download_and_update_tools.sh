@@ -33,6 +33,12 @@ ARCH="$(uname -m)"
 export DOCKER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
 export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
 
+if [[ "${DOCKER_ARCH}" == "arm64" ]]; then
+	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}v8"
+else
+	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
+fi
+
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
 
@@ -348,18 +354,12 @@ else
 	# Build container image
 	IMG_NAME="owasp-dependency-check:${OWASP_DC_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/owasp-dependency-check" &>/dev/null
-
-	if [[ "${DOCKER_ARCH}" == "arm64" ]]; then
-		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}v8"
-	else
-		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
-	fi
-
-	${MUSTACHE} "Dockerfile.owasp-dc.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-
-	# Cleanup
-	rm -f "Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_GO="golang:1.22.1-alpine" \
+		--build-arg IMG_JLINK="azul/zulu-openjdk-alpine:20" \
+		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
+		--build-arg VERSION="${OWASP_DC_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
 	# Save
@@ -583,19 +583,11 @@ else
 	# Build container image
 	IMG_NAME="mai:${MAI_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/mai" &>/dev/null
-
-	if [[ "${DOCKER_ARCH}" == "arm64" ]]; then
-		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}v8"
-	else
-		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
-	fi
-
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
 		--build-arg MAI_VERSION="${MAI_VERSION}" \
 		-f "Dockerfile" -t "${IMG_NAME}" .
-
 	popd &>/dev/null
 
 	# Save
