@@ -589,10 +589,13 @@ else
 	else
 		export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
 	fi
-	${MUSTACHE} "Dockerfile.mai.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-	# Cleanup
-	rm -f "Dockerfile"
+
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="alpine:latest" \
+		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
+		--build-arg MAI_VERSION="${MAI_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
+
 	popd &>/dev/null
 
 	# Save
