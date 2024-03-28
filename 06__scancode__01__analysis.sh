@@ -97,6 +97,8 @@ function analyze() {
 		APP_NAME=$(basename "${APP_DIR_TMP}")
 		log_console_info "Launching ScanCode for app '${APP_NAME}'"
 
+		mkdir -p "${APP_DIR_OUT}/${APP_NAME}"
+
 		set +e
 		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -v "${APP_DIR_TMP}:/app/${APP_NAME}:ro" -v "tmpfs:/cache:delegated" -v "${APP_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME}" \
 			--license --license-references --license-text --license-score 0 --classify --license-clarity-score \
