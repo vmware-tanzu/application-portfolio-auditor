@@ -794,4 +794,6 @@ chmod +x "${SCRIPT_DIR}/../00__release/"*.sh
 rm -Rf "${DIST_BIN}"
 
 # Remove dangling images
-${CONTAINER_ENGINE} rmi $(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)
+if [ -n "$(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)" ]; then
+    ${CONTAINER_ENGINE} rmi $(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)
+fi
