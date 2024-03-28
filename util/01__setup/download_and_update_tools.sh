@@ -321,11 +321,11 @@ else
 	# Build container image
 	IMG_NAME="wamt:${WAMT_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/wamt" &>/dev/null
-
-	${MUSTACHE} "Dockerfile.wamt.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-	# Cleanup
-	rm -f "Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="alpine:latest" \
+		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}-alpine" \
+		--build-arg WAMT_VERSION="${WAMT_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
 	# Save
