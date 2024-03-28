@@ -16,12 +16,15 @@
 
 # ----- Please adjust
 
+# Fernflower log level
+FERNFLOWER_LOG_LEVEL="ERROR"
+
 # Public maven search repository used to search SHA1 sums and ignore public libraries
 USE_MAVEN_SEARCH="true"
 MAVEN_SEARCH_BASE_URL="https://search.maven.org"
 MAVEN_SEARCH_URL="${MAVEN_SEARCH_BASE_URL}/solrsearch/select?q=1:"
 
-# Findjar (unfortunately not available at the moment - could be replaced by https://jar-download.com/maven-repository-class-search.php)
+# FIXME - Findjar is unfortunately not available anymore - could be replaced by https://jar-download.com/maven-repository-class-search.php)
 USE_FINDJAR="false"
 FINDJAR_BASE_URL="https://www.findjar.com"
 
@@ -35,22 +38,13 @@ FERNFLOWER_EXCLUDED_VENDORS_LIST="${CURRENT_DIR}/conf/Fernflower/excluded_vendor
 # ------ Do not modify
 STEP=$(get_step)
 
-FERNFLOWER=${INSTALL_DIR}/fernflower__${JAVA_VERSION}.jar
-FERNFLOWER_LOG_LEVEL="ERROR"
+VERSION="${FERNFLOWER_VERSION}"
+CONTAINER_IMAGE_NAME_FERNFLOWER="fernflower:${VERSION}"
 
 # List of all archives that have been decompiled
 FERNFLOWER_UNPACKED_LIBS_LIST="${REPORTS_DIR}/${STEP}__Fernflower__unpacked_libs.txt"
 FERNFLOWER_ALL_LIBS_LIST="${REPORTS_DIR}/${STEP}__Fernflower__all_libs.txt"
-
 MVNREPOSITORY_BASE_URL="https://mvnrepository.com"
-
-D=$(unzip -l "${FERNFLOWER}" | grep MANIFEST | rev | cut -d' ' -f5 | rev)
-
-if [[ "${IS_LINUX}" == "true" ]]; then
-	VERSION=$(echo "${D}" | tr '-' '.')
-else
-	VERSION=${D:6:4}.${D:3:2}.${D:0:2}
-fi
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__Fernflower.log
 
@@ -145,13 +139,17 @@ function unpack_and_decompile() {
 						HAS_TO_UNPACK_ARCHIVE="true"
 
 						# Check if one 'pom.properties' file is present and validate the maven coordinates against "mvnrepository.com"
+						set +e
 						unzip -Z1 "${ARCHIVE}" | grep '^META-INF/maven/.*pom.properties$' >"${ARCHIVE}.props"
+						set -e
 						POM_PROPS_COUNT=$(wc -l "${ARCHIVE}.props" | awk '{print $1}' | tr -d ' ')
 						if [[ "${POM_PROPS_COUNT}" == "1" ]]; then
 							ARCHIVED_POM_PROPS=$(head -n 1 "${ARCHIVE}.props")
 							# Extract the 'pom.properties' file
 							POM_PROPS="${ARCHIVE}.pom.properties"
+							set +e
 							unzip -p "${ARCHIVE}" "${ARCHIVED_POM_PROPS}" >"${POM_PROPS}"
+							set -e
 							POM_G=$(prop groupId "${POM_PROPS}")
 							POM_A=$(prop artifactId "${POM_PROPS}")
 							POM_V=$(prop version "${POM_PROPS}")
@@ -173,7 +171,9 @@ function unpack_and_decompile() {
 						if [[ "${HAS_TO_UNPACK_ARCHIVE}" == "true" ]]; then
 
 							# Check "Implementation-Vendor" (if set) in the MANIFEST.MF file to exclude well known ones
+							set +e
 							ARCHIVED_MF=$(unzip -Z1 "${ARCHIVE}" | grep '^META-INF/MANIFEST.MF$')
+							set -e
 							if [[ -n "${ARCHIVED_MF}" ]]; then
 								MF="${ARCHIVE}.MANIFEST.MF"
 								#DATE_EXTRACT="$(unzip -l "${ARCHIVE}" | grep 'META-INF/MANIFEST.MF$' | rev | cut -d' ' -f4-5 |rev)"
@@ -182,7 +182,9 @@ function unpack_and_decompile() {
 								#grep -m1 'Extension-Name:' "${MF}"
 								#grep -m1 'Implementation-Title:' "${MF}"
 								#grep -m1 'Implementation-URL:' "${MF}"
+								set +e
 								unzip -p "${ARCHIVE}" "${ARCHIVED_MF}" >"${MF}"
+								set -e
 								VENDOR=$(grep -m1 'Implementation-Vendor:' "${MF}" | tr -d '\n' | tr -d '\r' | cut -d' ' -f2- | tr -d '"')
 								if echo "${VENDOR}" | grep -q -f "${FERNFLOWER_EXCLUDED_VENDORS_LIST}"; then
 									HAS_TO_UNPACK_ARCHIVE="false"
@@ -198,7 +200,9 @@ function unpack_and_decompile() {
 							# Extract class with the longest package+class name, and use findjar to find a potential existing library
 							if [[ "${USE_FINDJAR}" == "true" && "${HAS_TO_UNPACK_ARCHIVE}" == "true" ]]; then
 								# Get the class with the longest package+class name
+								set +e
 								LONGEST_NAME=$(unzip -Z1 "${ARCHIVE}" | grep class | cut -d'.' -f1 | cut -d'$' -f1 | sort | uniq | awk 'length > max_length { max_length = length; longest_line = $0 } END { print longest_line }')
+								set -e
 								# Extract the prefix of the analyzed archive
 								ARCHIVE_PREFIX=$(basename "${ARCHIVE}" | tr '.' '-' | tr '_' '-' | sed 's/[0-9]*//g' | cut -d'-' -f1 | tr '[:upper:]' '[:lower:]')
 								FINDJAR_RESULTS="${ARCHIVE}.findjar"
@@ -255,7 +259,9 @@ function unpack_and_decompile() {
 			## file names not being UTF-8... Since all we _need_ are the EAR and class files,
 			## we should remove _everything_ else
 			#find . \! \( -name '*.ear' -o -name '*.class' -o -name '*.xml' -o -name '*.jsp' \) -type f -delete
-			java -jar "${FERNFLOWER}" -log="${FERNFLOWER_LOG_LEVEL}" "${APP_TMP_NAME}" "${APP_SRC}" >>"${LOG_FILE}" 2>&1
+			set +e
+			${CONTAINER_ENGINE} run --rm -v "${APP_TMP_NAME}:/class:ro" -v "${APP_SRC}:/src:delegated" "${CONTAINER_IMAGE_NAME_FERNFLOWER}" -log="${FERNFLOWER_LOG_LEVEL}" "/class" "/src" >>"${LOG_FILE}" 2>&1
+			set -e
 		else
 			log_console_step "Identified '${APP_TMP_NAME}' with a total of $(find "${APP_TMP_NAME}" -name '*.class' | wc -l | tr -d ' ') classes"
 		fi
@@ -275,7 +281,6 @@ function check_status() {
 
 function main() {
 
-	set +e
 	if [[ "${DEBUG}" == "true" ]]; then
 		set -x
 		exec 6>&1
@@ -284,46 +289,54 @@ function main() {
 		exec 6>/dev/null
 	fi
 
-	log_tool_info "Fernflower v${VERSION}"
+	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_FERNFLOWER}") ]]; then
 
-	[[ "${USE_FINDJAR}" == "true" ]] && { check_status "findjar.com" "${FINDJAR_BASE_URL}"; }
-	check_status "Maven Search" "${MAVEN_SEARCH_BASE_URL}"
-	check_status "MVN Repository" "${MVNREPOSITORY_BASE_URL}"
+		set +e
+		log_tool_info "Fernflower v${VERSION}"
 
-	for_each_group unpack_and_decompile
+		[[ "${USE_FINDJAR}" == "true" ]] && { check_status "findjar.com" "${FINDJAR_BASE_URL}"; }
+		check_status "Maven Search" "${MAVEN_SEARCH_BASE_URL}"
+		check_status "MVN Repository" "${MVNREPOSITORY_BASE_URL}"
 
-	if [[ "${PRE_ANALYSIS_ACTIVE}" == "true" ]]; then
+		for_each_group unpack_and_decompile
 
-		COUNT_APPS=$(grep -c "UNPACKED APP" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_UNPACKED_LIBS=$(grep -c "UNPACKED LIB" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS=$(grep -c "IGNORED" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS_NAME=$(grep -c "IGNORED NAME" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS_SHA1=$(grep -c "IGNORED SHA1" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS_MVN_REPO=$(grep -c "IGNORED MVN_REPO" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS_PUB_MVN=$(grep -c "IGNORED PUB MVN" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS_VENDOR=$(grep -c "IGNORED VENDOR" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
-		COUNT_IGNORED_LIBS_FINDJAR=$(grep -c "IGNORED FINDJAR" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+		if [[ "${PRE_ANALYSIS_ACTIVE}" == "true" ]]; then
 
-		log_console ""
-		log_console_success "${COUNT_APPS} Java binary applications identified with $((COUNT_UNPACKED_LIBS + COUNT_IGNORED_LIBS)) embedded libs:"
-		log_console_sub_step "${COUNT_UNPACKED_LIBS} libs will be decompiled"
-		[[ ${COUNT_IGNORED_LIBS_NAME} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_NAME} libs are ignored due to their name (exclusion list: ${FERNFLOWER_EXCLUDED_LIST})"; }
-		[[ ${COUNT_IGNORED_LIBS_SHA1} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_SHA1} libs are ignored due to their SHA1 signature (exclusion list: ${FERNFLOWER_SHA1_EXCLUDED_LIST})"; }
-		[[ ${COUNT_IGNORED_LIBS_MVN_REPO} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_MVN_REPO} libs are ignored due to their presence in MVNRepository (${MVNREPOSITORY_BASE_URL})"; }
-		[[ ${COUNT_IGNORED_LIBS_PUB_MVN} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_PUB_MVN} libs are ignored due to their presence in a public maven repo (${MAVEN_SEARCH_BASE_URL})"; }
-		[[ ${COUNT_IGNORED_LIBS_VENDOR} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_VENDOR} libs are ignored due to their vendor name (exclusion list: ${FERNFLOWER_EXCLUDED_VENDORS_LIST})"; }
-		[[ ${COUNT_IGNORED_LIBS_FINDJAR} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_FINDJAR} libs are ignored due to their longest class name detected on findjar (${FINDJAR_BASE_URL})"; }
+			COUNT_APPS=$(grep -c "UNPACKED APP" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_UNPACKED_LIBS=$(grep -c "UNPACKED LIB" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS=$(grep -c "IGNORED" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS_NAME=$(grep -c "IGNORED NAME" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS_SHA1=$(grep -c "IGNORED SHA1" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS_MVN_REPO=$(grep -c "IGNORED MVN_REPO" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS_PUB_MVN=$(grep -c "IGNORED PUB MVN" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS_VENDOR=$(grep -c "IGNORED VENDOR" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
+			COUNT_IGNORED_LIBS_FINDJAR=$(grep -c "IGNORED FINDJAR" "${FERNFLOWER_ALL_LIBS_LIST}" || true)
 
-		if [[ ${COUNT_UNPACKED_LIBS} -ne 0 ]]; then
 			log_console ""
-			log_console_warning "Please review the ${COUNT_UNPACKED_LIBS} Java libraries list in ${FERNFLOWER_UNPACKED_LIBS_LIST} and if they are not self-written consider ..."
-			log_console_sub_step "adding their SHA1 to your exclusion list: ${FERNFLOWER_SHA1_EXCLUDED_LIST}"
-			log_console_sub_step "adding their name to your exclusion list (regex): ${FERNFLOWER_EXCLUDED_LIST}"
-		fi
+			log_console_success "${COUNT_APPS} Java binary applications identified with $((COUNT_UNPACKED_LIBS + COUNT_IGNORED_LIBS)) embedded libs:"
+			log_console_sub_step "${COUNT_UNPACKED_LIBS} libs will be decompiled"
+			[[ ${COUNT_IGNORED_LIBS_NAME} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_NAME} libs are ignored due to their name (exclusion list: ${FERNFLOWER_EXCLUDED_LIST})"; }
+			[[ ${COUNT_IGNORED_LIBS_SHA1} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_SHA1} libs are ignored due to their SHA1 signature (exclusion list: ${FERNFLOWER_SHA1_EXCLUDED_LIST})"; }
+			[[ ${COUNT_IGNORED_LIBS_MVN_REPO} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_MVN_REPO} libs are ignored due to their presence in MVNRepository (${MVNREPOSITORY_BASE_URL})"; }
+			[[ ${COUNT_IGNORED_LIBS_PUB_MVN} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_PUB_MVN} libs are ignored due to their presence in a public maven repo (${MAVEN_SEARCH_BASE_URL})"; }
+			[[ ${COUNT_IGNORED_LIBS_VENDOR} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_VENDOR} libs are ignored due to their vendor name (exclusion list: ${FERNFLOWER_EXCLUDED_VENDORS_LIST})"; }
+			[[ ${COUNT_IGNORED_LIBS_FINDJAR} -ne 0 ]] && { log_console_sub_step "${COUNT_IGNORED_LIBS_FINDJAR} libs are ignored due to their longest class name detected on findjar (${FINDJAR_BASE_URL})"; }
 
-		log_console ""
+			if [[ ${COUNT_UNPACKED_LIBS} -ne 0 ]]; then
+				log_console ""
+				log_console_warning "Please review the ${COUNT_UNPACKED_LIBS} Java libraries list in ${FERNFLOWER_UNPACKED_LIBS_LIST} and if they are not self-written consider ..."
+				log_console_sub_step "adding their SHA1 to your exclusion list: ${FERNFLOWER_SHA1_EXCLUDED_LIST}"
+				log_console_sub_step "adding their name to your exclusion list (regex): ${FERNFLOWER_EXCLUDED_LIST}"
+			fi
+
+			log_console ""
+		fi
+		set -e
+
+	else
+		log_console_error "Fernflower decompilation canceled. Container image not available: '${CONTAINER_IMAGE_NAME_FERNFLOWER}'"
+		exit
 	fi
-	set -e
 }
 
 main

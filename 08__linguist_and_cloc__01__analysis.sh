@@ -46,10 +46,9 @@ function linguist() {
 				set -e
 			fi
 			log_console_step "linguist (${REPO_NAME})"
-			echo "${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -t --rm -v \"${REPO}:/repo\" ${CONTAINER_IMAGE_NAME} > ${LANG_FILE}" >>"${LOG_FILE}"
 
 			set +e
-			${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -t --rm -v "${REPO}:/repo" "${CONTAINER_IMAGE_NAME}" >"${LANG_FILE}" 2>&1 | tee -a "${LOG_FILE}"
+			${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -t --rm -v "${REPO}:/repo:ro" "${CONTAINER_IMAGE_NAME}" >"${LANG_FILE}" 2>&1 | tee -a "${LOG_FILE}"
 			set -e
 		fi
 	fi

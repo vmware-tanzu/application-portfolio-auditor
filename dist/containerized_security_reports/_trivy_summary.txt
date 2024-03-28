@@ -3,10 +3,13 @@ oci__bearer_1.43.1.img
 Total: 11 (UNKNOWN: 0, LOW: 2, MEDIUM: 9, HIGH: 0, CRITICAL: 0)
 
 oci__csa-bagger_1.0.1.img
-Total: 86 (UNKNOWN: 8, LOW: 57, MEDIUM: 15, HIGH: 5, CRITICAL: 1)
+Total: 86 (UNKNOWN: 0, LOW: 57, MEDIUM: 23, HIGH: 5, CRITICAL: 1)
+
+oci__fernflower_241.14494.158.img
+Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
 
 oci__findsecbugs_1.12.0.img
-Total: 47 (UNKNOWN: 0, LOW: 25, MEDIUM: 22, HIGH: 0, CRITICAL: 0)
+Total: 50 (UNKNOWN: 0, LOW: 25, MEDIUM: 25, HIGH: 0, CRITICAL: 0)
 Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
 oci__grype_0.74.7.img
@@ -29,10 +32,10 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 Total: 14 (UNKNOWN: 0, LOW: 1, MEDIUM: 6, HIGH: 6, CRITICAL: 1)
 
 oci__pmd_7.0.0.img
-Total: 74 (UNKNOWN: 0, LOW: 55, MEDIUM: 19, HIGH: 0, CRITICAL: 0)
+Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
 
 oci__sast-scan_2.1.1.img
-Total: 1352 (UNKNOWN: 0, LOW: 535, MEDIUM: 772, HIGH: 45, CRITICAL: 0)
+Total: 1351 (UNKNOWN: 0, LOW: 536, MEDIUM: 770, HIGH: 45, CRITICAL: 0)
 Total: 34 (UNKNOWN: 0, LOW: 1, MEDIUM: 12, HIGH: 20, CRITICAL: 1)
 Total: 12 (UNKNOWN: 0, LOW: 0, MEDIUM: 10, HIGH: 0, CRITICAL: 2)
 Total: 31 (UNKNOWN: 0, LOW: 2, MEDIUM: 18, HIGH: 10, CRITICAL: 1)
@@ -43,7 +46,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Total: 14 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 8, CRITICAL: 1)
 
 oci__scancode-toolkit_32.1.0.img
-Total: 578 (UNKNOWN: 16, LOW: 200, MEDIUM: 246, HIGH: 114, CRITICAL: 2)
+Total: 578 (UNKNOWN: 6, LOW: 200, MEDIUM: 256, HIGH: 114, CRITICAL: 2)
 Total: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 4, HIGH: 2, CRITICAL: 0)
 
 oci__syft_1.1.0.img
@@ -57,5 +60,5 @@ oci__wamt_24.0.0.1.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 oci__windup_6.1.11.img
-Total: 44 (UNKNOWN: 0, LOW: 25, MEDIUM: 19, HIGH: 0, CRITICAL: 0)
+Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
 Total: 118 (UNKNOWN: 0, LOW: 5, MEDIUM: 53, HIGH: 47, CRITICAL: 13)

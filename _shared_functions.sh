@@ -8,6 +8,8 @@
 
 # Container engine in use - choose between podman and docker
 export CONTAINER_ENGINE="docker"
+# Removing CLI hints for docker
+export DOCKER_CLI_HINTS=false
 
 # ------ Do not modify
 

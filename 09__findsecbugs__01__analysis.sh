@@ -32,7 +32,7 @@ function analyze() {
 				-output "/out/${GROUP}__${APP_NAME}.html"
 				"/apps/${APP_NAME}"
 			)
-			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name FSB "${CONTAINER_IMAGE_NAME}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
+			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name FSB "${CONTAINER_IMAGE_NAME}" "${ARGS[@]}" 2> >(grep -v "^SLF4J")) >>"${LOG_FILE}" 2>&1
 			set -e
 		done <"${LIST_JAVA_BIN}"
 		log_console_success "Open this directory for the results: ${APP_DIR_OUT}"

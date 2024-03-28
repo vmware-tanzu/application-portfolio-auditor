@@ -9,9 +9,6 @@
 # Current version of Application Portfolio Auditor
 export TOOL_VERSION='2.1.1'
 
-# Java version used for Bagger and Fernflower
-export JAVA_VERSION='20'
-
 # List of the versions for all tools in use.
 
 # Migration & cloud readiness
@@ -45,7 +42,8 @@ export OSV_VERSION='1.7.0'
 export BEARER_VERSION='1.43.1'
 
 # Supporting frameworks
-export MUSTACHE_VERSION='3.0.4'
+export FERNFLOWER_VERSION='241.14494.158'
+export MUSTACHE_VERSION='3.0.5'
 export NIST_MIRROR_VERSION='1.6.0'
 export D3_VERSION='7.9.0'
 export JQUERY_VERSION='3.7.1'
@@ -65,3 +63,5 @@ export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERS
 
 export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
 export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"
+export IMG_GRADLE_8_JDK_21="gradle:8.7.0-jdk21"
+export IMG_MAVEN_3_JDK_21="maven:3.9.6-eclipse-temurin-21"

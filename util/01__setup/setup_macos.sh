@@ -7,7 +7,7 @@
 ##############################################################################################################
 
 # --- To be changed
-export JAVA_VERSION=20
+set -x
 
 # --- Don't change
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
@@ -56,21 +56,3 @@ else
 	brew install --cask docker
 	open /Applications/Docker.app
 fi
-
-# Install sdkman
-SDKMAN_INIT="${HOME}/.sdkman/bin/sdkman-init.sh"
-if [[ -f "${SDKMAN_INIT}" ]]; then
-	echo ">>> Already installed: sdkman"
-else
-	echo ">>> Installing: sdkman"
-	curl -s "https://get.sdkman.io" | bash
-fi
-
-# Install latest compatible required Java version
-source "${SDKMAN_INIT}"
-JAVA_LATEST=$(sdk ls java | grep -v sdk | grep tem | grep "${JAVA_VERSION}." | sort | tail -1 | tr -d ' ' | rev | cut -d '|' -f 1 | rev)
-sdk install java "${JAVA_LATEST}"
-sdk current java "${JAVA_LATEST}"
-
-## Todo: Catch exception and provide guidant to fix potential permission issues on sdkman/docker directories
-# echo 'sudo chown -R  $(id -u):$(id -g) "${HOME}/.sdkman/" "${HOME}/.docker/"'

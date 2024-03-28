@@ -53,17 +53,6 @@ while read -r TOOL; do
 	cp -Rfp "${TOOL}" "${INSTALL_DIR}/." >/dev/null 2>&1
 done < <(find "${DIST_DIR}" -maxdepth 1 -mindepth 1 -type d -name templating)
 
-for TOOL in "${DIST_DIR}"/*.jar; do
-	log_console_step "Copying '$(basename "${TOOL}")'"
-	cp -f "${TOOL}" "${INSTALL_DIR}/." >/dev/null 2>&1
-done
-
-# Make 'findsecbugs.sh' executable
-FSB="${INSTALL_DIR}/findsecbugs-cli-${FSB_VERSION}/findsecbugs.sh"
-if [ -f "${FSB}" ]; then
-	chmod +x "${FSB}"
-fi
-
 # Creates a marker file with timestamp to skip the next unpacking.
 touch "${INSTALL_DIR}/tools_${TIMESTAMP}.unpacked"
 

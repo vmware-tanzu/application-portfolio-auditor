@@ -36,7 +36,6 @@ rsync --exclude ".DS_Store" \
 	--exclude ".vagrant" \
 	--exclude "/apps" \
 	--exclude "/bin" \
-	--exclude "/dist/bagger/target" \
 	--exclude "/docs" \
 	--exclude "/reports" \
 	--exclude "/tmp" \

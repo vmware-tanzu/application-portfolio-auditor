@@ -23,8 +23,8 @@ class Color:
     NORMAL = '\033[0m'
 
 # Tool names used to retrieve versions from OS environment variables
-tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FSB', 'GRYPE',
-    'INSIDER', 'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
+tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FERNFLOWER', 'FSB',
+     'GRYPE', 'INSIDER', 'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
     'PMD', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
 results = {}
@@ -155,6 +155,20 @@ async def check_dotnet_runtime(client, short_url, regex, name, version, unstable
     except Exception as error:
         await print_error(f'{name} - Request ({url}) failed: '+repr(error),line_idx)
 
+async def check_fernflower(client, short_url, regex, name, version, unstable_version, line_idx):
+    """Check if the current used version is the latest released one."""
+    # Python equivalent of the following line:
+    url='https://github.com/JetBrains/intellij-community'
+    try:
+        project_version=os.popen('git ls-remote --tags "'+url+'.git" refs/tags/idea/\\*| tr -d \'^{}\' | cut -d "/" -f 4- |sort -t. -k1,1n -k2,2n -k3,3n -u -r |tail -n 1').read().strip()
+        if project_version != version:
+            await print_warn(f'{name} - New version available: {project_version} (current: {version}) - Check: {url}',line_idx, select_warn_color(project_version,unstable_version))
+        else:
+            await print_ok(f'{name} - Version up-to-date: {project_version}',line_idx)
+    except Exception as error:
+        await print_error(f'{name} - Request ({url}) failed: '+repr(error),line_idx)
+
+
 async def print_bold_message(message,line_idx):
     # Section for the supporting frameworks
    await print_message(message,line_idx,Color.BOLD)
@@ -194,6 +208,7 @@ if __name__ == '__main__':
 
         # Section for the supporting frameworks
         (print_bold_message, '', r'', '\nSupporting frameworks', '', None),
+        (check_fernflower, '', r'', 'Fernflower', FERNFLOWER_VERSION, None),
         # NIST Data Mirror - end-of-life and unlikely to change
         (print_ok_message, '', r'', f'NIST Data Mirror - Version up-to-date: {NIST_MIRROR_VERSION}', '', None),
         # D3.js - Download from: https://cdn.jsdelivr.net/npm/d3@7.8.2/dist/d3.min.js

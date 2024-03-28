@@ -13,9 +13,6 @@
 # Set to true to get update all local vulnerability databases updated
 UPDATE_VULN_DBS=false
 
-# Gradle version for Fernflower
-GRADLE_VERSION='8.3'
-
 # ------ Do not modify
 [[ "$DEBUG" == "true" ]] && set -x
 set -eu
@@ -35,9 +32,6 @@ source "${HOME_DIR}/_versions.sh"
 ARCH="$(uname -m)"
 export DOCKER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
 export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
-
-## Multiple platform build currently not supported
-# export DOCKER_PLATFORM="linux/amd64,linux/arm64"
 
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
@@ -135,49 +129,6 @@ function download_container_image() {
 	fi
 }
 
-function check_java_version() {
-	# Java version validation for the build
-	NEEDED_JAVA_VERSION=${JAVA_VERSION}
-	echo "Check Java version (>=${NEEDED_JAVA_VERSION})"
-	if [[ -n "$(command -v javac)" ]]; then
-		if javac -version 2>&1 | grep -q 'No Java runtime present'; then
-			echo_console_error "No Java runtime present. Please install Java ${NEEDED_JAVA_VERSION}."
-			exit 1
-		else
-			JAVA_VERSION_CURRENT=$(javac -version 2>&1 | grep 'javac' | awk '{print $2}')
-			if [ -z "${JAVA_VERSION_CURRENT}" ]; then
-				echo_console_error "No Java runtime detected. Please install Java ${NEEDED_JAVA_VERSION}."
-				exit 1
-			fi
-			JAVA_VERSION_MAJOR="$(echo "${JAVA_VERSION_CURRENT}" 2>&1 | cut -d . -f 1)"
-			COUNT_ZULU=$(java -version 2>&1 | grep -c 'Zulu' || true)
-			if ((COUNT_ZULU > 0)); then
-				echo_console_error "Wrong JDK provider in use ('Zulu'). Please switch to a non-Zulu JDK."
-				exit 1
-			elif [ ${JAVA_VERSION_MAJOR} -lt ${NEEDED_JAVA_VERSION} ]; then
-				echo_console_error "Wrong Java version ('${JAVA_VERSION_CURRENT}') in use. Please switch to Java ${NEEDED_JAVA_VERSION}."
-				exit 1
-			fi
-		fi
-	else
-		echo_console_error "Java is not available. Please install Java ${NEEDED_JAVA_VERSION} or later."
-		exit 1
-	fi
-}
-
-function check_built_java_version() {
-	CLASS="${1}"
-	if [[ -n "$(command -v od)" ]]; then
-		JAVA_VERSION_BUILD=$(od -t d -j 7 -N 1 "${CLASS}" | head -1 | awk '{print $2 - 44}')
-		if [[ "${JAVA_VERSION_BUILD}" != "${JAVA_VERSION}" ]]; then
-			echo_console_error "Build JAR (Java ${JAVA_VERSION_BUILD}) does not match expected version (${JAVA_VERSION})"
-			exit 1
-		fi
-	else
-		echo_console_warning "Unable to validate built JAR version as 'od' is not installed"
-	fi
-}
-
 check_container_engine
 
 ##############################################################################################################
@@ -199,43 +150,28 @@ fi
 ##############################################################################################################
 # 01 Fernflower
 ##############################################################################################################
-echo_console_tool_info "01 - Fernflower"
-DIST_FERNFLOWER="${DIST_DIR}/fernflower__${JAVA_VERSION}.jar"
+echo_console_tool_info "01 - Fernflower v${FERNFLOWER_VERSION}"
+DIST_FERNFLOWER="${DIST_DIR}/oci__fernflower_${FERNFLOWER_VERSION}.img"
 if [ -f "${DIST_FERNFLOWER}" ]; then
-	echo "[INFO] 'Fernflower' is already available"
+	echo "[INFO] 'Fernflower' (${FERNFLOWER_VERSION}) is already available"
 else
-	REPO_URL=https://github.com/JetBrains/intellij-community.git
+	IMG_NAME="fernflower:${FERNFLOWER_VERSION}"
+	mkdir -p "${DIST_DIR}/containerized/fernflower"
 
-	check_java_version
+	# Delete previous versions
+	find "${DIST_DIR}" -type f -iname 'oci__fernflower*.img' -delete
+	find "${DIST_DIR}" -type f -iname 'fernflower_*.jar' -delete
 
-	TMP_DIR=/tmp/intellij
-	rm -Rf "${TMP_DIR}"
-	mkdir -p "${TMP_DIR}"
-
-	pushd "${TMP_DIR}" &>/dev/null
-	# Retrieve latest idea tag
-	LATEST_TAG=$(git ls-remote --tags "${REPO_URL}" | grep -o "refs/tags/idea/.*" | sort -r | head -n 1 | tr -d '^{}' | cut -d "/" -f 3-)
-	echo "Downloading 'Fernflower' from Intellij-Community '${LATEST_TAG}'"
-
-	# Do not retrieve the repository
-	git clone --depth=1 --branch "${LATEST_TAG}" --filter=blob:none --sparse "${REPO_URL}"
-	cd intellij-community
-
-	# Selectively checkout sub directory
-	git sparse-checkout set plugins/java-decompiler/engine
-	cd plugins/java-decompiler/engine
-
-	# Build Fernflower using the configured $JAVA_VERSION
-	stream_edit "s/targetCompatibility '.*'/targetCompatibility '${JAVA_VERSION}'/" build.gradle
-	stream_edit 's|distributionUrl=.*|distributionUrl=https\://services.gradle.org/distributions/gradle-'"${GRADLE_VERSION}"'-bin.zip|' 'gradle/wrapper/gradle-wrapper.properties'
-	./gradlew wrapper
-	GRADLE_OPTS="-Dorg.gradle.daemon=false" ./gradlew assemble
+	# Build container image
+	pushd "${SCRIPT_PATH}/../../dist/containerized/fernflower" &>/dev/null
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_GRADLE="${IMG_GRADLE_8_JDK_21}" \
+		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}" \
+		--build-arg FERNFLOWER_VERSION="${FERNFLOWER_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
-	check_built_java_version "${TMP_DIR}/intellij-community/plugins/java-decompiler/engine/build/classes/java/main/org/jetbrains/java/decompiler/ClassNameConstants.class"
-
-	cp "${TMP_DIR}/intellij-community/plugins/java-decompiler/engine/build/libs/fernflower.jar" "${DIST_DIR}/fernflower__${JAVA_VERSION}.jar"
-	rm -Rf "${TMP_DIR}"
+	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_FERNFLOWER}"
 fi
 
 ##############################################################################################################
@@ -265,7 +201,7 @@ else
 fi
 
 # 02 CSA - Bagger build
-echo_console_tool_info "02 - CSA Bagger v${CSA_BAGGER_VERSION} - Bagger"
+echo_console_tool_info "02 - CSA - Bagger v${CSA_BAGGER_VERSION}"
 DIST_CSA_BAGGER="${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
 if [ -f "${DIST_CSA_BAGGER}" ]; then
 	echo "[INFO] 'CSA Bagger' (${CSA_BAGGER_VERSION}) is already available"
@@ -279,7 +215,11 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/csa-bagger" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg CSA_BAGGER_VERSION="${CSA_BAGGER_VERSION}" \
+		--build-arg IMG_MAVEN="${IMG_MAVEN_3_JDK_21}" \
+		--build-arg IMG_SLIM="debian:12.5-slim" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
 	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_CSA_BAGGER}"
@@ -402,7 +342,6 @@ else
 	find "${DIST_DIR}/containerized/owasp-dependency-check" -type f -iname 'owasp-dependency-check*.zip' ! -name "owasp-dependency-check_${OWASP_DC_VERSION}.zip" -delete
 
 	ODC_SHORT_ZIP="containerized/owasp-dependency-check/owasp-dependency-check_${OWASP_DC_VERSION}.zip"
-	ODC_ZIP="${DIST_DIR}/${ODC_SHORT_ZIP}"
 
 	simple_check_and_download "OWASP Dependency-Check" "${ODC_SHORT_ZIP}" "https://github.com/jeremylong/DependencyCheck/releases/download/v${OWASP_DC_VERSION}/dependency-check-${OWASP_DC_VERSION}-release.zip" "${OWASP_DC_VERSION}"
 
@@ -437,10 +376,13 @@ if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	echo "[INFO] Updating local RetireJS cache ..."
 	wget -q -O "${DATA_DIR}/jsrepository.json" "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json"
 
-	echo "[INFO] Updating local NVD cache ..."
-	set +e
-	java -jar "${DIST_DIR}/containerized/owasp-dependency-check/nist-data-mirror.jar" "${DATA_DIR}/nvdcache"
-	set -e
+	# FIXME - Remove Java usage and bump to latest version
+	if [[ -n "$(command -v javac)" ]]; then
+		echo "[INFO] Updating local NVD cache ..."
+		set +e
+		java -jar "${DIST_DIR}/containerized/owasp-dependency-check/nist-data-mirror.jar" "${DATA_DIR}/nvdcache"
+		set -e
+	fi
 fi
 
 ##############################################################################################################
@@ -613,10 +555,11 @@ else
 	# Build container image
 	IMG_NAME="findsecbugs:${FSB_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/findsecbugs" &>/dev/null
-	${MUSTACHE} "Dockerfile.fsb.mo" >"Dockerfile"
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" .
-	# Cleanup
-	rm -f "Dockerfile"
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="alpine:latest" \
+		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_11}" \
+		--build-arg FSB_VERSION="${FSB_VERSION}" \
+		-f "Dockerfile" -t "${IMG_NAME}" .
 	popd &>/dev/null
 
 	# Save
@@ -631,9 +574,6 @@ DIST_MAI="${DIST_DIR}/oci__mai_${MAI_VERSION}.img"
 if [ -f "${DIST_MAI}" ]; then
 	echo "[INFO] 'MAI' (${DIST_MAI}) is already available"
 else
-	MAI_DIR="${DIST_DIR}/containerized/mai"
-	MAI_ZIP="${MAI_DIR}/ApplicationInspector_netcoreapp_${MAI_VERSION}.zip"
-
 	# Delete previous versions
 	find "${SCRIPT_PATH}/../../dist/containerized/mai/" -type f -iname 'ApplicationInspector_netcoreapp_*.zip' ! -name ApplicationInspector_netcoreapp_${MAI_VERSION}.zip -delete
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__mai_*.img' -delete
@@ -712,7 +652,7 @@ if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	remove_container_images "trivy"
 fi
 if [ -f "${DIST_TRIVY}" ]; then
-	echo "[INFO] 'Trivy' (${DIST_TRIVY}) is already available"
+	echo "[INFO] 'Trivy' (${TRIVY_VERSION}) is already available"
 else
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__trivy_*.img' ! -name oci__trivy_${TRIVY_VERSION}.img -delete
 
@@ -737,8 +677,12 @@ fi
 # Load the correct OSV container image
 echo_console_tool_info "15 - OSV v${OSV_VERSION}"
 DIST_OSV="${DIST_DIR}/oci__osv_${OSV_VERSION}.img"
-find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__osv_*.img' ! -name oci__osv_${OSV_VERSION}.img -delete
-download_container_image 'OSV' "v${OSV_VERSION}" "ghcr.io/google/osv-scanner" "oci__osv_${OSV_VERSION}.img"
+if [ -f "${DIST_OSV}" ]; then
+	echo "[INFO] 'OSV' (${OSV_VERSION}) is already available"
+else
+	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__osv_*.img' ! -name oci__osv_${OSV_VERSION}.img -delete
+	download_container_image 'OSV' "v${OSV_VERSION}" "ghcr.io/google/osv-scanner" "oci__osv_${OSV_VERSION}.img"
+fi
 
 ##############################################################################################################
 # 17 Bearer
@@ -747,8 +691,12 @@ download_container_image 'OSV' "v${OSV_VERSION}" "ghcr.io/google/osv-scanner" "o
 if [[ "${ARCH}" == "x86_64" ]]; then
 	echo_console_tool_info "17 - Bearer v${BEARER_VERSION}"
 	DIST_BEARER="${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
-	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
-	download_container_image 'Bearer' "v${BEARER_VERSION}" "bearer/bearer" "oci__bearer_${BEARER_VERSION}.img"
+	if [ -f "${DIST_BEARER}" ]; then
+		echo "[INFO] 'Bearer' (${BEARER_VERSION}) is already available"
+	else
+		find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
+		download_container_image 'Bearer' "v${BEARER_VERSION}" "bearer/bearer" "oci__bearer_${BEARER_VERSION}.img"
+	fi
 fi
 
 ##############################################################################################################
@@ -781,8 +729,6 @@ DIST_BOOTSTRAP="${DIST_STATIC}/bootstrap-${BOOTSTRAP_VERSION}-dist"
 if [ -d "${DIST_BOOTSTRAP}" ]; then
 	echo "[INFO] 'Bootstrap' (${BOOTSTRAP_VERSION}) is already available"
 else
-	BOOTSTRAP_ZIP="${DIST_STATIC}/bootstrap-${BOOTSTRAP_VERSION}-dist.zip"
-
 	mkdir -p "${DIST_STATIC}"
 	# Delete previous folder and distributions
 	find "${SCRIPT_PATH}/../../dist/templating/static" -type f -iname 'bootstrap-*-dist.zip' ! -name bootstrap-${BOOTSTRAP_VERSION}-dist.zip -delete
@@ -802,7 +748,6 @@ DIST_BOOTSTRAP_ICONS="${DIST_STATIC}/css/bootstrap-icons-${BOOTSTRAP_ICONS_VERSI
 if [ -f "${DIST_BOOTSTRAP_ICONS}" ]; then
 	echo "[INFO] 'Bootstrap Icons' (${BOOTSTRAP_ICONS_VERSION}) is already available"
 else
-	BOOTSTRAP_ICONS_ZIP="${DIST_STATIC}/bootstrap-icons-${BOOTSTRAP_ICONS_VERSION}.zip"
 	mkdir -p "${DIST_STATIC}/css" "${DIST_STATIC}/fonts"
 	find "${SCRIPT_PATH}/../../dist/templating/static/css" -type f -iname 'bootstrap-icons-*.css' -delete
 	find "${SCRIPT_PATH}/../../dist/templating/static/fonts" -type f -iname 'bootstrap-icons.*' -delete
@@ -825,7 +770,7 @@ mkdir -p "${DIST_STATIC}/img/"
 pushd "${SCRIPT_PATH}/../../dist/containerized/external-assets-downloader" &>/dev/null
 IMG_NAME="external-assets-downloader:1.0"
 ${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" . &>/dev/null
-${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img" --name Downloader "${IMG_NAME}"
+${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img:delegated" --name Downloader "${IMG_NAME}"
 popd &>/dev/null
 
 # https://github.com/vmware/clarity

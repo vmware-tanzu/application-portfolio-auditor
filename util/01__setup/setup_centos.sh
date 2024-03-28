@@ -6,9 +6,8 @@
 # Install all prerequisites needed to run "Application Portfolio Auditor" on CentOS.
 ##############################################################################################################
 
-set -x
-
 # --- To be changed
+set -x
 
 # --- Don't change
 CURRENT_USER="$(whoami)"
@@ -34,33 +33,6 @@ EOF
 	sudo mv 'nofile.conf' ${ULIMIT_FILE_DEST}
 	sudo chown root:root ${ULIMIT_FILE_DEST}
 	sudo chmod 0644 ${ULIMIT_FILE_DEST}
-}
-
-# Install Java JDK from https://jdk.java.net/20/
-function setup_java() {
-	ARCH=$(arch)
-	JDK_URL=https://download.java.net/java/GA/jdk20.0.1/b4887098932d415489976708ad6d1a4b/9/GPL/openjdk-20.0.1_linux-x64_bin.tar.gz
-	if [[ "${ARCH}" == "aarch64" ]]; then
-		JDK_URL=https://download.java.net/java/GA/jdk20.0.1/b4887098932d415489976708ad6d1a4b/9/GPL/openjdk-20.0.1_linux-aarch64_bin.tar.gz
-	fi
-	JAVA_DIR="/java/jdk"
-	sudo mkdir -p "${JAVA_DIR}"
-	sudo chown -R "${USER}":"${GROUP}" "${JAVA_DIR}"
-	cd "${JAVA_DIR}"
-	wget -q "${JDK_URL}"
-	tar xvzf openjdk-20.0.1_linux-*.tar.gz &>/dev/null
-	rm openjdk-20.0.1_linux-*.tar.gz
-
-	ln -s /java/jdk/jdk-20.0.1/bin/java /usr/bin/java
-	ln -s /java/jdk/jdk-20.0.1/bin/javac /usr/bin/javac
-	chmod +x /usr/bin/java /usr/bin/javac
-
-	USER_HOME="$(eval echo ~${USER})"
-	sudo tee -a "${USER_HOME}/.bashrc" <<EOL
-export JAVA_HOME=/java/jdk/jdk-20.0.1
-export PATH="\${JAVA_HOME}/bin:\${PATH}"
-EOL
-	source "${USER_HOME}/.bashrc"
 }
 
 # Install, enable, and start Docker (https://docs.docker.com/engine/install/ubuntu/)
@@ -108,9 +80,6 @@ function main() {
 
 	## Configure the ulimit
 	# set_ulimit
-
-	# Install Java JDK
-	setup_java
 
 	# Install Docker
 	setup_docker

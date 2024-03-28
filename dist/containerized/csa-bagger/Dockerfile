@@ -1,17 +1,21 @@
-# Build with: docker buildx build --platform "linux/amd64" -f "Dockerfile" -t bagger:1.0.1 .
-# Execution with: 
-FROM maven:3.9.6-eclipse-temurin-21 as build
+# Copyright 2019-2024 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+ARG IMG_MAVEN
+ARG IMG_SLIM
+
+FROM ${IMG_MAVEN} as build
+ARG CSA_BAGGER_VERSION
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
 RUN mvn clean package assembly:single -DskipTests
-RUN jar xf target/bagger-1.0.1.jar
+RUN jar xf target/bagger-${CSA_BAGGER_VERSION}.jar
 RUN jdeps --ignore-missing-deps -q  \
     --recursive  \
     --multi-release 21  \
     --print-module-deps  \
     --class-path 'BOOT-INF/lib/*'  \
-    target/bagger-1.0.1.jar > deps.info
+    target/bagger-${CSA_BAGGER_VERSION}.jar > deps.info
 RUN jlink \
     --add-modules $(cat deps.info) \
     --strip-debug \
@@ -20,7 +24,8 @@ RUN jlink \
     --no-man-pages \
     --output /myjre
 
-FROM debian:12.5-slim
+FROM ${IMG_SLIM}
+ARG CSA_BAGGER_VERSION
 ENV JAVA_HOME /user/java/jdk
 ENV PATH $JAVA_HOME/bin:$PATH
 ENV BAGGER_DB_TMP /app/bagger_tmp
@@ -28,7 +33,7 @@ RUN addgroup --gid 1234 javauser
 RUN useradd --uid 1234 -g javauser javauser
 RUN mkdir -p /app $JAVA_HOME $BAGGER_DB_TMP
 COPY --from=build /myjre $JAVA_HOME
-COPY --from=build /app/target/bagger-1.0.1-jar-with-dependencies.jar /app/bagger.jar
+COPY --from=build /app/target/bagger-${CSA_BAGGER_VERSION}-jar-with-dependencies.jar /app/bagger.jar
 WORKDIR /app
 RUN chown -R javauser:javauser /app "${BAGGER_DB_TMP}"
 USER javauser

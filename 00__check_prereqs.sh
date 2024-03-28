@@ -171,7 +171,6 @@ log_console_step "Check tools distributions"
 mkdir -p "${DIST_DIR}"
 TOOLS=(
 	"cloud-suitability-analyzer-${CSA_VERSION}.zip"
-	"fernflower__${JAVA_VERSION}.jar"
 )
 for TOOL in "${TOOLS[@]}"; do
 	if [ -f "${DIST_DIR}/${TOOL}" ]; then
@@ -181,45 +180,6 @@ for TOOL in "${TOOLS[@]}"; do
 		ARE_PREREQUISITES_MET=false
 	fi
 done
-
-# Java version validation
-log_console_step "Check Java version (=${JAVA_VERSION})"
-ERROR_MESSAGE_JAVA_VERSION=''
-if [[ -n "$(command -v javac)" ]]; then
-	if javac -version 2>&1 | grep -q 'No Java runtime present'; then
-		ERROR_MESSAGE_JAVA_VERSION="No Java runtime present. Please install Java ${JAVA_VERSION}."
-	else
-		JAVA_VERSION_CURRENT=$(javac -version 2>&1 | grep 'javac' | awk '{print $2}')
-		JAVA_VERSION_MAJOR="$(echo "${JAVA_VERSION_CURRENT}" 2>&1 | cut -d . -f 1)"
-		COUNT_ZULU=$(java -version 2>&1 | grep -c 'Zulu' || true)
-		if ((COUNT_ZULU > 0)); then
-			ERROR_MESSAGE_JAVA_VERSION="Wrong JDK provider in use ('Zulu'). Please switch to a non-Zulu JDK."
-		elif ((JAVA_VERSION_MAJOR != JAVA_VERSION)); then
-			ERROR_MESSAGE_JAVA_VERSION="Wrong Java version ('${JAVA_VERSION_CURRENT}') in use. Please switch to Java ${JAVA_VERSION}."
-		fi
-	fi
-else
-	ERROR_MESSAGE_JAVA_VERSION="Java is not available. Please install Java ${JAVA_VERSION}."
-fi
-if [ -z "${ERROR_MESSAGE_JAVA_VERSION}" ]; then
-	log_console_info "Compatible Java version ('${JAVA_VERSION_CURRENT}') in use."
-else
-	ARE_PREREQUISITES_MET=false
-	if [[ "${IS_MAC}" == "true" ]]; then
-		log_console_error "${ERROR_MESSAGE_JAVA_VERSION}
-	[MacOS] Java ${JAVA_VERSION} installation with SDKMAN! (https://sdkman.io/):
-	$ curl -s \"https://get.sdkman.io\" | bash
-	$ source ~/.sdkman/bin/sdkman-init.sh
-	$ sdk install java ${JAVA_VERSION}-tem
-	$ sdk default java ${JAVA_VERSION}-tem"
-	else
-		log_console_error "No Java runtime present. Please install Java ${JAVA_VERSION}.
-	[CentoOS/RHEL/Fedora] Java ${JAVA_VERSION} installation with yum:
-	$ sudo yum -y install java-${JAVA_VERSION}-openjdk-devel
-	[Ubuntu] Java ${JAVA_VERSION} installation with yum:
-	$ sudo yum -y install java-${JAVA_VERSION}-openjdk"
-	fi
-fi
 
 # Bash version validation
 log_console_step "Check Bash version (>=4)"
@@ -282,6 +242,8 @@ if [[ "${DECOMPILE_SOURCE}" == "true" ]]; then
 		fi
 		ARE_PREREQUISITES_MET=false
 	fi
+
+	check_container_engine "fernflower:${FERNFLOWER_VERSION}" "${DIST_DIR}/oci__fernflower_${FERNFLOWER_VERSION}.img"
 fi
 
 # 02
