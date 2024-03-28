@@ -795,3 +795,6 @@ simple_check_and_download "Script - json-v2.sh" "../util/00__release/json-v2.sh"
 chmod +x "${SCRIPT_DIR}/../00__release/"*.sh
 
 rm -Rf "${DIST_BIN}"
+
+# Remove dangling images
+${CONTAINER_ENGINE} rmi $(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)
