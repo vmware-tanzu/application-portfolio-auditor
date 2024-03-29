@@ -15,7 +15,6 @@ RULESETS=category/java/bestpractices.xml,category/java/errorprone.xml,category/j
 
 # ------ Do not modify
 VERSION=${PMD_VERSION}
-PMD_RUN=${INSTALL_DIR}/pmd-bin-${VERSION}/bin/pmd
 STEP=$(get_step)
 APP_DIR_OUT=${REPORTS_DIR}/${STEP}__PMD
 LOG_FILE=${APP_DIR_OUT}.log

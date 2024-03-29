@@ -11,7 +11,6 @@ LOCAL_WINDUP_REPORT="$(pwd)/reports/2023_10_25__12_30_48__large/03__WINDUP__larg
 
 # ------ Do not modify
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-INSTALL_DIR=${SCRIPT_DIR}/../../bin
 DIST_DIR=${SCRIPT_DIR}/../../dist
 CONF_DIR=${SCRIPT_DIR}/../../conf
 
@@ -78,7 +77,8 @@ RULES_LINGUIST=$(curl --compressed -fsSL https://github.com/github/linguist/tree
 echo "08 - Linguist: ${RULES_LINGUIST}"
 
 ###### 08 - CLOC
-CLOC=${INSTALL_DIR}/cloc-${CLOC_VERSION}/cloc
+# Fixme - Leverage containerized version
+CLOC=cloc-${CLOC_VERSION}/cloc
 RULES_CLOC=$("${CLOC}" --show-lang | wc -l | tr -d ' ')
 echo "08 - CLOC: ${RULES_CLOC}"
 

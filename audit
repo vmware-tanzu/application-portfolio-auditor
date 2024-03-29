@@ -568,12 +568,6 @@ SCRIPTS=(
 	# Check prerequisites for running the tools
 	00__check_prereqs.sh
 
-	# Unpack all tools from 'dist' to 'bin'
-	00__unpack_all_tools.sh
-
-	# Verify additional prerequisites on unpacked tools
-	00__verify_prereqs.sh
-
 	# Identify apps, generate execution plans and warnings
 	00__weave_execution_plan.sh
 )

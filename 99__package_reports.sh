@@ -24,7 +24,7 @@ export NGINX_BUILDPACK="https://github.com/cloudfoundry/nginx-buildpack.git"
 export CF_NAME_PREFIX="tanzu-app-report"
 
 # ------ Do not modify
-TEMPLATE_DIR=${INSTALL_DIR}/templating
+TEMPLATE_DIR=${DIST_DIR}/templating
 TEMPLATE_DIR_CF=${TEMPLATE_DIR}/cf
 TEMPLATE_DIR_K8=${TEMPLATE_DIR}/k8
 MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
