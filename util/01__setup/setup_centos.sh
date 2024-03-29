@@ -21,7 +21,7 @@ export USER="${CURRENT_USER}"
 export GROUP="${CURRENT_USER}"
 
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-export INSTALL_DIR="${SCRIPT_DIR}/../../../"
+export BASE_DIR="${SCRIPT_DIR}/../../../"
 
 # Update the ulimits to be able to pass the Windup tests
 function set_ulimit() {
@@ -86,7 +86,7 @@ function main() {
 
 	## Clean up permissions
 	if [[ "${USER}" != "root" ]]; then
-		sudo chown -R "${USER}":"${GROUP}" "${INSTALL_DIR}" &>/dev/null
+		sudo chown -R "${USER}":"${GROUP}" "${BASE_DIR}" &>/dev/null
 	fi
 }
 

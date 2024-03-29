@@ -18,7 +18,7 @@ CAT_ANALYSIS="Analysis"
 CAT_EXTRACTION="Extraction"
 
 INFO_REPORT="${REPORTS_DIR}/info.html"
-TEMPLATE_DIR="${INSTALL_DIR}/templating"
+TEMPLATE_DIR="${DIST_DIR}/templating"
 MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 
 export LOG_FILE="${REPORTS_DIR}/${STEP}__generate_timeline.log"
@@ -85,8 +85,6 @@ function generate_timeline_json() {
 	mv "${TIMELINE_JSON_TMP}" "${TIMELINE_JSON}"
 
 	add_entry "${CAT_PREPARATION}" "00__check_prereqs.sh" "${RUN_LOG}"
-	add_entry "${CAT_PREPARATION}" "00__unpack_all_tools.sh" "${RUN_LOG}"
-	add_entry "${CAT_PREPARATION}" "00__verify_prereqs.sh" "${RUN_LOG}"
 	add_entry "${CAT_PREPARATION}" "00__weave_execution_plan.sh" "${RUN_LOG}"
 	add_entry "${CAT_PREPARATION}" "01__fernflower_decompile.sh" "${FERNFLOWER_LOG}"
 	add_entry "${CAT_PREPARATION}" "01__unpack_sources.sh" "${UNPACK_LOG}"

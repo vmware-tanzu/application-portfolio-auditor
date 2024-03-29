@@ -69,7 +69,6 @@ SOURCE_JAVA=ibm5
 
 # ------ Do not modify
 VERSION=${WAMT_VERSION}
-#WAMT_JAR=${INSTALL_DIR}/wamt/binaryAppScanner.jar
 STEP=$(get_step)
 
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"

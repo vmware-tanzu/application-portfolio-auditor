@@ -5,8 +5,12 @@ Total: 11 (UNKNOWN: 0, LOW: 2, MEDIUM: 9, HIGH: 0, CRITICAL: 0)
 oci__cloc_2.00.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
-oci__csa-bagger_1.0.1.img
-Total: 86 (UNKNOWN: 0, LOW: 57, MEDIUM: 23, HIGH: 5, CRITICAL: 1)
+oci__csa-bagger_1.0.2.img
+Total: 86 (UNKNOWN: 0, LOW: 57, MEDIUM: 15, HIGH: 13, CRITICAL: 1)
+
+oci__csa_4.1.13.img
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 oci__fernflower_241.14494.158.img
 Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
@@ -38,7 +42,7 @@ oci__pmd_7.0.0.img
 Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
 
 oci__sast-scan_2.1.1.img
-Total: 1351 (UNKNOWN: 0, LOW: 538, MEDIUM: 768, HIGH: 45, CRITICAL: 0)
+Total: 1351 (UNKNOWN: 0, LOW: 544, MEDIUM: 765, HIGH: 42, CRITICAL: 0)
 Total: 34 (UNKNOWN: 0, LOW: 1, MEDIUM: 12, HIGH: 20, CRITICAL: 1)
 Total: 12 (UNKNOWN: 0, LOW: 0, MEDIUM: 10, HIGH: 0, CRITICAL: 2)
 Total: 31 (UNKNOWN: 0, LOW: 2, MEDIUM: 18, HIGH: 10, CRITICAL: 1)
@@ -49,7 +53,7 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Total: 14 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 8, CRITICAL: 1)
 
 oci__scancode-toolkit_32.1.0.img
-Total: 579 (UNKNOWN: 7, LOW: 200, MEDIUM: 256, HIGH: 114, CRITICAL: 2)
+Total: 579 (UNKNOWN: 3, LOW: 200, MEDIUM: 250, HIGH: 124, CRITICAL: 2)
 Total: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 4, HIGH: 2, CRITICAL: 0)
 
 oci__syft_1.1.0.img

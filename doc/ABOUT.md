@@ -62,8 +62,6 @@ The starting point for any execution of Application Portfolio Auditor is the `au
 `audit` calls dynamically `XX__NAME.sh` scripts in increasing order:
 
 * `00__check_prereqs.sh`: Check that the prerequisites to run the tools are met. 
-* `00__unpack_all_tools.sh`: Unpack all downloaded tools from `dist` to `bin`.
-* `00__verify_prereqs.sh`: Validate further prerequisites to runs the tools.
 * `00__weave_execution_plan.sh`: Identify application types, generate tool execution plans.
 * `01__fernflower_decompile.sh`: Recursively unpack apps and decompiles relevant libraries using Fernflower.
 * `01__unpack_sources.sh`: Unpack zipped application code and copy source code folders.

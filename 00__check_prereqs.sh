@@ -166,21 +166,6 @@ if [[ "${SKIP_TARGET_GROUP_ANALYSIS}" == "false" ]]; then
 	fi
 fi
 
-# Validating presence of bundled tools
-log_console_step "Check tools distributions"
-mkdir -p "${DIST_DIR}"
-TOOLS=(
-	"cloud-suitability-analyzer-${CSA_VERSION}.zip"
-)
-for TOOL in "${TOOLS[@]}"; do
-	if [ -f "${DIST_DIR}/${TOOL}" ]; then
-		log_console_info "'${TOOL}' present."
-	else
-		log_console_error "'${TOOL}' is missing! Please add it to '${DIST_DIR}'."
-		ARE_PREREQUISITES_MET=false
-	fi
-done
-
 # Bash version validation
 log_console_step "Check Bash version (>=4)"
 MAJOR_BASH_VERSION=$(echo "${BASH_VERSION}" | cut -d . -f 1)
@@ -249,6 +234,7 @@ fi
 # 02
 if [[ "${CSA_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 02 - Check CSA prerequisites"
+	check_container_engine "${CONTAINER_IMAGE_NAME_CSA}" "${DIST_DIR}/oci__csa_${CSA_VERSION}.img"
 	check_container_engine "${CONTAINER_IMAGE_NAME_CSA_BAGGER}" "${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
 fi
 

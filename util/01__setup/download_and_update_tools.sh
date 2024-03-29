@@ -118,10 +118,12 @@ function remove_container_images() {
 
 function download_container_image() {
 	NAME="${1}"
-	VERSION="${2}"
-	REPO="${3}"
-	LOCAL_IMG="${4}"
-	PLATFORM=${5:-${DOCKER_PLATFORM}}
+	CONTAINER_IMAGE_NAME="${2}"
+	LOCAL_IMG="${3}"
+	PLATFORM=${4:-${DOCKER_PLATFORM}}
+	# Extract "REPO" and "VERSION" from container image name
+	REPO="${CONTAINER_IMAGE_NAME%%:*}"
+	VERSION="${CONTAINER_IMAGE_NAME#*:}"
 	if [[ -f "${DIST_DIR}/${LOCAL_IMG}" ]]; then
 		echo "[INFO] '${NAME}' (${VERSION}) is already available"
 	else
@@ -183,26 +185,30 @@ fi
 # 02 CSA
 ##############################################################################################################
 echo_console_tool_info "02 - CSA v${CSA_VERSION}"
-DIST_CSA="${DIST_DIR}/cloud-suitability-analyzer-${CSA_VERSION}.zip"
+DIST_CSA="${DIST_DIR}/oci__csa_${CSA_VERSION}.img"
 if [ -f "${DIST_CSA}" ]; then
 	echo "[INFO] 'CSA' (${CSA_VERSION}) is already available"
 else
-	# Delete previous versions
-	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'cloud-suitability-analyzer-*.zip' -delete
+	mkdir -p "${DIST_DIR}/containerized/csa"
 
-	TMP_DIR=/tmp/cloud-suitability-analyzer
-	rm -Rf "${TMP_DIR}"
-	mkdir -p "${TMP_DIR}"
-	pushd "${TMP_DIR}" &>/dev/null
-	wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa-l"
-	wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa"
-	#wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/CSA-UserManual.pdf"
-	chmod +x csa-l csa
-	cd ..
-	zip -r "cloud-suitability-analyzer-${CSA_VERSION}.zip" cloud-suitability-analyzer
+	# Delete previous versions
+	find "${DIST_DIR}" -type f -iname 'oci__csa*.img' ! -name 'oci__csa*bagger*.img' -delete
+	find "${DIST_DIR}" -type f -iname 'cloud-suitability-analyzer-*.zip' -delete
+
+	# wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa-l"
+	# wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa"
+	# wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/CSA-UserManual.pdf"
+
+	# Build container image
+	pushd "${SCRIPT_PATH}/../../dist/containerized/csa" &>/dev/null
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg CSA_VERSION="${CSA_VERSION}" \
+		--build-arg IMG_BUILD="alpine:latest" \
+		--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}" .
 	popd &>/dev/null
-	mv "/tmp/cloud-suitability-analyzer-${CSA_VERSION}.zip" "${DIST_DIR}"
-	rm -Rf "${TMP_DIR}"
+
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_CSA}" | gzip >"${DIST_CSA}"
 fi
 
 # 02 CSA - Bagger build
@@ -612,7 +618,7 @@ fi
 if [[ "${ARCH}" == "x86_64" ]]; then
 	echo_console_tool_info "11 - SAST-Scan v${SLSCAN_VERSION}"
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__sast-scan_*.img' ! -name oci__sast-scan_${SLSCAN_VERSION}.img -delete
-	download_container_image 'SAST-Scan (slscan)' "latest" "shiftleft/sast-scan" "oci__sast-scan_${SLSCAN_VERSION}.img"
+	download_container_image 'SAST-Scan (slscan)' "${CONTAINER_IMAGE_NAME_SLSCAN}" "oci__sast-scan_${SLSCAN_VERSION}.img"
 fi
 
 ##############################################################################################################
@@ -621,7 +627,7 @@ fi
 # Load the latest Insider container image
 echo_console_tool_info "12 - Insider v${INSIDER_VERSION}"
 find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__insider_*.img' ! -name oci__insider_${INSIDER_VERSION}.img -delete
-download_container_image 'Insider' "latest" "insidersec/insider" "oci__insider_${INSIDER_VERSION}.img" "linux/amd64"
+download_container_image 'Insider' "${CONTAINER_IMAGE_NAME_INSIDER}" "oci__insider_${INSIDER_VERSION}.img" "linux/amd64"
 
 ##############################################################################################################
 # 13 Grype
@@ -629,7 +635,7 @@ download_container_image 'Insider' "latest" "insidersec/insider" "oci__insider_$
 # Load the correct Grype container image
 echo_console_tool_info "13 - Grype v${GRYPE_VERSION}"
 find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__grype_*.img' ! -name oci__grype_${GRYPE_VERSION}.img -delete
-download_container_image 'Grype' "v${GRYPE_VERSION}" "anchore/grype" "oci__grype_${GRYPE_VERSION}.img"
+download_container_image 'Grype' "${CONTAINER_IMAGE_NAME_GRYPE}" "oci__grype_${GRYPE_VERSION}.img"
 
 # Update Grype DB
 if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
@@ -644,7 +650,7 @@ fi
 # Load the correct Syft container image
 echo_console_tool_info "13 - Syft v${SYFT_VERSION}"
 find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__syft_*.img' ! -name oci__syft_${SYFT_VERSION}.img -delete
-download_container_image 'Syft' "v${SYFT_VERSION}" "anchore/syft" "oci__syft_${SYFT_VERSION}.img"
+download_container_image 'Syft' "${CONTAINER_IMAGE_NAME_SYFT}" "oci__syft_${SYFT_VERSION}.img"
 
 ##############################################################################################################
 # 14 Trivy
@@ -684,7 +690,7 @@ if [ -f "${DIST_OSV}" ]; then
 	echo "[INFO] 'OSV' (${OSV_VERSION}) is already available"
 else
 	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__osv_*.img' ! -name oci__osv_${OSV_VERSION}.img -delete
-	download_container_image 'OSV' "v${OSV_VERSION}" "ghcr.io/google/osv-scanner" "oci__osv_${OSV_VERSION}.img"
+	download_container_image 'OSV' "${CONTAINER_IMAGE_NAME_OSV}" "oci__osv_${OSV_VERSION}.img"
 fi
 
 ##############################################################################################################
@@ -698,7 +704,7 @@ if [[ "${ARCH}" == "x86_64" ]]; then
 		echo "[INFO] 'Bearer' (${BEARER_VERSION}) is already available"
 	else
 		find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
-		download_container_image 'Bearer' "v${BEARER_VERSION}" "bearer/bearer" "oci__bearer_${BEARER_VERSION}.img"
+		download_container_image 'Bearer' "${CONTAINER_IMAGE_NAME_BEARER}" "oci__bearer_${BEARER_VERSION}.img"
 	fi
 fi
 

@@ -12,7 +12,7 @@ export NAV_LINK="https://github.com/vmware-tanzu/application-portfolio-auditor"
 export NAV_ICON="bi bi-github"
 
 # ------ Do not modify
-TEMPLATE_DIR=${INSTALL_DIR}/templating
+TEMPLATE_DIR=${DIST_DIR}/templating
 MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 export LOG_FILE CSA_URL
 LOG_FILE=/dev/null
