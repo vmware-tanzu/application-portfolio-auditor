@@ -37,10 +37,9 @@
     },
     {
         "description": "Logo - VMware",
-        "url": "https://tanzu.vmware.com/",
+        "url": "https://d1fto35gcfffzn.cloudfront.net/images/global/vmware-by-broadcom/VMware-by-Broadcom-Logo_color.svg",
         "targetName": "company.svg",
-        "targetDir": "img",
-        "extractFirstSVG": "true"
+        "targetDir": "img"
     },
     {
         "description": "Logo - Grype",
