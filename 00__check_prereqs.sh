@@ -243,13 +243,13 @@ if [[ "${DECOMPILE_SOURCE}" == "true" ]]; then
 		ARE_PREREQUISITES_MET=false
 	fi
 
-	check_container_engine "fernflower:${FERNFLOWER_VERSION}" "${DIST_DIR}/oci__fernflower_${FERNFLOWER_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_FERNFLOWER}" "${DIST_DIR}/oci__fernflower_${FERNFLOWER_VERSION}.img"
 fi
 
 # 02
 if [[ "${CSA_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 02 - Check CSA prerequisites"
-	check_container_engine "csa-bagger:${CSA_BAGGER_VERSION}" "${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_CSA_BAGGER}" "${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
 fi
 
 # 03
@@ -259,7 +259,7 @@ if [[ "${WINDUP_ACTIVE}" == "true" ]]; then
 		log_console_error "'xmllint' and 'xsltproc' are not available. Please install them."
 		ARE_PREREQUISITES_MET=false
 	fi
-	check_container_engine "windup:${WINDUP_VERSION}" "${DIST_DIR}/oci__windup_${WINDUP_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_WINDUP}" "${DIST_DIR}/oci__windup_${WINDUP_VERSION}.img"
 	if [[ -z "${WINDUP_INCLUDE_PACKAGES_FILE}" && -z "${WINDUP_EXCLUDE_PACKAGES_FILE}" ]]; then
 		log_console_warning "Windup Analysis is active, but no list of packages to include/exclude has been set. It might take a long time to run."
 	fi
@@ -268,31 +268,32 @@ fi
 # 04
 if [[ "${WAMT_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 04 - Check WAMT prerequisites"
-	check_container_engine "wamt:${WAMT_VERSION}" "${DIST_DIR}/oci__wamt_${WAMT_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_WAMT}" "${DIST_DIR}/oci__wamt_${WAMT_VERSION}.img"
 fi
 
 # 05
 if [[ "${OWASP_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 05 - Check OWASP Dependency-Check prerequisites"
-	check_container_engine "owasp-dependency-check:${OWASP_DC_VERSION}" "${DIST_DIR}/oci__owasp-dependency-check_${OWASP_DC_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_OWASP_DC}" "${DIST_DIR}/oci__owasp-dependency-check_${OWASP_DC_VERSION}.img"
 fi
 
 # 06
 if [[ "${SCANCODE_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 06 - Check ScanCode prerequisites"
-	check_container_engine 'scancode-toolkit' "${DIST_DIR}/oci__scancode-toolkit_${SCANCODE_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_SCANCODE}" "${DIST_DIR}/oci__scancode-toolkit_${SCANCODE_VERSION}.img"
 fi
 
 # 07
 if [[ "${PMD_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 07 - Check PMD prerequisites"
-	check_container_engine 'pmd' "${DIST_DIR}/oci__pmd_${PMD_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_PMD}" "${DIST_DIR}/oci__pmd_${PMD_VERSION}.img"
 fi
 
 # 08
 if [[ "${LANGUAGES_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 08 - Check Linguist prerequisites"
-	check_container_engine 'crazymax/linguist' "${DIST_DIR}/oci__linguist_${LINGUIST_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_LINGUIST}" "${DIST_DIR}/oci__linguist_${LINGUIST_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_CLOC}" "${DIST_DIR}/oci__cloc_${CLOC_VERSION}.img"
 	# Check if git is present
 	if [[ -z "$(command -v git)" ]]; then
 		if [[ "${IS_MAC}" == "true" ]]; then
@@ -307,7 +308,7 @@ fi
 # 09
 if [[ "${FSB_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 09 - Check Find Security Bugs prerequisites"
-	check_container_engine "findsecbugs:${FSB_VERSION}" "${DIST_DIR}/oci__findsecbugs_${FSB_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_FSB}" "${DIST_DIR}/oci__findsecbugs_${FSB_VERSION}.img"
 	if [[ -z "$(command -v xmllint)" ]]; then
 		log_console_error "'xmllint' is not available. Please install it."
 		ARE_PREREQUISITES_MET=false
@@ -317,51 +318,51 @@ fi
 # 10
 if [[ "${MAI_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 10 - Check Microsoft Application Inspector (MAI) prerequisites"
-	check_container_engine "mai:${MAI_VERSION}" "${DIST_DIR}/oci__mai_${MAI_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_MAI}" "${DIST_DIR}/oci__mai_${MAI_VERSION}.img"
 fi
 
 # 11
 if [[ "${SLSCAN_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 11 - Check SAST-Scan prerequisites"
-	check_container_engine "shiftleft/sast-scan" "${DIST_DIR}/oci__sast-scan_${SLSCAN_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_SLSCAN}" "${DIST_DIR}/oci__sast-scan_${SLSCAN_VERSION}.img"
 fi
 
 # 12
 if [[ "${INSIDER_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 12 - Check Insider prerequisites"
-	check_container_engine 'insidersec/insider' "${DIST_DIR}/oci__insider_${INSIDER_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_INSIDER}" "${DIST_DIR}/oci__insider_${INSIDER_VERSION}.img"
 fi
 
 # 13
 if [[ "${GRYPE_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 13 - Check Grype prerequisites"
-	check_container_engine "anchore/grype:v${GRYPE_VERSION}" "${DIST_DIR}/oci__grype_${GRYPE_VERSION}.img"
-	check_container_engine "anchore/syft:v${SYFT_VERSION}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_GRYPE}" "${DIST_DIR}/oci__grype_${GRYPE_VERSION}.img"
+	check_container_engine "{CONTAINER_IMAGE_NAME_SYFT}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
 fi
 
 # 14
 if [[ "${TRIVY_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 14 - Check Trivy prerequisites"
-	check_container_engine "trivy:${TRIVY_VERSION}" "${DIST_DIR}/oci__trivy_${TRIVY_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_TRIVY}" "${DIST_DIR}/oci__trivy_${TRIVY_VERSION}.img"
 fi
 
 # 15
 if [[ "${OSV_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 15 - Check OSV prerequisites"
-	check_container_engine "anchore/syft:v${SYFT_VERSION}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
-	check_container_engine "ghcr.io/google/osv-scanner:v${OSV_VERSION}" "${DIST_DIR}/oci__osv_${OSV_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_SYFT}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_OSV}" "${DIST_DIR}/oci__osv_${OSV_VERSION}.img"
 fi
 
 # 16
 if [[ "${ARCHEO_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 16 - Check Archeo prerequisites"
-	check_container_engine "anchore/syft:v${SYFT_VERSION}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_SYFT}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
 fi
 
 # 17
 if [[ "${BEARER_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 17 - Check Bearer prerequisites"
-	check_container_engine "bearer/bearer:v${BEARER_VERSION}" "${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_BEARER}" "${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
 fi
 
 # 99

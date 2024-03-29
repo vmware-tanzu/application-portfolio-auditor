@@ -21,7 +21,7 @@ ENABLE_VERBOSE_LOG="false"
 
 # ------ Do not modify
 VERSION=${OWASP_DC_VERSION}
-CONTAINER_IMAGE_NAME="owasp-dependency-check:${VERSION}"
+
 STEP=$(get_step)
 APP_BASE=${REPORTS_DIR}/${STEP}__OWASP_DC
 LOG_FILE=${APP_BASE}.log
@@ -68,7 +68,7 @@ function analyze() {
 				--volume "${APP_DIR}":"/apps":ro \
 				--volume "${DATA_DIR}":/usr/share/dependency-check/data:delegated \
 				--volume "${APP_DIR_OUT}":/report:delegated \
-				"${CONTAINER_IMAGE_NAME}" \
+				"${CONTAINER_IMAGE_NAME_OWASP_DC}" \
 				"${ARGS[@]}"
 		) >>"${LOG_FILE}" 2>&1
 		set -e

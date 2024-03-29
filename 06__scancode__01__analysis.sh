@@ -17,7 +17,6 @@ TIMEOUT=90
 # ------ Do not modify
 VERSION=${SCANCODE_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME='scancode-toolkit'
 APP_BASE=${REPORTS_DIR}/${STEP}__SCANCODE
 export LOG_FILE=${APP_BASE}.log
 
@@ -100,7 +99,7 @@ function analyze() {
 		mkdir -p "${APP_DIR_OUT}/${APP_NAME}"
 
 		set +e
-		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -v "${APP_DIR_TMP}:/app/${APP_NAME}:ro" -v "tmpfs:/cache:delegated" -v "${APP_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME}" \
+		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} -v "${APP_DIR_TMP}:/app/${APP_NAME}:ro" -v "tmpfs:/cache:delegated" -v "${APP_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME_SCANCODE}" \
 			--license --license-references --license-text --license-score 0 --classify --license-clarity-score \
 			--url --info --email \
 			--package \
@@ -145,10 +144,10 @@ function main() {
 
 	log_tool_info "ScanCode v${VERSION}"
 
-	if [[ -n "$(${CONTAINER_ENGINE} images -q ${CONTAINER_IMAGE_NAME})" ]]; then
+	if [[ -n "$(${CONTAINER_ENGINE} images -q ${CONTAINER_IMAGE_NAME_SCANCODE})" ]]; then
 		for_each_group analyze
 	else
-		log_console_error "ScanCode analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME}'"
+		log_console_error "ScanCode analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_SCANCODE}'"
 	fi
 
 }

@@ -14,7 +14,6 @@
 # ------ Do not modify
 VERSION=${TRIVY_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_TRIVY="trivy:${TRIVY_VERSION}"
 TRIVY_VULN_CACHE_DIR="${DIST_DIR}/trivy_cache"
 TRIVY_OFFLINE_ARGS=()
 

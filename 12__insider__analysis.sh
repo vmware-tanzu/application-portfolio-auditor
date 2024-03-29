@@ -14,7 +14,6 @@
 # ------ Do not modify
 VERSION=${INSIDER_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME='insidersec/insider'
 
 APP_BASE=${REPORTS_DIR}/${STEP}__INSIDER
 export LOG_FILE="${APP_BASE}.log"
@@ -97,10 +96,10 @@ function main() {
 
 	log_tool_info "Insider Static Application Security Testing (SAST) v${VERSION}"
 
-	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME}")" ]]; then
+	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_INSIDER}")" ]]; then
 		for_each_group analyze_group
 	else
-		log_console_error "INSIDER analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME}'"
+		log_console_error "INSIDER analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_INSIDER}'"
 	fi
 
 }

@@ -22,7 +22,6 @@ LOG_FILE=${APP_DIR_OUT}.log
 PMD_DIR_OUT=${APP_DIR_OUT}/pmd
 CPD_DIR_OUT=${APP_DIR_OUT}/cpd
 ANALYZABLE_APP_FOUND="false"
-CONTAINER_IMAGE_NAME_PMD="pmd:${VERSION}"
 
 function analyze() {
 

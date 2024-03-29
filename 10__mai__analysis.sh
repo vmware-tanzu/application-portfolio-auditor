@@ -14,7 +14,6 @@
 
 # ------ Do not modify
 VERSION=${MAI_VERSION}
-CONTAINER_IMAGE_NAME="mai:${VERSION}"
 
 STEP=$(get_step)
 APP_DIR_OUT=${REPORTS_DIR}/${STEP}__MAI
@@ -49,7 +48,7 @@ function analyze() {
 			set +e
 
 			mkdir -p "${MAI_OUT}"
-			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${MAI_OUT}:/out:delegated" --name MAI "${CONTAINER_IMAGE_NAME}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
+			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${MAI_OUT}:/out:delegated" --name MAI "${CONTAINER_IMAGE_NAME_MAI}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 
 			# Hack to fix the issue with files created with root user
 			if sudo -n ls >/dev/null 2>&1; then

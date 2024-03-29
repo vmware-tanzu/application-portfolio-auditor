@@ -14,8 +14,6 @@
 # ------ Do not modify
 VERSION=${OSV_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_SYFT="anchore/syft:v${SYFT_VERSION}"
-CONTAINER_IMAGE_NAME_OSV="ghcr.io/google/osv-scanner:v${VERSION}"
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__OSV.log
 

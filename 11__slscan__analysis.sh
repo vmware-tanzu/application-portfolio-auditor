@@ -19,7 +19,6 @@ SCAN_AUTO_BUILD=false
 # ------ Do not modify
 VERSION=${SLSCAN_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME="shiftleft/sast-scan"
 
 export APP_NAME LOG_FILE APP_DIR_OUT
 APP_BASE=${REPORTS_DIR}/${STEP}__SLSCAN
@@ -42,7 +41,7 @@ function analyze() {
 
 			set +e
 			# Run SLSCAN
-			${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -e ENABLE_OSS_RISK="${ENABLE_OSS_RISK}" -e SCAN_AUTO_BUILD="${SCAN_AUTO_BUILD}" -e SCAN_DEBUG_MODE="${SCAN_DEBUG_MODE}" -e "WORKSPACE=${APP}" -v "${APP}:/app" "${CONTAINER_IMAGE_NAME}" scan --build --local-only >"${EXECUTION_LOG_FILE}" 2>&1
+			${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -e ENABLE_OSS_RISK="${ENABLE_OSS_RISK}" -e SCAN_AUTO_BUILD="${SCAN_AUTO_BUILD}" -e SCAN_DEBUG_MODE="${SCAN_DEBUG_MODE}" -e "WORKSPACE=${APP}" -v "${APP}:/app" "${CONTAINER_IMAGE_NAME_SLSCAN}" scan --build --local-only >"${EXECUTION_LOG_FILE}" 2>&1
 
 			sed -n '/.*Tool.*Critical.*$/,$p' "${EXECUTION_LOG_FILE}" | sed '$d' >"${SUMMARY_FILE_TXT}"
 
@@ -101,10 +100,10 @@ function main() {
 		ENABLE_OSS_RISK="false"
 	fi
 
-	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME}")" ]]; then
+	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_SLSCAN}")" ]]; then
 		for_each_group analyze_group
 	else
-		log_console_error "SLSCAN analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME}'"
+		log_console_error "SLSCAN analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_SLSCAN}'"
 	fi
 
 }

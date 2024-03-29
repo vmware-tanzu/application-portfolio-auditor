@@ -22,7 +22,6 @@ TARGET="cloud-readiness openjdk resteasy eap6 eap7 linux jakarta-ee java-ee"
 # ------ Do not modify
 VERSION=${WINDUP_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_WINDUP="windup:${VERSION}"
 
 INCLUDE_PACKAGES=()
 EXCLUDE_PACKAGES=()

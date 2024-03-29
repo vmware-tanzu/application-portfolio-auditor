@@ -14,8 +14,6 @@
 # ------ Do not modify
 VERSION=${GRYPE_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_SYFT="anchore/syft:v${SYFT_VERSION}"
-CONTAINER_IMAGE_NAME_GRYPE="anchore/grype:v${GRYPE_VERSION}"
 GRYPE_VULN_CACHE_DIR="${DIST_DIR}/grype_cache"
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__GRYPE.log

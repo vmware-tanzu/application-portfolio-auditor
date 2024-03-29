@@ -15,7 +15,6 @@ THREADS=10
 # ------ Do not modify
 VERSION=${BEARER_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_BEARER="bearer/bearer:v${VERSION}"
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__BEARER.log
 

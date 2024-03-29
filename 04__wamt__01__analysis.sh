@@ -71,7 +71,6 @@ SOURCE_JAVA=ibm5
 VERSION=${WAMT_VERSION}
 #WAMT_JAR=${INSTALL_DIR}/wamt/binaryAppScanner.jar
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME="wamt:${VERSION}"
 
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"
 LOG_FILE="${APP_DIR_OUT}".log
@@ -101,7 +100,7 @@ function analyze() {
 			--output="/out/${GROUP}__${APP_NAME}.html"
 		)
 		set +e
-		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name WAMT "${CONTAINER_IMAGE_NAME}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
+		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name WAMT "${CONTAINER_IMAGE_NAME_WAMT}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 		set -e
 	done < <(grep '.*\.[ew]ar$' "${JAVA_BIN_LIST}")
 
@@ -114,11 +113,11 @@ function analyze() {
 
 function main() {
 	log_tool_info "IBM WAMT (WebSphere Application Server Migration Toolkit) v${VERSION}"
-	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME}") ]]; then
+	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_WAMT}") ]]; then
 		mkdir -p "${APP_DIR_OUT}"
 		for_each_group analyze
 	else
-		log_console_error "IBM WAMT analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME}'"
+		log_console_error "IBM WAMT analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_WAMT}'"
 	fi
 }
 

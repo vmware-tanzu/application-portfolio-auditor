@@ -10,7 +10,6 @@
 # ------ Do not modify
 VERSION="${FSB_VERSION}"
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME="findsecbugs:${VERSION}"
 
 # Analyse all applications present in the ${1} directory.
 function analyze() {
@@ -32,7 +31,7 @@ function analyze() {
 				-output "/out/${GROUP}__${APP_NAME}.html"
 				"/apps/${APP_NAME}"
 			)
-			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name FSB "${CONTAINER_IMAGE_NAME}" "${ARGS[@]}" 2> >(grep -v "^SLF4J")) >>"${LOG_FILE}" 2>&1
+			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name FSB "${CONTAINER_IMAGE_NAME_FSB}" "${ARGS[@]}" 2> >(grep -v "^SLF4J")) >>"${LOG_FILE}" 2>&1
 			set -e
 		done <"${LIST_JAVA_BIN}"
 		log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
@@ -45,11 +44,11 @@ function main() {
 	APP_DIR_OUT="${REPORTS_DIR}/${STEP}__FindSecBugs"
 	LOG_FILE="${APP_DIR_OUT}".log
 	log_tool_info "Find Security Bugs (FSB) v${VERSION}"
-	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME}") ]]; then
+	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_FSB}") ]]; then
 		mkdir -p "${APP_DIR_OUT}"
 		for_each_group analyze
 	else
-		log_console_error "FSB analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME}'"
+		log_console_error "FSB analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_FSB_FSB}'"
 	fi
 }
 

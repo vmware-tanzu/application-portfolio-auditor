@@ -17,8 +17,6 @@ RESULT_BAGGER_FILE_NAME=results_extracted_bagger.csv
 RESULT_BAGGER_FILE="${APP_DIR_OUT}/${RESULT_BAGGER_FILE_NAME}"
 RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
 
-CONTAINER_IMAGE_NAME_CSA_BAGGER="csa-bagger:${CSA_BAGGER_VERSION}"
-
 export LOG_FILE=/dev/null
 
 function check_missing_apps() {

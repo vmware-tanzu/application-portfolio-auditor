@@ -39,7 +39,6 @@ FERNFLOWER_EXCLUDED_VENDORS_LIST="${CURRENT_DIR}/conf/Fernflower/excluded_vendor
 STEP=$(get_step)
 
 VERSION="${FERNFLOWER_VERSION}"
-CONTAINER_IMAGE_NAME_FERNFLOWER="fernflower:${VERSION}"
 
 # List of all archives that have been decompiled
 FERNFLOWER_UNPACKED_LIBS_LIST="${REPORTS_DIR}/${STEP}__Fernflower__unpacked_libs.txt"

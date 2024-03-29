@@ -13,7 +13,6 @@
 # ------ Do not modify
 VERSION=${TOOL_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_SYFT="anchore/syft:v${SYFT_VERSION}"
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__ARCHEO.log
 

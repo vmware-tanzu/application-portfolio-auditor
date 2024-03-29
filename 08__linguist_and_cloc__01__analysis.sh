@@ -21,8 +21,6 @@ CLOC_TIMEOUT=30
 # ------ Do not modify
 VERSION=${LINGUIST_VERSION}
 STEP=$(get_step)
-CONTAINER_IMAGE_NAME_LINGUIST="crazymax/linguist:${LINGUIST_VERSION}"
-CONTAINER_IMAGE_NAME_CLOC="cloc:${CLOC_VERSION}"
 
 function linguist() {
 	LANG_FILE="${1}"
