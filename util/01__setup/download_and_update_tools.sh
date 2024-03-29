@@ -161,7 +161,6 @@ DIST_FERNFLOWER="${DIST_DIR}/oci__fernflower_${FERNFLOWER_VERSION}.img"
 if [ -f "${DIST_FERNFLOWER}" ]; then
 	echo "[INFO] 'Fernflower' (${FERNFLOWER_VERSION}) is already available"
 else
-	IMG_NAME="fernflower:${FERNFLOWER_VERSION}"
 	mkdir -p "${DIST_DIR}/containerized/fernflower"
 
 	# Delete previous versions
@@ -174,10 +173,10 @@ else
 		--build-arg IMG_GRADLE="${IMG_GRADLE_8_JDK_21}" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}" \
 		--build-arg FERNFLOWER_VERSION="${FERNFLOWER_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_FERNFLOWER}" .
 	popd &>/dev/null
 
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_FERNFLOWER}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_FERNFLOWER}" | gzip >"${DIST_FERNFLOWER}"
 fi
 
 ##############################################################################################################
@@ -212,7 +211,6 @@ DIST_CSA_BAGGER="${DIST_DIR}/oci__csa-bagger_${CSA_BAGGER_VERSION}.img"
 if [ -f "${DIST_CSA_BAGGER}" ]; then
 	echo "[INFO] 'CSA Bagger' (${CSA_BAGGER_VERSION}) is already available"
 else
-	IMG_NAME="csa-bagger:${CSA_BAGGER_VERSION}"
 	mkdir -p "${DIST_DIR}/containerized/csa-bagger"
 
 	# Delete previous versions
@@ -225,10 +223,10 @@ else
 		--build-arg CSA_BAGGER_VERSION="${CSA_BAGGER_VERSION}" \
 		--build-arg IMG_MAVEN="${IMG_MAVEN_3_JDK_21}" \
 		--build-arg IMG_SLIM="debian:12.5-slim" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA_BAGGER}" .
 	popd &>/dev/null
 
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_CSA_BAGGER}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_CSA_BAGGER}" | gzip >"${DIST_CSA_BAGGER}"
 fi
 
 ##############################################################################################################
@@ -240,7 +238,6 @@ if [ -f "${DIST_WINDUP}" ]; then
 	echo "[INFO] 'Windup' (${WINDUP_VERSION}) is already available"
 else
 	# 03 Windup (https://windup.github.io/downloads/)
-	IMG_NAME="windup:${WINDUP_VERSION}"
 	echo "[INFO] Downloading 'Windup'"
 	mkdir -p "${DIST_DIR}/containerized/windup"
 
@@ -275,12 +272,12 @@ else
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_11}" \
 		--build-arg WINDUP_VERSION="${WINDUP_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_WINDUP}" .
 
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_WINDUP}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_WINDUP}" | gzip >"${DIST_WINDUP}"
 fi
 
 ##############################################################################################################
@@ -321,17 +318,16 @@ else
 	fi
 
 	# Build container image
-	IMG_NAME="wamt:${WAMT_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/wamt" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}-alpine" \
 		--build-arg WAMT_VERSION="${WAMT_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_WAMT}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_IBM_WAMT}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_WAMT}" | gzip >"${DIST_IBM_WAMT}"
 fi
 
 ##############################################################################################################
@@ -354,18 +350,17 @@ else
 	simple_check_and_download "OWASP Dependency-Check" "${ODC_SHORT_ZIP}" "https://github.com/jeremylong/DependencyCheck/releases/download/v${OWASP_DC_VERSION}/dependency-check-${OWASP_DC_VERSION}-release.zip" "${OWASP_DC_VERSION}"
 
 	# Build container image
-	IMG_NAME="owasp-dependency-check:${OWASP_DC_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/owasp-dependency-check" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_GO="golang:1.22.1-alpine" \
 		--build-arg IMG_JLINK="azul/zulu-openjdk-alpine:20" \
 		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
 		--build-arg VERSION="${OWASP_DC_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_OWASP_DC}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${ODC_IMG}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_OWASP_DC}" | gzip >"${ODC_IMG}"
 fi
 
 simple_check_and_download "Nist Data Mirror" "containerized/owasp-dependency-check/nist-data-mirror.jar" "https://github.com/stevespringett/nist-data-mirror/releases/download/nist-data-mirror-${NIST_MIRROR_VERSION}/nist-data-mirror.jar" "${NIST_MIRROR_VERSION}"
@@ -435,13 +430,13 @@ else
 	cp "${SCRIPT_PATH}/../../dist/containerized/scancode-toolkit/template.html" src/formattedcode/templates/html-app/template.html
 
 	# Build container image
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t scancode-toolkit .
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_SCANCODE}" .
 
 	popd &>/dev/null
 
 	# Cleanup
 	rm -Rf "${TMP_SCANCODE_BUILD_DIR}"
-	${CONTAINER_ENGINE} image save scancode-toolkit:latest | gzip >"${SC_IMG}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_SCANCODE}" | gzip >"${SC_IMG}"
 fi
 
 ##############################################################################################################
@@ -463,17 +458,16 @@ else
 	simple_check_and_download "PMD" "containerized/pmd/pmd-bin-${PMD_VERSION}.zip" "https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip" "${PMD_VERSION}"
 
 	# Build container image
-	IMG_NAME="pmd:${PMD_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/pmd" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}" \
 		--build-arg PMD_VERSION="${PMD_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_PMD}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_PMD}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_PMD}" | gzip >"${DIST_PMD}"
 fi
 
 ##############################################################################################################
@@ -501,9 +495,9 @@ else
 	rm Dockerfile
 	wget -q -O "Dockerfile" https://raw.githubusercontent.com/crazy-max/docker-linguist/master/Dockerfile
 	sed -i '' -e "s/.*ARG LINGUIST_VERSION=.*/ARG LINGUIST_VERSION=\"${LINGUIST_VERSION}\"/" Dockerfile
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t "crazymax/linguist:${LINGUIST_VERSION}" .
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_LINGUIST}" .
 	popd &>/dev/null
-	${CONTAINER_ENGINE} image save "crazymax/linguist:${LINGUIST_VERSION}" | gzip >"${DIST_DIR}/${LINGUIST_IMG}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_LINGUIST}" | gzip >"${DIST_DIR}/${LINGUIST_IMG}"
 	rm -Rf /tmp/linguist
 fi
 
@@ -522,16 +516,15 @@ else
 
 	simple_check_and_download "CLOC" "containerized/cloc/cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
 	# Build container image
-	IMG_NAME="cloc:${CLOC_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/cloc" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg CLOC_VERSION="${CLOC_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CLOC}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${CLOC_DIST}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_CLOC}" | gzip >"${CLOC_DIST}"
 fi
 
 ##############################################################################################################
@@ -573,17 +566,16 @@ else
 	fi
 
 	# Build container image
-	IMG_NAME="findsecbugs:${FSB_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/findsecbugs" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_11}" \
 		--build-arg FSB_VERSION="${FSB_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_FSB}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${FSB_DIST}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_FSB}" | gzip >"${FSB_DIST}"
 fi
 
 ##############################################################################################################
@@ -601,17 +593,16 @@ else
 	simple_check_and_download "Microsoft Application Inspector" "containerized/mai/ApplicationInspector_netcoreapp_${MAI_VERSION}.zip" "https://github.com/microsoft/ApplicationInspector/releases/download/v${MAI_VERSION}/ApplicationInspector_netcoreapp_${MAI_VERSION}.zip" "${MAI_VERSION}"
 
 	# Build container image
-	IMG_NAME="mai:${MAI_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/mai" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
 		--build-arg MAI_VERSION="${MAI_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_MAI}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_MAI}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_MAI}" | gzip >"${DIST_MAI}"
 fi
 
 ##############################################################################################################
@@ -673,15 +664,14 @@ else
 
 	# Build container image including cache as it otherwise does not work in an airgapped environmment with podman
 	## https://aquasecurity.github.io/trivy/v0.43/docs/advanced/air-gap/
-	IMG_NAME="trivy:${TRIVY_VERSION}"
 	pushd "${SCRIPT_PATH}/../../dist/containerized/trivy" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
 		--build-arg TRIVY_VERSION="${TRIVY_VERSION}" \
-		-f "Dockerfile" -t "${IMG_NAME}" .
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_TRIVY}" .
 	popd &>/dev/null
 
 	# Save
-	${CONTAINER_ENGINE} image save "${IMG_NAME}" | gzip >"${DIST_TRIVY}"
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_TRIVY}" | gzip >"${DIST_TRIVY}"
 fi
 
 ##############################################################################################################
@@ -781,9 +771,8 @@ fi
 echo "[INFO] Downloading and transforming all required images"
 mkdir -p "${DIST_STATIC}/img/"
 pushd "${SCRIPT_PATH}/../../dist/containerized/external-assets-downloader" &>/dev/null
-IMG_NAME="external-assets-downloader:1.0"
-${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${IMG_NAME}" . &>/dev/null
-${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img:delegated" --name Downloader "${IMG_NAME}"
+${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER}" . &>/dev/null
+${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img:delegated" --name Downloader "${CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER}"
 popd &>/dev/null
 
 # https://github.com/vmware/clarity

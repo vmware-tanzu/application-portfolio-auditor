@@ -11,26 +11,26 @@ export TOOL_VERSION='2.1.1'
 
 # List of the versions for all tools in use.
 
-# Migration & cloud readiness
+## Migration & cloud readiness
 export WINDUP_VERSION='6.1.11'
 export CSA_VERSION='4.1.13'
 export CSA_BAGGER_VERSION='1.0.2'
 export WAMT_VERSION='24.0.0.1'
 
-# Languages
+## Languages
 export LINGUIST_VERSION='7.29.0'
 export CLOC_VERSION='2.00'
 
-# License & Authors
+## License & Authors
 export SCANCODE_VERSION='32.1.0'
 
-# Code quality / bugs
+## Code quality / bugs
 export MAI_VERSION='1.9.22'
 export PMD_VERSION='7.0.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
 
-# Security
+## Security
 export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
@@ -50,29 +50,16 @@ export JQUERY_VERSION='3.7.1'
 export BOOTSTRAP_VERSION='5.3.3'
 export BOOTSTRAP_ICONS_VERSION='1.11.3'
 export TIMELINES_CHART_VERSION='2.12.1'
-
-# Supporting container images
-
-## Nginx runtime
 export NGINX_VERSION='1.25.4'
-export IMG_NGINX="nginx:${NGINX_VERSION}-alpine3.18"
-
-## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
-export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
-
-export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
-export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"
-export IMG_GRADLE_8_JDK_21="gradle:8.7.0-jdk21"
-export IMG_MAVEN_3_JDK_21="maven:3.9.6-eclipse-temurin-21"
 
 # Name of all container images
 export CONTAINER_IMAGE_NAME_FERNFLOWER="fernflower:${FERNFLOWER_VERSION}"
+export CONTAINER_IMAGE_NAME_CSA="csa:${CSA_VERSION}"
 export CONTAINER_IMAGE_NAME_CSA_BAGGER="csa-bagger:${CSA_BAGGER_VERSION}"
 export CONTAINER_IMAGE_NAME_WINDUP="windup:${WINDUP_VERSION}"
 export CONTAINER_IMAGE_NAME_WAMT="wamt:${WAMT_VERSION}"
 export CONTAINER_IMAGE_NAME_OWASP_DC="owasp-dependency-check:${OWASP_DC_VERSION}"
-export CONTAINER_IMAGE_NAME_SCANCODE="scancode-toolkit:latest"
+export CONTAINER_IMAGE_NAME_SCANCODE="scancode-toolkit:${SCANCODE_VERSION}"
 export CONTAINER_IMAGE_NAME_PMD="pmd:${PMD_VERSION}"
 export CONTAINER_IMAGE_NAME_LINGUIST="crazymax/linguist:${LINGUIST_VERSION}"
 export CONTAINER_IMAGE_NAME_CLOC="cloc:${CLOC_VERSION}"
@@ -85,3 +72,14 @@ export CONTAINER_IMAGE_NAME_GRYPE="anchore/grype:v${GRYPE_VERSION}"
 export CONTAINER_IMAGE_NAME_TRIVY="trivy:${TRIVY_VERSION}"
 export CONTAINER_IMAGE_NAME_OSV="ghcr.io/google/osv-scanner:v${OSV_VERSION}"
 export CONTAINER_IMAGE_NAME_BEARER="bearer/bearer:v${BEARER_VERSION}"
+
+# Supporting container images
+export CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER="external-assets-downloader:1.0"
+export CONTAINER_IMAGE_NAME_NGINX="nginx:${NGINX_VERSION}-alpine3.18"
+## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
+export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
+export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
+export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
+export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"
+export IMG_GRADLE_8_JDK_21="gradle:8.7.0-jdk21"
+export IMG_MAVEN_3_JDK_21="maven:3.9.6-eclipse-temurin-21"
