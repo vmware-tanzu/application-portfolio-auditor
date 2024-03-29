@@ -337,7 +337,7 @@ fi
 if [[ "${GRYPE_ACTIVE}" == "true" ]]; then
 	log_console_step "Step 13 - Check Grype prerequisites"
 	check_container_engine "${CONTAINER_IMAGE_NAME_GRYPE}" "${DIST_DIR}/oci__grype_${GRYPE_VERSION}.img"
-	check_container_engine "{CONTAINER_IMAGE_NAME_SYFT}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
+	check_container_engine "${CONTAINER_IMAGE_NAME_SYFT}" "${DIST_DIR}/oci__syft_${SYFT_VERSION}.img"
 fi
 
 # 14
