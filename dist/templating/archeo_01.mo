@@ -66,12 +66,6 @@
         {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../security{{GROUP_POSTFIX}}.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
-        <li class="nav-item dropdown">
-          <a class="nav-item nav-link dropdown-toggle me-md-2" href="#" id="bd-versions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;</a>
-          <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
-            <a class="dropdown-item active" href="#">{{APP_GROUP}}</a>
-          </div>
-        </li>
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
         </li>

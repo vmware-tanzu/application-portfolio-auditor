@@ -16,7 +16,6 @@ TEMPLATE_DIR=${DIST_DIR}/templating
 MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 export LOG_FILE CSA_URL
 LOG_FILE=/dev/null
-IS_FIRST_GROUP="true"
 SEPARATOR=','
 if [[ "${PACKAGE_CF}" == "true" || "${PACKAGE_K8}" == "true" ]]; then
 	CSA_URL='./csa/'
@@ -364,34 +363,9 @@ function export_vars() {
 	source "${REPORT_VARS}"
 }
 
-# Generate the dropdown menu for multiple groups
-function dropdown() {
-	PAGE="${1}"
-	DROPDOWN_ITEMS=""
-	if [[ -n "${APP_GROUP}" ]]; then
-		# shellcheck disable=SC2089
-		DROPDOWN_ITEMS+="<a class=\"dropdown-item active\" href=\"#\">${APP_GROUP}</a>"
-	else
-		while read -r DIR; do
-			GROUP=$(basename "${DIR}")
-			if [[ "${GROUP}" == "${APP_GROUP}" ]]; then
-				# shellcheck disable=SC2089
-				DROPDOWN_ITEMS+="<a class=\"dropdown-item active\" href=\"#\">${GROUP}</a>"
-			elif [[ "${GROUP}" == "${FIST_GROUP}" ]]; then
-				# shellcheck disable=SC2089
-				DROPDOWN_ITEMS+="<a class=\"dropdown-item\" href=\"${REPORTS_DIR}/${PAGE}.html\">${GROUP}</a>"
-			else
-				# shellcheck disable=SC2089
-				DROPDOWN_ITEMS+="<a class=\"dropdown-item\" href=\"${REPORTS_DIR}/${PAGE}_${GROUP}.html\">${GROUP}</a>"
-			fi
-		done < <(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | sort)
-	fi
-}
-
 # Add the language column
 function add_language_column() {
-	APP_GROUP=${1}
-	TMP_CSV=${2}
+	TMP_CSV=${1}
 	export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
 	# Add the language column
 	{
@@ -429,8 +403,6 @@ function concatenate_csv() {
 # Generate the CSV file for the cloud.html page
 function generate_cloud_csv() {
 	TMP_CSV=${1}
-	APP_GROUP=${2}
-
 	rm -f "${TMP_CSV}"
 
 	#export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
@@ -470,14 +442,13 @@ function generate_cloud_csv() {
 		fi
 	fi
 	if [[ -f "${TMP_CSV}" ]]; then
-		add_language_column "${APP_GROUP}" "${TMP_CSV}"
+		add_language_column "${TMP_CSV}"
 	fi
 }
 
 # Generate the CSV file for the security.html page
 function generate_security_csv() {
 	TMP_CSV=${1}
-	APP_GROUP=${2}
 	rm -f "${TMP_CSV}"
 
 	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
@@ -506,14 +477,13 @@ function generate_security_csv() {
 	done
 
 	if [[ -f "${TMP_CSV}" ]]; then
-		add_language_column "${APP_GROUP}" "${TMP_CSV}"
+		add_language_column "${TMP_CSV}"
 	fi
 }
 
 # Generate the CSV file for the quality.html page
 function generate_quality_csv() {
 	TMP_CSV=${1}
-	APP_GROUP=${2}
 	rm -f "${TMP_CSV}"
 
 	export ARCHEO_CSV="${REPORTS_DIR}/16__ARCHEO/_results__quality__archeo.csv"
@@ -528,7 +498,7 @@ function generate_quality_csv() {
 	done
 
 	if [[ -f "${TMP_CSV}" ]]; then
-		add_language_column "${APP_GROUP}" "${TMP_CSV}"
+		add_language_column "${TMP_CSV}"
 	fi
 }
 
@@ -537,7 +507,6 @@ function generate_slscan_html() {
 
 	export APP SLSCAN_REPORT_DIR
 
-	APP_GROUP=${1}
 	SLSCAN_REPORT_DIR=./../11__SLSCAN__${APP_GROUP}
 
 	APP_LIST="${REPORTS_DIR}/list__tmp.txt"
@@ -561,7 +530,6 @@ function generate_slscan_html() {
 function generate_grype_html() {
 	export APP GRYPE_REPORT_DIR
 
-	APP_GROUP=${1}
 	GRYPE_REPORT_DIR=./../13__GRYPE__${APP_GROUP}
 
 	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
@@ -599,7 +567,6 @@ function build_trivy_regex() {
 function generate_trivy_html() {
 
 	export APP GRYPE_REPORT_DIR
-	APP_GROUP=${1}
 	export TRIVY_REPORT_DIR="./../14__TRIVY__${APP_GROUP}"
 	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}"
 
@@ -764,8 +731,6 @@ function generate_trivy_html() {
 function generate_archeo_html() {
 
 	export APP ARCHEO_REPORT_DIR
-
-	APP_GROUP=${1}
 	ARCHEO_REPORT_DIR=./../16__ARCHEO
 
 	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
@@ -793,37 +758,24 @@ function generate_archeo_html() {
 # Generate all pages
 function generate_reports() {
 
-	# shellcheck disable=SC2090
-	export GROUP_POSTFIX DROPDOWN_ITEMS
-
-	GROUP_POSTFIX=''
-	if [[ "${IS_FIRST_GROUP}" == "true" ]]; then
-		IS_FIRST_GROUP="false"
-		FIST_GROUP="${APP_GROUP}"
-	else
-		GROUP_POSTFIX="_${APP_GROUP}"
-	fi
-
-	LINK_REPORT="${REPORTS_DIR}/index${GROUP_POSTFIX}.html"
-	CLOUD_REPORT="${REPORTS_DIR}/cloud${GROUP_POSTFIX}.html"
-	SECURITY_REPORT="${REPORTS_DIR}/security${GROUP_POSTFIX}.html"
-	QUALITY_REPORT="${REPORTS_DIR}/quality${GROUP_POSTFIX}.html"
+	LINK_REPORT="${REPORTS_DIR}/index.html"
+	CLOUD_REPORT="${REPORTS_DIR}/cloud.html"
+	SECURITY_REPORT="${REPORTS_DIR}/security.html"
+	QUALITY_REPORT="${REPORTS_DIR}/quality.html"
 	INFO_RULES_REPORT="${REPORTS_DIR}/info_rules.html"
 
 	# Export all variables for the reports
 	export_vars
 
 	# Generate overview report (index)
-	dropdown index
 	${MUSTACHE} "${TEMPLATE_DIR}/index.mo" >"${LINK_REPORT}"
 	log_console_success "Open this file for reviewing all generated reports: ${LINK_REPORT}"
 
 	# Generate cloud report
 	if [[ "${HAS_CLOUD_REPORT}" == TRUE ]]; then
 
-		dropdown cloud
 		# Generate CSV file with all results
-		generate_cloud_csv "${CLOUD_TMP_CSV}" "${APP_GROUP}"
+		generate_cloud_csv "${CLOUD_TMP_CSV}"
 
 		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP__${APP_GROUP}__report_map.js"
 
@@ -844,20 +796,19 @@ function generate_reports() {
 	# Generate security reports
 	if [[ "${HAS_SECURITY_REPORT}" == TRUE ]]; then
 
-		dropdown security
 		# Generate CSV file with all results
-		generate_security_csv "${SECURITY_TMP_CSV}" "${APP_GROUP}"
+		generate_security_csv "${SECURITY_TMP_CSV}"
 
 		if [[ "${HAS_SLSCAN_REPORT}" == TRUE ]]; then
-			generate_slscan_html "${APP_GROUP}"
+			generate_slscan_html
 		fi
 
 		if [[ "${HAS_GRYPE_REPORT}" == TRUE ]]; then
-			generate_grype_html "${APP_GROUP}"
+			generate_grype_html
 		fi
 
 		if [[ "${HAS_TRIVY_REPORT}" == TRUE ]]; then
-			generate_trivy_html "${APP_GROUP}"
+			generate_trivy_html
 		fi
 
 		if [[ -f "${SECURITY_TMP_CSV}" ]]; then
@@ -884,12 +835,11 @@ function generate_reports() {
 	# Generate quality reports
 	if [[ "${HAS_QUALITY_REPORT}" == TRUE ]]; then
 
-		dropdown quality
 		# Generate CSV file with all results
-		generate_quality_csv "${QUALITY_TMP_CSV}" "${APP_GROUP}"
+		generate_quality_csv "${QUALITY_TMP_CSV}"
 
 		if [[ "${HAS_ARCHEO_REPORT}" == TRUE ]]; then
-			generate_archeo_html "${APP_GROUP}"
+			generate_archeo_html
 		fi
 
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then
