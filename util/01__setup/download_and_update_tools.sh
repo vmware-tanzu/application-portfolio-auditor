@@ -695,16 +695,25 @@ fi
 ##############################################################################################################
 # 17 Bearer
 ##############################################################################################################
-# Load the correct Bearer container image (only for amd64)
-if [[ "${ARCH}" == "x86_64" ]]; then
-	echo_console_tool_info "17 - Bearer v${BEARER_VERSION}"
-	DIST_BEARER="${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
-	if [ -f "${DIST_BEARER}" ]; then
-		echo "[INFO] 'Bearer' (${BEARER_VERSION}) is already available"
-	else
-		find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
-		download_container_image 'Bearer' "${CONTAINER_IMAGE_NAME_BEARER}" "oci__bearer_${BEARER_VERSION}.img"
-	fi
+echo_console_tool_info "17 - Bearer v${BEARER_VERSION}"
+DIST_BEARER="${DIST_DIR}/oci__bearer_${BEARER_VERSION}.img"
+if [ -f "${DIST_BEARER}" ]; then
+	echo "[INFO] 'Bearer' (${BEARER_VERSION}) is already available"
+else
+	# Delete previous versions
+	find "${SCRIPT_PATH}/../../dist/" -type f -iname 'oci__bearer_*.img' ! -name oci__bearer_${BEARER_VERSION}.img -delete
+
+	# Build container image (custom build as official image only available for x86)
+	pushd "${SCRIPT_PATH}/../../dist/containerized/bearer" &>/dev/null
+	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+		--build-arg IMG_BASE="ubuntu:24.04" \
+		--build-arg IMG_BUILD="ubuntu:24.04" \
+		--build-arg BEARER_VERSION="${BEARER_VERSION}" \
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_BEARER}" .
+	popd &>/dev/null
+
+	# Save
+	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_BEARER}" | gzip >"${DIST_BEARER}"
 fi
 
 ##############################################################################################################
