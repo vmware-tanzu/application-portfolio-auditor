@@ -407,7 +407,7 @@ function generate_cloud_csv() {
 
 	#export LANG_CSV="${REPORTS_DIR}/00__Weave/list__all_apps.csv"
 	export CSA_CSV="${REPORTS_DIR}/02__CSA/_results_extracted.csv"
-	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__results_extracted.csv"
+	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP/_results_extracted.csv"
 	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/_results_extracted.csv"
 
 	# Debug info to compare the result counts
@@ -777,7 +777,7 @@ function generate_reports() {
 		# Generate CSV file with all results
 		generate_cloud_csv "${CLOUD_TMP_CSV}"
 
-		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP__report_map.js"
+		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP/_report_map.js"
 
 		# Generate cloud HTML file
 		{
