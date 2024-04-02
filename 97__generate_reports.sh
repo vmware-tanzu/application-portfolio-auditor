@@ -895,11 +895,12 @@ function generate_reports() {
 
 # Generate HTML file vizualising the CLOC and Linguist results
 function generate_language_report() {
+
 	export APP_DATE LANGUAGES_REPORT REPORT_TIMESTAMP HEIGHT LINGUIST_CSV CLOC_CSV LANGUAGES_LOG
-	CLOC_CSV="./08__LOC__CLOC__results_extracted.csv"
-	LINGUIST_CSV="./08__LOC__LINGUIST__results_extracted.csv"
-	OUTPUT_CLOC_FILE="${REPORTS_DIR}/08__LOC__CLOC__results_generated.txt"
-	OUTPUT_LINGUIST_FILE="${REPORTS_DIR}/08__LOC__LINGUIST__results_generated.txt"
+	CLOC_CSV="./08__LINGUIST/_CLOC_results_extracted.csv"
+	LINGUIST_CSV="./08__LINGUIST/_LINGUIST_results_extracted.csv"
+	OUTPUT_CLOC_FILE="${REPORTS_DIR}/08__LINGUIST/_CLOC_results_generated.txt"
+	OUTPUT_LINGUIST_FILE="${REPORTS_DIR}/08__LINGUIST/_LINGUIST_results_generated.txt"
 	LANGUAGES_LOG="./08__LINGUIST.log"
 
 	if [[ -f "${OUTPUT_LINGUIST_FILE}" && -f "${OUTPUT_CLOC_FILE}" ]]; then

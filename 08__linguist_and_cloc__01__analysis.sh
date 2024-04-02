@@ -24,6 +24,8 @@ STEP=$(get_step)
 
 export APP_DIR_OUT="${REPORTS_DIR}/${STEP}__LINGUIST"
 export LOG_FILE="${APP_DIR_OUT}.log"
+export OUT_CSV_FILE="${APP_DIR_OUT}/_LINGUIST_results_extracted.csv"
+export OUT_CLOC_CSV_FILE="${APP_DIR_OUT}/_CLOC_results_extracted.csv"
 
 function linguist() {
 	LANG_FILE="${1}"
@@ -91,9 +93,6 @@ function main() {
 	log_tool_info "Linguist v${VERSION} & CLOC v${CLOC_VERSION}"
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_LINGUIST}") ]]; then
 		if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_CLOC}") ]]; then
-			export OUT_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__LINGUIST__results_extracted.csv
-			export OUT_CLOC_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__CLOC__results_extracted.csv
-
 			rm -Rf "${APP_DIR_OUT}"
 			mkdir -p "${APP_DIR_OUT}"
 			rm -f "${OUT_CSV_FILE}" "${OUT_CLOC_CSV_FILE}"
