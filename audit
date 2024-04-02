@@ -434,7 +434,6 @@ done
 
 if [[ "${USAGE_ACTIVE}" == "true" ]]; then
 	usage
-	exit
 
 elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
 	# Display all current versions in use
@@ -539,16 +538,17 @@ fi
 
 [[ "${DEBUG}" == "true" ]] && set -x
 
-# Directory containing all generated reports
-REPORTS_DIR=${REPORTING_DIR}/${TIMESTAMP}
-
 if [[ -n "${IMPORT_DIR}" ]]; then
 	TARGET_GROUP=$(basename "${IMPORT_DIR}")
 fi
 
-# Include name of the app group if single group is selected
+# Check if an application group has been selected
 if [[ "${TARGET_GROUP}" != "" ]]; then
-	REPORTS_DIR=${REPORTS_DIR}__${TARGET_GROUP}
+	REPORTS_DIR=${REPORTING_DIR}/${TIMESTAMP}__${TARGET_GROUP}
+else
+	echo -e "${ORANGE}No application group selected. Either select a group with '-g', point to a local directory with '-d', or use '-r' to re-generate an existing report.${N}"
+	echo ""
+	usage
 fi
 
 mkdir -p "${REPORTS_DIR}"
