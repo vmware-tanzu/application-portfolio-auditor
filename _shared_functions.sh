@@ -130,7 +130,7 @@ function stream_edit() {
 function for_each_group() {
 	while read -r DIR; do
 		GROUP_NAME="$(basename "${DIR}")"
-		if [[ -z "${TARGET_GROUP}" || "${GROUP_NAME}" == "${TARGET_GROUP}" ]]; then
+		if [[ -z "${APP_GROUP}" || "${GROUP_NAME}" == "${APP_GROUP}" ]]; then
 			"${@}" "${DIR}"
 		fi
 	done < <(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | sort)

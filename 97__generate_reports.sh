@@ -367,9 +367,9 @@ function export_vars() {
 function dropdown() {
 	PAGE="${1}"
 	DROPDOWN_ITEMS=""
-	if [[ -n "${TARGET_GROUP}" ]]; then
+	if [[ -n "${APP_GROUP}" ]]; then
 		# shellcheck disable=SC2089
-		DROPDOWN_ITEMS+="<a class=\"dropdown-item active\" href=\"#\">${TARGET_GROUP}</a>"
+		DROPDOWN_ITEMS+="<a class=\"dropdown-item active\" href=\"#\">${APP_GROUP}</a>"
 	else
 		while read -r DIR; do
 			GROUP=$(basename "${DIR}")

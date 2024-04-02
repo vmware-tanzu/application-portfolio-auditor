@@ -95,50 +95,50 @@ function check_container_engine() {
 
 mkdir -p "${APP_DIR_IN}"
 
-log_console_step "Check and import present applications (${TARGET_GROUP})"
+log_console_step "Check and import present applications (${APP_GROUP})"
 
 # Handle "IMPORT_DIR" parameter
-SKIP_TARGET_GROUP_ANALYSIS="false"
+SKIP_APP_GROUP_ANALYSIS="false"
 if [[ -n "${IMPORT_DIR}" ]]; then
 	if [[ ! -d "${IMPORT_DIR}" ]]; then
 		log_console_error "The specified application import directory ('${IMPORT_DIR}') does not exist."
 		ARE_PREREQUISITES_MET=false
-		SKIP_TARGET_GROUP_ANALYSIS=true
+		SKIP_APP_GROUP_ANALYSIS=true
 	else
 		if [[ "${IMPORT_DIR}" = "${CURRENT_DIR}"* ]]; then
 			log_console_error "The specified application import directory ('${IMPORT_DIR}') must not under the current dir ('${CURRENT_DIR}')."
 			ARE_PREREQUISITES_MET=false
-			SKIP_TARGET_GROUP_ANALYSIS=true
+			SKIP_APP_GROUP_ANALYSIS=true
 		else
-			rm -Rf "${APP_DIR_IN:?}/${TARGET_GROUP}"
+			rm -Rf "${APP_DIR_IN:?}/${APP_GROUP}"
 			# Detect if it is a single- or multiple-app directory
 			if (find "${IMPORT_DIR}" -mindepth 1 -maxdepth 1 | rev | cut -d '/' -f 1 | rev | grep -q -i -E '^pom.xml$|^readme.md$|^license.md$|^\.git$|^target$|^\.svn$'); then
 				log_console_info "Import a single application"
 				# Single app in the import directory
-				TARGET_DIR="${APP_DIR_IN}/${TARGET_GROUP}/"
+				TARGET_DIR="${APP_DIR_IN}/${APP_GROUP}/"
 			else
 				log_console_info "Import multiple applications"
 				# Multiple apps in the import directory
 				TARGET_DIR="${APP_DIR_IN}/"
 			fi
 			mkdir -p "${TARGET_DIR}"
-			cp -Rfp "${IMPORT_DIR}/../${TARGET_GROUP}" "${TARGET_DIR}."
+			cp -Rfp "${IMPORT_DIR}/../${APP_GROUP}" "${TARGET_DIR}."
 		fi
 	fi
 fi
 
-if [[ "${SKIP_TARGET_GROUP_ANALYSIS}" == "false" ]]; then
-	if [[ "${TARGET_GROUP}" == "" ]]; then
+if [[ "${SKIP_APP_GROUP_ANALYSIS}" == "false" ]]; then
+	if [[ "${APP_GROUP}" == "" ]]; then
 		# All groups selected
 		SELECTED_APP_DIR_IN="${APP_DIR_IN}"
 		DEPTH=2
 		COUNT_GROUPS=$(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' \t')
 	else
 		# Group selected
-		SELECTED_APP_DIR_IN="${APP_DIR_IN}/${TARGET_GROUP}"
+		SELECTED_APP_DIR_IN="${APP_DIR_IN}/${APP_GROUP}"
 		DEPTH=1
 		COUNT_GROUPS=1
-		if ! find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | grep -q "${TARGET_GROUP}"; then
+		if ! find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | grep -q "${APP_GROUP}"; then
 			SELECTED_APP_DIR_IN=""
 		fi
 	fi
@@ -153,14 +153,14 @@ if [[ "${SKIP_TARGET_GROUP_ANALYSIS}" == "false" ]]; then
 			ARE_PREREQUISITES_MET=false
 		fi
 	else
-		if [[ -f "${REPORTS_DIR}/list__${TARGET_GROUP}__all_apps.csv" ]]; then
-			log_console_warning "Applications do not exist locally. Creating mock application group structure under '${APP_DIR_IN}/${TARGET_GROUP}'"
-			mkdir -p "${APP_DIR_IN}/${TARGET_GROUP}"
+		if [[ -f "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv" ]]; then
+			log_console_warning "Applications do not exist locally. Creating mock application group structure under '${APP_DIR_IN}/${APP_GROUP}'"
+			mkdir -p "${APP_DIR_IN}/${APP_GROUP}"
 			while read -r APP; do
-				touch "${APP_DIR_IN}/${TARGET_GROUP}/${APP}"
-			done < <(cut -d ',' -f 1 "${REPORTS_DIR}/list__${TARGET_GROUP}__all_apps.csv")
+				touch "${APP_DIR_IN}/${APP_GROUP}/${APP}"
+			done < <(cut -d ',' -f 1 "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv")
 		else
-			log_console_error "Specified application group ('${TARGET_GROUP}') not found. Please use the import option or organize your applications as described in README.md."
+			log_console_error "Specified application group ('${APP_GROUP}') not found. Please use the import option or organize your applications as described in README.md."
 			ARE_PREREQUISITES_MET=false
 		fi
 	fi
