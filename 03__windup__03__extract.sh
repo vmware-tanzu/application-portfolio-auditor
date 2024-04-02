@@ -15,7 +15,7 @@ LOG_FILE="${REPORTS_DIR}/${STEP}__WINDUP.log"
 VERSION="${WINDUP_VERSION}"
 
 # FIXDIR
-RESULT_DIR="${REPORTS_DIR}/${STEP}__WINDUP__${APP_GROUP}"
+RESULT_DIR="${REPORTS_DIR}/${STEP}__WINDUP"
 RESULT_SHELL_FILE="${RESULT_DIR}__results_extracted_shell.csv"
 MISSING_FILE="${RESULT_DIR}__results_missing.csv"
 RESULT_FILE="${RESULT_DIR}__results_extracted.csv"
@@ -59,7 +59,7 @@ function check_missing_apps() {
 	mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
 
 	# Generate HTML report map
-	WINDUP_REPORT_DIR="${REPORTS_DIR}/${STEP}__WINDUP__${APP_GROUP}/reports/"
+	WINDUP_REPORT_DIR="${REPORTS_DIR}/${STEP}__WINDUP/reports/"
 	if [[ ! -d "${WINDUP_REPORT_DIR}" ]]; then
 		if [[ -s "${LIST_JAVA_BIN}" || -s "${LIST_JAVA_SRC_INIT}" ]]; then
 			log_console_error "WINDUP result folder does not exist: ${WINDUP_REPORT_DIR}"

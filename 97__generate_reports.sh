@@ -71,9 +71,9 @@ function export_vars() {
 
 	CSV_URL="./${RESULT_CSV_FILE_NAME}"
 
-	WINDUP_URL="./03__WINDUP__${APP_GROUP}/index.html"
+	WINDUP_URL="./03__WINDUP/index.html"
 	WINDUP_PACKAGES="./03__WINDUP__packages/"
-	WINDUP_CSV_ALL="./03__WINDUP__${APP_GROUP}/AllIssues.csv"
+	WINDUP_CSV_ALL="./03__WINDUP/AllIssues.csv"
 	WINDUP_LOG="./03__WINDUP.log"
 
 	WAMT_URL="./04__WAMT/"
@@ -407,7 +407,7 @@ function generate_cloud_csv() {
 
 	#export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
 	export CSA_CSV="${REPORTS_DIR}/02__CSA/results_extracted.csv"
-	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__${APP_GROUP}__results_extracted.csv"
+	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__results_extracted.csv"
 	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/${APP_GROUP}___results_extracted.csv"
 
 	# Debug info to compare the result counts
@@ -777,7 +777,7 @@ function generate_reports() {
 		# Generate CSV file with all results
 		generate_cloud_csv "${CLOUD_TMP_CSV}"
 
-		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP__${APP_GROUP}__report_map.js"
+		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP__report_map.js"
 
 		# Generate cloud HTML file
 		{

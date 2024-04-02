@@ -26,10 +26,8 @@ STEP=$(get_step)
 INCLUDE_PACKAGES=()
 EXCLUDE_PACKAGES=()
 
-BASE_DIR="${REPORTS_DIR}/${STEP}__WINDUP"
-LOG_FILE="${BASE_DIR}.log"
-# FIXDIR
-APP_DIR_OUT="${BASE_DIR}__${APP_GROUP}"
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WINDUP"
+LOG_FILE="${APP_DIR_OUT}.log"
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
