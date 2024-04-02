@@ -23,7 +23,6 @@ SCRIPT_PATH="$(
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 HOME_DIR="${SCRIPT_DIR}/../.."
 export DIST_DIR="${HOME_DIR}/dist"
-export DIST_BIN="${HOME_DIR}/bin"
 
 # shellcheck source=/dev/null
 source "${HOME_DIR}/_versions.sh"
@@ -801,8 +800,6 @@ simple_check_and_download "Script - github_release_manager.sh" "../util/00__rele
 simple_check_and_download "Script - json-v2.sh" "../util/00__release/json-v2.sh" 'https://raw.githubusercontent.com/pgdurand/github-release-api/master/json-v2.sh' "latest"
 
 chmod +x "${SCRIPT_DIR}/../00__release/"*.sh
-
-rm -Rf "${DIST_BIN}"
 
 # Remove dangling images
 if [ -n "$(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)" ]; then
