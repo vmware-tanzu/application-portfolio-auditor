@@ -15,7 +15,7 @@ STEP=$(get_step)
 SEPARATOR=","
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"
 export LOG_FILE="${APP_DIR_OUT}.log"
-RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}___results_extracted.csv"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 JAVA_BIN_LIST="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
 

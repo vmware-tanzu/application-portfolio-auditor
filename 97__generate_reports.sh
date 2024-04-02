@@ -408,7 +408,7 @@ function generate_cloud_csv() {
 	#export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
 	export CSA_CSV="${REPORTS_DIR}/02__CSA/_results_extracted.csv"
 	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__results_extracted.csv"
-	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/${APP_GROUP}___results_extracted.csv"
+	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/_results_extracted.csv"
 
 	# Debug info to compare the result counts
 	#echo "LANG_CSV        - $(cat $LANG_CSV | wc -l |  tr -d ' \t') entries - $LANG_CSV"
