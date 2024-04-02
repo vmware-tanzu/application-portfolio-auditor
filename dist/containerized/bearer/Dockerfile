@@ -7,7 +7,7 @@ FROM ${IMG_BUILD} as build
 ARG BEARER_VERSION
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y ca-certificates software-properties-common golang git
+    apt-get install -y ca-certificates software-properties-common golang-go git
 RUN git clone --branch "v${BEARER_VERSION}" "https://github.com/Bearer/bearer.git" /tool/bearer
 WORKDIR /tool/bearer
 RUN go clean -modcache && go mod download
