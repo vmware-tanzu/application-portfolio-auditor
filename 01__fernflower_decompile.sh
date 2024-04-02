@@ -97,7 +97,6 @@ function unpack_and_decompile() {
 		cp "${APP}" "${APP_DIR_TMP}"
 
 		APP_NAME=$(basename "${APP}")
-		APP_TMP=${APP_DIR_TMP}/${APP_NAME}
 
 		while [ "$(find "${APP_DIR_TMP}" -type f -iname '*.war' \
 			-o -type f -iname '*.ear' \
@@ -248,25 +247,33 @@ function unpack_and_decompile() {
 		done
 
 		APP_SRC="${APP_DIR_SRC}/${APP_NAME}"
+		rm -Rf "${APP_SRC}"
 		mkdir -p "${APP_SRC}"
 
+		APP_TMP=${APP_DIR_TMP}/${APP_NAME}
 		APP_TMP_NAME="${APP_TMP%.*}_${APP_TMP##*.}"
 
 		if [[ "${PRE_ANALYSIS_ACTIVE}" == "false" ]]; then
 			log_console_step "Decompiling '${APP_TMP_NAME}' with a total of $(find "${APP_TMP_NAME}" -name '*.class' | wc -l | tr -d ' ') classes ($(date))"
 			## A number of files cause issues for Fernflower, either due to their type, or the
-			## file names not being UTF-8... Since all we _need_ are the EAR and class files,
-			## we should remove _everything_ else
+			## file names not being UTF-8... Since all we _need_ are the EAR and class files, we should remove _everything_ else
 			#find . \! \( -name '*.ear' -o -name '*.class' -o -name '*.xml' -o -name '*.jsp' \) -type f -delete
 			set +e
 			${CONTAINER_ENGINE} run --rm -v "${APP_TMP_NAME}:/class:ro" -v "${APP_SRC}:/src:delegated" "${CONTAINER_IMAGE_NAME_FERNFLOWER}" -log="${FERNFLOWER_LOG_LEVEL}" "/class" "/src" >>"${LOG_FILE}" 2>&1
+			RC=$?
 			set -e
+			if [[ ${RC} -ne 0 ]]; then
+				log_console_error "An error occurred during the decompilation."
+			fi
 		else
 			log_console_step "Identified '${APP_TMP_NAME}' with a total of $(find "${APP_TMP_NAME}" -name '*.class' | wc -l | tr -d ' ') classes"
 		fi
-		rm -Rf "${APP_DIR_TMP}"
+		# Note: Here we do not delete ${APP_DIR_TMP} as it creates some issues with the containerized fernflower execution. 
+		rm -Rf "${APP_TMP}" "${APP_TMP_NAME}"
 
 	done <"${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
+
+	rm -Rf "${APP_DIR_TMP}"
 
 }
 
