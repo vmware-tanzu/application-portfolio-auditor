@@ -15,7 +15,7 @@ DB_LOCATION="${APP_DIR_OUT}/db/csa.db"
 MISSING_FILE="${APP_DIR_OUT}/results_missing.csv"
 RESULT_BAGGER_FILE_NAME=results_extracted_bagger.csv
 RESULT_BAGGER_FILE="${APP_DIR_OUT}/${RESULT_BAGGER_FILE_NAME}"
-RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 export LOG_FILE=/dev/null
 
