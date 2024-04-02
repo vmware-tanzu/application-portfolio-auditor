@@ -10,7 +10,6 @@
 set -eu
 
 # ------ Do not modify
-
 VERSION=${WINDUP_VERSION}
 STEP=$(get_step)
 
