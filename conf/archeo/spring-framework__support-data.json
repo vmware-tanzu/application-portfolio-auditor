@@ -18,7 +18,7 @@
   {
     "branch": "5.3.x",
     "initialDate": "2020-10-27",
-    "ossEnforcedEnd": "2024-12-31",
+    "ossEnforcedEnd": "2024-08-31",
     "ossPolicyEnd": "2024-12-31",
     "commercialEnforcedEnd": "2026-12-31",
     "commercialPolicyEnd": "2026-04-30"

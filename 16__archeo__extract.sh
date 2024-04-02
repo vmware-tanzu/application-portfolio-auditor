@@ -451,18 +451,17 @@ function generate_csv() {
 download_spring_project_support_files() {
 	mkdir -p "${CONF_DIR}"
 	for KEY in "${!PROJECT_ID_MAP[@]}"; do
-		FILENAME="${CONF_DIR}/${KEY}__support-data.json"
-		if [ ! -f "${FILENAME}" ]; then
+		if [ "${KEY}" != "micrometer-io" ]; then
+			FILENAME="${CONF_DIR}/${KEY}__support-data.json"
 			URL="https://spring.io/page-data/projects/$KEY/page-data.json"
 			log_console_info "Downloading configuration for ${KEY} (${FILENAME})"
 			curl -Ls "$URL" | jq -r '.result.data.page.support' >"${FILENAME}"
-		else
-			log_console_info "Configuration for ${KEY} already exists. Skipping download. (${FILENAME})"
 		fi
 	done
 }
 
 function main() {
+	# Uncomment to update the Spring Support information files
 	#download_spring_project_support_files
 	for_each_group generate_csv
 }
