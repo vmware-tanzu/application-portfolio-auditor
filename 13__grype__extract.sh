@@ -12,10 +12,9 @@
 # ------ Do not modify
 STEP=$(get_step)
 SEPARATOR=","
-# FIXDIR
-APP_DIR_OUT="${REPORTS_DIR}/${STEP}__GRYPE__${APP_GROUP}"
-RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
-export LOG_FILE=${REPORTS_DIR}/${STEP}__GRYPE.log
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__GRYPE"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+export LOG_FILE="${APP_DIR_OUT}.log"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}Grype vulns" >"${RESULT_FILE}"

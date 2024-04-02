@@ -13,11 +13,9 @@
 SEPARATOR=","
 VERSION=${SCANCODE_VERSION}
 STEP=$(get_step)
-APP_BASE="${REPORTS_DIR}/${STEP}__SCANCODE"
-# FIXDIR
-export APP_DIR_OUT="${APP_BASE}__${APP_GROUP}"
-export LOG_FILE=${APP_BASE}.log
-RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
+export APP_DIR_OUT="${REPORTS_DIR}/${STEP}__SCANCODE"
+export LOG_FILE=${APP_DIR_OUT}.log
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 function extract() {
 	rm -f "${RESULT_FILE}"

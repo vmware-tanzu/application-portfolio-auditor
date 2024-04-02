@@ -14,7 +14,6 @@ STEP=$(get_step)
 LOG_FILE="${REPORTS_DIR}/${STEP}__WINDUP.log"
 VERSION="${WINDUP_VERSION}"
 
-# FIXDIR
 RESULT_DIR="${REPORTS_DIR}/${STEP}__WINDUP"
 RESULT_SHELL_FILE="${RESULT_DIR}__results_extracted_shell.csv"
 MISSING_FILE="${RESULT_DIR}__results_missing.csv"

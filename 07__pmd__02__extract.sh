@@ -17,7 +17,7 @@ PMD_DIR_OUT=${APP_DIR_OUT}/pmd
 CPD_DIR_OUT=${APP_DIR_OUT}/cpd
 export LOG_FILE=${APP_DIR_OUT}.log
 
-RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}___results_extracted.csv"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 declare -A LANGUAGES=(
 	["java-src"]="Java"
@@ -46,7 +46,7 @@ function extract() {
 		COUNT_VIOLATIONS='n/a'
 		COUNT_RULES='n/a'
 		if [[ "${LANGUAGE}" == "Java" ]]; then
-			PMD_FILE=${PMD_DIR_OUT}/${APP_GROUP}__${APP_NAME}_pmd.html
+			PMD_FILE=${PMD_DIR_OUT}/${APP_NAME}_pmd.html
 			if [[ -f "${PMD_FILE}" ]]; then
 				COUNT_VIOLATIONS=$(awk 'BEGIN { count=0 } /<td align="center">[0-9]*<\/td>/{count++} END{print count}' "${PMD_FILE}" || true)
 				COUNT_RULES=$(awk -F'[<>]' 'BEGIN { count=0 } /<tr><td>[^<]*<\/td><td align=center>[0-9]*<\/td><\/tr>/ {count++} END {print count}' "${PMD_FILE}" || true)
@@ -54,7 +54,7 @@ function extract() {
 			#echo "${APP_NAME} - VIOLATIONS: ${COUNT_VIOLATIONS} - RULES: ${COUNT_RULES}"
 		fi
 
-		CPD_FILE=${CPD_DIR_OUT}/${APP_GROUP}__${APP_NAME}__cpd.xml
+		CPD_FILE=${CPD_DIR_OUT}/${APP_NAME}__cpd.xml
 
 		declare COUNT_DUPLICATED_FRAMENTS TOTAL_DUPLICATED_LINES TOTAL_DUPLICATED_TOKENS
 		if [[ -f "${CPD_FILE}" ]]; then

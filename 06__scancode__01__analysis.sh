@@ -17,10 +17,8 @@ TIMEOUT=90
 # ------ Do not modify
 VERSION=${SCANCODE_VERSION}
 STEP=$(get_step)
-APP_BASE=${REPORTS_DIR}/${STEP}__SCANCODE
-export LOG_FILE=${APP_BASE}.log
-# FIXDIR
-APP_DIR_OUT=${APP_BASE}__${APP_GROUP}
+APP_DIR_OUT=${REPORTS_DIR}/${STEP}__SCANCODE
+export LOG_FILE=${APP_DIR_OUT}.log
 
 # Unpack and delete an archive
 function unpack() {

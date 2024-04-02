@@ -15,9 +15,8 @@
 VERSION=${GRYPE_VERSION}
 STEP=$(get_step)
 GRYPE_VULN_CACHE_DIR="${DIST_DIR}/grype_cache"
-export LOG_FILE=${REPORTS_DIR}/${STEP}__GRYPE.log
-# FIXDIR
-export OUT_DIR="${REPORTS_DIR}/${STEP}__GRYPE__${APP_GROUP}"
+export OUT_DIR="${REPORTS_DIR}/${STEP}__GRYPE"
+export LOG_FILE="${OUT_DIR}.log"
 
 # Analyze all applications present in provided list.
 function analyze() {

@@ -25,7 +25,7 @@ function analyze() {
 		set +e
 		APP_NAME=$(basename "${APP}")
 		log_analysis_message "app '${APP_NAME}'"
-		MAI_OUT=${APP_DIR_OUT}/mai__${APP_GROUP}__${APP_NAME}
+		MAI_OUT=${APP_DIR_OUT}/${APP_NAME}
 
 		if [[ -f "${APP}" || -d "${APP}" ]]; then
 			APP_DIR=$(dirname "${APP}")

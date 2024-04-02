@@ -88,7 +88,7 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../11__SLSCAN__{{APP_GROUP}}/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/scan-light.png" height="50" width="50" alt="{{SLSCAN_VERSION}}"></a>
+          <a href="./../11__SLSCAN/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/scan-light.png" height="50" width="50" alt="{{SLSCAN_VERSION}}"></a>
           <div>
             <h5 class="mt-0 mb-1">ShiftLeft SAST Scan <a href="https://github.com/ShiftLeftSecurity/sast-scan" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SLSCAN_VERSION}}</a></h5>
             Identifies security vulnerabilities focussing on the <a href="https://owasp.org/www-project-top-ten/" rel="noreferrer" target="_blank" class="link">OWASP Top 10</a>. (<a href="./.{{SLSCAN_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{SLSCAN_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)

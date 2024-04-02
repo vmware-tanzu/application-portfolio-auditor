@@ -39,7 +39,7 @@ function analyze() {
 			if [[ "${LANGUAGE}" == "java" ]]; then
 				# Generate the quality report
 				set +e
-				(time ${CONTAINER_ENGINE} run --rm -v "${APP_DIR}:/app:ro" -v "${PMD_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME_PMD}" check --no-progress --no-cache -d "/app/${APP_NAME}" -f summaryhtml --rulesets "${RULESETS}" --no-fail-on-violation --report-file "/out/${APP_GROUP}__${APP_NAME}_pmd.html") >>"${LOG_FILE}" 2>&1
+				(time ${CONTAINER_ENGINE} run --rm -v "${APP_DIR}:/app:ro" -v "${PMD_DIR_OUT}:/out:delegated" "${CONTAINER_IMAGE_NAME_PMD}" check --no-progress --no-cache -d "/app/${APP_NAME}" -f summaryhtml --rulesets "${RULESETS}" --no-fail-on-violation --report-file "/out/${APP_NAME}_pmd.html") >>"${LOG_FILE}" 2>&1
 				set -e
 			fi
 
@@ -48,7 +48,7 @@ function analyze() {
 			fi
 
 			# Generate the copy-paste report
-			CPD_OUT=${CPD_DIR_OUT}/${APP_GROUP}__${APP_NAME}__cpd.xml
+			CPD_OUT=${CPD_DIR_OUT}/${APP_NAME}__cpd.xml
 			set +e
 			(time ${CONTAINER_ENGINE} run --rm -v "${APP_DIR}:/app:ro" "${CONTAINER_IMAGE_NAME_PMD}" cpd --minimum-tokens 100 -d "/app/${APP_NAME}" --format xml --language "${LANGUAGE}" --no-fail-on-violation --skip-lexical-errors >"${CPD_OUT}") >>"${LOG_FILE}" 2>&1
 			set -e

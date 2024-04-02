@@ -55,7 +55,7 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../13__GRYPE__{{APP_GROUP}}/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="{{GRYPE_VERSION}}"></a>
+          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="{{GRYPE_VERSION}}"></a>
           <div>
             <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
             Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)

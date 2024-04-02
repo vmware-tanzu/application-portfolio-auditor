@@ -92,7 +92,7 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../14__TRIVY__{{APP_GROUP}}/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/trivy.svg" height="50" width="50" alt="{{TRIVY_VERSION}}"></a>
+          <a href="./../14__TRIVY/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/trivy.svg" height="50" width="50" alt="{{TRIVY_VERSION}}"></a>
           <div>
             <h5 class="mt-0 mb-1">Trivy <a href="https://github.com/aquasecurity/trivy" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TRIVY_VERSION}}</a></h5>
             Find vulnerabilities, misconfigurations, secrets. (<a href="{{TRIVY_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{TRIVY_REPORT_DIR}}/../14__TRIVY.log" rel="noreferrer" target="_blank" class="report-link">log</a>)

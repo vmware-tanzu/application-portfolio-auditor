@@ -21,10 +21,8 @@ VERSION=${SLSCAN_VERSION}
 STEP=$(get_step)
 
 export APP_NAME LOG_FILE APP_DIR_OUT
-APP_BASE="${REPORTS_DIR}/${STEP}__SLSCAN"
-LOG_FILE="${APP_BASE}.log"
-# FIXDIR
-APP_DIR_OUT="${APP_BASE}__${APP_GROUP}"
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__SLSCAN"
+LOG_FILE="${APP_DIR_OUT}.log"
 
 ANALYZABLE_APP_FOUND="false"
 
@@ -80,7 +78,6 @@ function main() {
 
 		mkdir -p "${APP_DIR_OUT}"
 
-		# FIXDIR
 		analyze java "${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt"
 		analyze python "${REPORTS_DIR}/list__${APP_GROUP}__python.txt"
 		analyze javascript "${REPORTS_DIR}/list__${APP_GROUP}__js.txt"

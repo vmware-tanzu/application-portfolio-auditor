@@ -209,15 +209,15 @@ function drawTable(data) {
       } else if (d.name.includes("OWASP")) {
         return "./05__OWASP_DC/"+d.app+"_dc_report.html";
       } else if (d.name.includes("FSB")) {
-        return "./09__FindSecBugs/{{APP_GROUP}}__"+d.app+".html";
+        return "./09__FindSecBugs/"+d.app+".html";
       } else if (d.name.includes("SLScan")) {
-        return "./11__SLSCAN__{{APP_GROUP}}/"+d.app+".html";
+        return "./11__SLSCAN/"+d.app+".html";
       } else if (d.name.includes("Insider")) {
-        return "./12__INSIDER__{{APP_GROUP}}/"+d.app+"_report.html";
+        return "./12__INSIDER/"+d.app+"_report.html";
       } else if (d.name.includes("Grype")) {
-        return "./13__GRYPE__{{APP_GROUP}}/"+d.app+".html";
+        return "./13__GRYPE/"+d.app+".html";
       } else if (d.name.includes("Trivy")) {
-        return "./14__TRIVY__{{APP_GROUP}}/"+d.app+".html";
+        return "./14__TRIVY/"+d.app+".html";
       } else if (d.name.includes("OSV")) {
         return "./15__OSV/"+d.app+"_osv.txt";
       } else if (d.name.includes("Bearer")) {

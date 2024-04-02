@@ -82,7 +82,7 @@ function export_vars() {
 	ODC_URL="./05__OWASP_DC/"
 	ODC_LOG="./05__OWASP_DC.log"
 
-	SCANCODE_URL="./06__SCANCODE__${APP_GROUP}/"
+	SCANCODE_URL="./06__SCANCODE/"
 	SCANCODE_LOG="./06__SCANCODE.log"
 
 	PMD_URL="./07__PMD/"
@@ -97,16 +97,16 @@ function export_vars() {
 	MAI_URL="./10__MAI/"
 	MAI_LOG="./10__MAI.log"
 
-	SLSCAN_URL="./11__SLSCAN__${APP_GROUP}/"
-	SLSCAN_LOG="./11__SLSCAN__${APP_GROUP}.log"
+	SLSCAN_URL="./11__SLSCAN/"
+	SLSCAN_LOG="./11__SLSCAN.log"
 
-	INSIDER_URL="./12__INSIDER__${APP_GROUP}/"
+	INSIDER_URL="./12__INSIDER/"
 	INSIDER_LOG="./12__INSIDER.log"
 
-	GRYPE_URL="./13__GRYPE__${APP_GROUP}/"
+	GRYPE_URL="./13__GRYPE/"
 	GRYPE_LOG="./13__GRYPE.log"
 
-	TRIVY_URL="./14__TRIVY__${APP_GROUP}/"
+	TRIVY_URL="./14__TRIVY/"
 	TRIVY_LOG="./14__TRIVY.log"
 
 	OSV_URL="./15__OSV/"
@@ -150,7 +150,7 @@ function export_vars() {
 		export HAS_WINDUP_PACKAGES_REPORT=''
 	fi
 
-	WAMT_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '*__*.html' | grep -c 'WAMT' || true)
+	WAMT_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'WAMT' || true)
 	if ((WAMT_REPORT > 0)); then
 		export HAS_WAMT_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -161,7 +161,7 @@ function export_vars() {
 
 	export HAS_QUALITY_OR_LANGUAGE_REPORT=''
 	export HAS_QUALITY_REPORT=''
-	SCANCODE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 3 -mindepth 3 -type f -name 'index.html' | grep -c 'SCANCODE' || true)
+	SCANCODE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'SCANCODE' || true)
 	if ((SCANCODE_REPORT > 0)); then
 		export HAS_SCANCODE_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -172,7 +172,7 @@ function export_vars() {
 		export HAS_SCANCODE_REPORT=''
 	fi
 
-	PMD_REPORT=$(find "${REPORTS_DIR}" -maxdepth 3 -mindepth 3 -type f -name '*__*' | grep -c 'PMD' || true)
+	PMD_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'PMD' || true)
 	if ((PMD_REPORT > 0)); then
 		export HAS_PMD_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -183,7 +183,7 @@ function export_vars() {
 		export HAS_PMD_REPORT=''
 	fi
 
-	MAI_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'mai_*.html' | grep -c 'MAI' || true)
+	MAI_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'MAI' || true)
 	if ((MAI_REPORT > 0)); then
 		export HAS_MAI_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -215,7 +215,7 @@ function export_vars() {
 		export HAS_ODC_REPORT=''
 	fi
 
-	FSB_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '*__*.html' | grep -c 'FindSecBugs' || true)
+	FSB_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'FindSecBugs' || true)
 	if ((FSB_REPORT > 0)); then
 		export HAS_FSB_REPORT=TRUE
 		HAS_SECURITY_REPORT=TRUE
@@ -245,7 +245,7 @@ function export_vars() {
 		export HAS_INSIDER_REPORT=''
 	fi
 
-	GRYPE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'results_extracted.csv' | grep -c 'GRYPE' || true)
+	GRYPE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'GRYPE' || true)
 	if ((GRYPE_REPORT > 0)); then
 		export HAS_GRYPE_REPORT=TRUE
 		HAS_SECURITY_REPORT=TRUE
@@ -255,7 +255,7 @@ function export_vars() {
 		export HAS_GRYPE_REPORT=''
 	fi
 
-	TRIVY_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'results_extracted.csv' | grep -c 'TRIVY' || true)
+	TRIVY_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'TRIVY' || true)
 	if ((TRIVY_REPORT > 0)); then
 		export HAS_TRIVY_REPORT=TRUE
 		HAS_SECURITY_REPORT=TRUE
@@ -451,13 +451,13 @@ function generate_security_csv() {
 	TMP_CSV=${1}
 	rm -f "${TMP_CSV}"
 
-	export FSB_CSV_FILE="${REPORTS_DIR}/09__FindSecBugs/${APP_GROUP}___results_extracted.csv"
-	export FSB_CSV="./09__FindSecBugs/${APP_GROUP}___results_extracted.csv"
-	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
-	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
-	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}/results_extracted.csv"
-	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}/results_extracted.csv"
 	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC/_results_extracted.csv"
+	export FSB_CSV_FILE="${REPORTS_DIR}/09__FindSecBugs/_results_extracted.csv"
+	export FSB_CSV="./09__FindSecBugs/_results_extracted.csv"
+	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN/_results_extracted.csv"
+	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER/_results_extracted.csv"
+	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE/_results_extracted.csv"
+	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY/_results_extracted.csv"
 	export OSV_CSV_FILE="${REPORTS_DIR}/15__OSV/_results__security__osv.csv"
 	export BEARER_CSV_FILE="${REPORTS_DIR}/17__BEARER/_results__security__bearer.csv"
 
@@ -487,9 +487,9 @@ function generate_quality_csv() {
 	rm -f "${TMP_CSV}"
 
 	export ARCHEO_CSV="${REPORTS_DIR}/16__ARCHEO/_results__quality__archeo.csv"
-	export PMD_CSV="${REPORTS_DIR}/07__PMD/${APP_GROUP}___results_extracted.csv"
-	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE__${APP_GROUP}/results_extracted.csv"
-	export MAI_CSV="${REPORTS_DIR}/10__MAI/${APP_GROUP}__results_extracted.csv"
+	export PMD_CSV="${REPORTS_DIR}/07__PMD/_results_extracted.csv"
+	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE/_results_extracted.csv"
+	export MAI_CSV="${REPORTS_DIR}/10__MAI/_results_extracted.csv"
 
 	CSV_FILES=("${ARCHEO_CSV}" "${PMD_CSV}" "${SCANCODE_CSV}" "${MAI_CSV}")
 
@@ -507,15 +507,15 @@ function generate_slscan_html() {
 
 	export APP SLSCAN_REPORT_DIR
 
-	SLSCAN_REPORT_DIR=./../11__SLSCAN__${APP_GROUP}
+	SLSCAN_REPORT_DIR=./../11__SLSCAN
 
 	APP_LIST="${REPORTS_DIR}/list__tmp.txt"
 	cat "${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt" "${REPORTS_DIR}/list__${APP_GROUP}__python.txt" "${REPORTS_DIR}/list__${APP_GROUP}__js.txt" "${REPORTS_DIR}/list__${APP_GROUP}__cs.txt" >"${APP_LIST}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
-		SLSCAN_REPORT="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP}.html"
-		TXT_IN="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP}.txt"
+		SLSCAN_REPORT="${REPORTS_DIR}/11__SLSCAN/${APP}.html"
+		TXT_IN="${REPORTS_DIR}/11__SLSCAN/${APP}.txt"
 		{
 			${MUSTACHE} "${TEMPLATE_DIR}/slscan_01.mo"
 			echo "Tool,Critical,High,Medium,Low,Status"
@@ -530,13 +530,13 @@ function generate_slscan_html() {
 function generate_grype_html() {
 	export APP GRYPE_REPORT_DIR
 
-	GRYPE_REPORT_DIR=./../13__GRYPE__${APP_GROUP}
+	GRYPE_REPORT_DIR=./../13__GRYPE
 
 	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
-		GRYPE_DIR="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}"
+		GRYPE_DIR="${REPORTS_DIR}/13__GRYPE"
 		GRYPE_REPORT="${GRYPE_DIR}/${APP}.html"
 		GRYPE_CSV="${GRYPE_DIR}/${APP}_grype.csv"
 		if [ -f "${GRYPE_CSV}" ] && [ $(wc -l <(tail -n +2 "${GRYPE_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
@@ -567,8 +567,8 @@ function build_trivy_regex() {
 function generate_trivy_html() {
 
 	export APP GRYPE_REPORT_DIR
-	export TRIVY_REPORT_DIR="./../14__TRIVY__${APP_GROUP}"
-	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}"
+	export TRIVY_REPORT_DIR="./../14__TRIVY"
+	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY"
 
 	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 

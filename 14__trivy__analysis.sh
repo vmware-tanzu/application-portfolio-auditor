@@ -16,9 +16,8 @@ VERSION=${TRIVY_VERSION}
 STEP=$(get_step)
 TRIVY_VULN_CACHE_DIR="${DIST_DIR}/trivy_cache"
 
-export LOG_FILE=${REPORTS_DIR}/${STEP}__TRIVY.log
-# FIXDIR
-export OUT_DIR="${REPORTS_DIR}/${STEP}__TRIVY__${APP_GROUP}"
+export OUT_DIR="${REPORTS_DIR}/${STEP}__TRIVY"
+export LOG_FILE="${OUT_DIR}.log"
 
 # Analyze all applications present in provided list.
 function analyze() {

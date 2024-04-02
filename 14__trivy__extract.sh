@@ -13,10 +13,9 @@
 VERSION=${TRIVY_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-# FIXDIR
-APP_DIR_OUT="${REPORTS_DIR}/${STEP}__TRIVY__${APP_GROUP}"
-RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
-export LOG_FILE="${REPORTS_DIR}/${STEP}__TRIVY.log"
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__TRIVY"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+export LOG_FILE="${APP_DIR_OUT}.log"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}Trivy vulns" >"${RESULT_FILE}"

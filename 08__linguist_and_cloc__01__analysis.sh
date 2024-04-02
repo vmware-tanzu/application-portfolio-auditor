@@ -60,8 +60,8 @@ function analyze_dir() {
 	DIR="${1}"
 	REPO_NAME=$(basename "${DIR}")
 	REPO="${APP_GROUP_SRC_DIR}/${REPO_NAME}"
-	LINGUIST_FILE="${APP_DIR_OUT}/${APP_GROUP}__${REPO_NAME}.linguist"
-	CLOC_RESULTS="${APP_DIR_OUT}/${APP_GROUP}__${REPO_NAME}.cloc"
+	LINGUIST_FILE="${APP_DIR_OUT}/${REPO_NAME}.linguist"
+	CLOC_RESULTS="${APP_DIR_OUT}/${REPO_NAME}.cloc"
 
 	# Run Linguist
 	linguist "${LINGUIST_FILE}" "${REPO}" "${REPO_NAME}" "${LOG_FILE}"

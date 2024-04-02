@@ -13,11 +13,9 @@
 VERSION=${INSIDER_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-APP_BASE=${REPORTS_DIR}/${STEP}__INSIDER
-# FIXDIR
-APP_DIR_OUT="${APP_BASE}__${APP_GROUP}"
-RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}___results_extracted.csv"
-export LOG_FILE="${APP_BASE}.log"
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__INSIDER"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+export LOG_FILE="${APP_DIR_OUT}.log"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}Insider SAST vulns" >"${RESULT_FILE}"

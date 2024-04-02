@@ -94,7 +94,7 @@ function analyze() {
 			--targetCloud="${TARGET_CLOUD}"
 			--sourceJava="${SOURCE_JAVA}"
 			--targetJava="${TARGET_JAVA}"
-			--output="/out/${APP_GROUP}__${APP_NAME}.html"
+			--output="/out/${APP_NAME}.html"
 		)
 		set +e
 		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name WAMT "${CONTAINER_IMAGE_NAME_WAMT}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1

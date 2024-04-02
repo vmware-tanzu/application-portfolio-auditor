@@ -15,14 +15,14 @@ STEP=$(get_step)
 SEPARATOR=","
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__MAI"
 export LOG_FILE="${APP_DIR_OUT}.log"
-RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}__results_extracted.csv"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}MAI unique tags" >"${RESULT_FILE}"
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
 		log_extract_message "app '${APP}'"
-		HTML_IN="${APP_DIR_OUT}/mai__${APP_GROUP}__${APP}.html"
+		HTML_IN="${APP_DIR_OUT}/${APP}.html"
 		TAGS="n/a"
 		if [ -f "${HTML_IN}" ]; then
 			TAGS="0"

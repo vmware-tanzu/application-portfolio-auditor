@@ -29,7 +29,7 @@ function analyze() {
 			ARGS=(
 				-low
 				-html
-				-output "/out/${APP_GROUP}__${APP_NAME}.html"
+				-output "/out/${APP_NAME}.html"
 				"/apps/${APP_NAME}"
 			)
 			(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name FSB "${CONTAINER_IMAGE_NAME_FSB}" "${ARGS[@]}" 2> >(grep -v "^SLF4J")) >>"${LOG_FILE}" 2>&1

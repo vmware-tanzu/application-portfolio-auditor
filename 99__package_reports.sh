@@ -44,11 +44,7 @@ function generate_cf_deployment() {
 	mkdir -p "${REPORTS_DIR_CF_PUBLIC}" "${REPORTS_DIR_CF_CSA}"
 
 	T=$(echo "${TIMESTAMP}" | tr '_' '-')
-	if [[ "${APP_GROUP}" != "" ]]; then
-		CF_APP_NAME="${CF_NAME_PREFIX}-${T}--${APP_GROUP}"
-	else
-		CF_APP_NAME="${CF_NAME_PREFIX}-${T}"
-	fi
+	CF_APP_NAME="${CF_NAME_PREFIX}-${T}--${APP_GROUP}"
 
 	cp -Rfp "${REPORTS_DIR}/" "${REPORTS_DIR_CF_PUBLIC}/."
 
@@ -92,11 +88,7 @@ function generate_k8_deployment() {
 	mkdir -p "${REPORTS_DIR_K8_DEPLOY}" "${REPORTS_DIR_K8_REPORTS}" "${REPORTS_DIR_K8_PUBLIC}"
 
 	T=$(echo "${TIMESTAMP}" | tr '_' '-')
-	if [[ "${APP_GROUP}" != "" ]]; then
-		K8_REPORT_NAME="${T}-${APP_GROUP}"
-	else
-		K8_REPORT_NAME="${T}"
-	fi
+	K8_REPORT_NAME="${T}-${APP_GROUP}"
 
 	cp -Rfp "${REPORTS_DIR}/" "${REPORTS_DIR_K8_PUBLIC}/."
 	cp -Rfp "${TEMPLATE_DIR_K8}/deploy" "${REPORTS_DIR_K8}/."

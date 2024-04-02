@@ -13,11 +13,9 @@
 VERSION=${SLSCAN_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-APP_BASE=${REPORTS_DIR}/${STEP}__SLSCAN
-# FIXDIR
-APP_DIR_OUT=${APP_BASE}__${APP_GROUP}
-RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}___results_extracted.csv"
-export LOG_FILE=${APP_DIR_OUT}.log
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__SLSCAN"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+export LOG_FILE="${APP_DIR_OUT}.log"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}SLScan SAST vulns" >"${RESULT_FILE}"
