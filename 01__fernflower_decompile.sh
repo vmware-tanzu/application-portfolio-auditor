@@ -41,8 +41,9 @@ STEP=$(get_step)
 VERSION="${FERNFLOWER_VERSION}"
 
 # List of all archives that have been decompiled
-FERNFLOWER_UNPACKED_LIBS_LIST="${REPORTS_DIR}/${STEP}__Fernflower__unpacked_libs.txt"
-FERNFLOWER_ALL_LIBS_LIST="${REPORTS_DIR}/${STEP}__Fernflower__all_libs.txt"
+BASE_DIR="${REPORTS_DIR}/${STEP}__Fernflower"
+FERNFLOWER_UNPACKED_LIBS_LIST="${BASE_DIR}/list__unpacked_libs.txt"
+FERNFLOWER_ALL_LIBS_LIST="${BASE_DIR}/list__all_libs.txt"
 MVNREPOSITORY_BASE_URL="https://mvnrepository.com"
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__Fernflower.log
@@ -294,6 +295,8 @@ function main() {
 		[[ "${USE_FINDJAR}" == "true" ]] && { check_status "findjar.com" "${FINDJAR_BASE_URL}"; }
 		check_status "Maven Search" "${MAVEN_SEARCH_BASE_URL}"
 		check_status "MVN Repository" "${MVNREPOSITORY_BASE_URL}"
+
+		mkdir -p "${BASE_DIR}"
 
 		unpack_and_decompile
 
