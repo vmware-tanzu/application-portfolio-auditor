@@ -79,7 +79,7 @@ function analyze() {
 
 		log_console_info "Results: ${APP_DIR_OUT}/${APP_NAME}_dc_report.html"
 
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__owasp_dc.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__owasp_dc.txt"
 
 	log_console_success "Open this directory for all results: ${APP_DIR_OUT}"
 }

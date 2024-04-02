@@ -14,7 +14,7 @@ STEP=$(get_step)
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__FindSecBugs"
 LOG_FILE="${APP_DIR_OUT}".log
 
-LIST_JAVA_BIN="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+LIST_JAVA_BIN="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {

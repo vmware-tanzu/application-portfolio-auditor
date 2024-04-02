@@ -18,11 +18,11 @@ BASE_DIR="${REPORTS_DIR}/${STEP}__OSV"
 export LOG_FILE="${BASE_DIR}.log"
 export OUT_DIR_SYFT="${BASE_DIR}"
 export OUT_DIR_OSV="${BASE_DIR}"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
 
 # Analyze all applications present in provided list.
 function analyze() {
 
-	APP_LIST=${1}
 	if [[ -s "${APP_LIST}" ]]; then
 		while read -r APP; do
 			APP_NAME=$(basename "${APP}")
@@ -92,7 +92,7 @@ function main() {
 			# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 			check_debug_mode
 			mkdir -p "${OUT_DIR_SYFT}" "${OUT_DIR_OSV}"
-			analyze "${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt"
+			analyze
 			log_console_success "Open this directory for the results: ${OUT_DIR_OSV}"
 		else
 			log_console_error "OSV analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_OSV}'"

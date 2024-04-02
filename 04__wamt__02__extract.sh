@@ -17,7 +17,7 @@ APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"
 export LOG_FILE="${APP_DIR_OUT}.log"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
-JAVA_BIN_LIST="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 function generate_csv() {
 	if ! grep -q '.*\.[ew]ar$' "${JAVA_BIN_LIST}"; then
@@ -92,7 +92,7 @@ function generate_csv() {
 			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
 
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"
 }

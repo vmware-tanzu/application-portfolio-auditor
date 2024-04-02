@@ -67,7 +67,7 @@ function export_vars() {
 	TOOLS_QUALITY_COUNT=0
 	TOOLS_LANGUAGE_COUNT=0
 
-	APP_COUNT=$(count_lines "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt")
+	APP_COUNT=$(count_lines "${REPORTS_DIR}/00__Weave/list__all_apps.txt")
 
 	CSV_URL="./${RESULT_CSV_FILE_NAME}"
 
@@ -366,7 +366,7 @@ function export_vars() {
 # Add the language column
 function add_language_column() {
 	TMP_CSV=${1}
-	export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
+	export LANG_CSV="${REPORTS_DIR}/00__Weave/list__all_apps.csv"
 	# Add the language column
 	{
 		echo "Applications${SEPARATOR}Language"
@@ -405,7 +405,7 @@ function generate_cloud_csv() {
 	TMP_CSV=${1}
 	rm -f "${TMP_CSV}"
 
-	#export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
+	#export LANG_CSV="${REPORTS_DIR}/00__Weave/list__all_apps.csv"
 	export CSA_CSV="${REPORTS_DIR}/02__CSA/_results_extracted.csv"
 	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__results_extracted.csv"
 	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/_results_extracted.csv"
@@ -510,7 +510,7 @@ function generate_slscan_html() {
 	SLSCAN_REPORT_DIR=./../11__SLSCAN
 
 	APP_LIST="${REPORTS_DIR}/list__tmp.txt"
-	cat "${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt" "${REPORTS_DIR}/list__${APP_GROUP}__python.txt" "${REPORTS_DIR}/list__${APP_GROUP}__js.txt" "${REPORTS_DIR}/list__${APP_GROUP}__cs.txt" >"${APP_LIST}"
+	cat "${REPORTS_DIR}/00__Weave/list__java-src.txt" "${REPORTS_DIR}/00__Weave/list__python.txt" "${REPORTS_DIR}/00__Weave/list__js.txt" "${REPORTS_DIR}/00__Weave/list__cs.txt" >"${APP_LIST}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -532,7 +532,7 @@ function generate_grype_html() {
 
 	GRYPE_REPORT_DIR=./../13__GRYPE
 
-	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -570,7 +570,7 @@ function generate_trivy_html() {
 	export TRIVY_REPORT_DIR="./../14__TRIVY"
 	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY"
 
-	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	# The URL patterns are split in smaller groups because the lenght of the regex sed can handle is limited.
 	# shellcheck disable=SC2034
@@ -733,7 +733,7 @@ function generate_archeo_html() {
 	export APP ARCHEO_REPORT_DIR
 	ARCHEO_REPORT_DIR=./../16__ARCHEO
 
-	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"

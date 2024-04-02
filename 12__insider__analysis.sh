@@ -72,8 +72,8 @@ function main() {
 		# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 		check_debug_mode
 		mkdir -p "${APP_DIR_OUT}"
-		analyze java "${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt"
-		analyze csharp "${REPORTS_DIR}/list__${APP_GROUP}__cs.txt"
+		analyze java "${REPORTS_DIR}/00__Weave/list__java-src.txt"
+		analyze csharp "${REPORTS_DIR}/00__Weave/list__cs.txt"
 		if [[ "${ANALYZABLE_APP_FOUND}" == "true" ]]; then
 			log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
 		else

@@ -36,7 +36,7 @@ function extract() {
 
 		LANGUAGE="Other"
 		for EXT in "${!LANGUAGES[@]}"; do
-			if grep -q "${APP}" "${REPORTS_DIR}/list__${APP_GROUP}__${EXT}.txt"; then
+			if grep -q "${APP}" "${REPORTS_DIR}/00__Weave/list__${EXT}.txt"; then
 				LANGUAGE="${LANGUAGES[$EXT]}"
 				break
 			fi
@@ -93,7 +93,7 @@ function extract() {
 		#echo "${APP_NAME} - DUPLICATED FRAGMENTS: ${COUNT_DUPLICATED_FRAMENTS} - LINES: ${TOTAL_DUPLICATED_LINES} - TOKENS: ${TOTAL_DUPLICATED_TOKENS}"
 		echo "${APP_NAME}${SEPARATOR}${COUNT_RULES}${SEPARATOR}${COUNT_VIOLATIONS}${SEPARATOR}${COUNT_DUPLICATED_FRAMENTS}${SEPARATOR}${TOTAL_DUPLICATED_LINES}${SEPARATOR}${TOTAL_DUPLICATED_TOKENS}" >>"${RESULT_FILE}"
 
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	# Adding the header
 	{

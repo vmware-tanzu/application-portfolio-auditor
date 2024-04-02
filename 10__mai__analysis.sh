@@ -62,7 +62,7 @@ function analyze() {
 			rm -Rf "${MAI_OUT}"
 		fi
 		set -e
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 }
 
 function main() {

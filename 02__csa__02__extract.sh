@@ -29,7 +29,7 @@ function check_missing_apps() {
 		else
 			echo "${APP_GROUP}${S}${APP}${S}${APP}${S}n/a${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}" >>"${MISSING_FILE}"
 		fi
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 }
 
 function main() {

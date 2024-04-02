@@ -19,9 +19,9 @@ RESULT_SHELL_FILE="${RESULT_DIR}__results_extracted_shell.csv"
 MISSING_FILE="${RESULT_DIR}__results_missing.csv"
 RESULT_FILE="${RESULT_DIR}__results_extracted.csv"
 RESULT_REPORT_MAP="${RESULT_DIR}__report_map.js"
-LIST_JAVA_BIN="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
-LIST_JAVA_SRC_INIT="${REPORTS_DIR}/list__${APP_GROUP}__java-src-init.txt"
-LIST_ALL_APPS="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+LIST_JAVA_BIN="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
+LIST_JAVA_SRC_INIT="${REPORTS_DIR}/00__Weave/list__java-src-init.txt"
+LIST_ALL_APPS="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 XSL_FILE="${CURRENT_DIR}/conf/Windup/process_WINDUP.xsl"
 
 function check_missing_apps() {

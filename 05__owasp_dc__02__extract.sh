@@ -58,7 +58,7 @@ function generate_csv() {
 			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
 
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"
 }

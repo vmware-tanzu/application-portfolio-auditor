@@ -264,7 +264,7 @@ function unpack_and_decompile() {
 		# Note: Here we do not delete ${APP_GROUP_TMP_DIR} as it creates some issues with the containerized fernflower execution.
 		rm -Rf "${APP_TMP}" "${APP_TMP_NAME}"
 
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 	rm -Rf "${APP_GROUP_TMP_DIR}"
 

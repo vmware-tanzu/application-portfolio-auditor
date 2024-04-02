@@ -55,6 +55,27 @@ STEP=$(get_step)
 SEPARATOR=','
 export LOG_FILE=${REPORTS_DIR}/${STEP}__Weave.log
 
+export BASE_DIR="${REPORTS_DIR}/00__Weave"
+
+# All apps
+export LIST_ALL="${BASE_DIR}/list__all_apps.txt"
+export LIST_ALL_INIT="${BASE_DIR}/list__all_init_apps.txt"
+export LANG_MAP_CSV="${BASE_DIR}/list__all_apps.csv"
+
+# Currently the following application type can be analyzed ...
+# -> Java apps decompiled and initially provided as source code apps (zip/folder)
+export LIST_JAVA_SRC="${BASE_DIR}/list__java-src.txt"
+# -> Java binary apps
+export LIST_JAVA_BIN="${BASE_DIR}/list__java-bin.txt"
+# -> Java apps initially provided as source code
+export LIST_JAVA_SRC_INIT="${BASE_DIR}/list__java-src-init.txt"
+# -> JavaScript / Python / C# source code apps
+export LIST_JAVASCRIPT="${BASE_DIR}/list__js.txt"
+export LIST_PYTHON="${BASE_DIR}/list__python.txt"
+export LIST_DOTNET="${BASE_DIR}/list__cs.txt"
+# -> Other apps
+export LIST_OTHER="${BASE_DIR}/list__other.txt"
+
 function identify() {
 	local -r APP_FILE_LIST=${1}
 	local -r APP_SRC_DIR=${2}
@@ -89,26 +110,8 @@ function sort_files() {
 }
 
 function main() {
-
-	# All apps
-	export LIST_ALL=${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt
-	export LIST_ALL_INIT=${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt
-
-	export LANG_MAP_CSV=${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv
-
-	# Currently the following application type can be analyzed ...
-	# -> Java apps decompiled and initially provided as source code apps (zip/folder)
-	export LIST_JAVA_SRC=${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt
-	# -> Java binary apps
-	export LIST_JAVA_BIN=${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt
-	# -> Java apps initially provided as source code
-	export LIST_JAVA_SRC_INIT=${REPORTS_DIR}/list__${APP_GROUP}__java-src-init.txt
-	# -> JavaScript / Python / C# source code apps
-	export LIST_JAVASCRIPT=${REPORTS_DIR}/list__${APP_GROUP}__js.txt
-	export LIST_PYTHON=${REPORTS_DIR}/list__${APP_GROUP}__python.txt
-	export LIST_DOTNET=${REPORTS_DIR}/list__${APP_GROUP}__cs.txt
-	# -> Other apps
-	export LIST_OTHER=${REPORTS_DIR}/list__${APP_GROUP}__other.txt
+	rm -Rf "${BASE_DIR}"
+	mkdir -p "${BASE_DIR}"
 
 	rm -f "${LIST_ALL}" "${LIST_ALL_INIT}" "${LANG_MAP_CSV}" "${LIST_JAVA_SRC}" "${LIST_JAVA_BIN}" "${LIST_JAVA_SRC_INIT}" "${LIST_JAVASCRIPT}" "${LIST_PYTHON}" "${LIST_DOTNET}" "${LIST_OTHER}"
 	touch "${LIST_ALL}" "${LIST_ALL_INIT}" "${LANG_MAP_CSV}" "${LIST_JAVA_SRC}" "${LIST_JAVA_BIN}" "${LIST_JAVA_SRC_INIT}" "${LIST_JAVASCRIPT}" "${LIST_PYTHON}" "${LIST_DOTNET}" "${LIST_OTHER}"
@@ -146,7 +149,7 @@ function main() {
 
 	if [[ "${OWASP_ACTIVE}" == "true" ]]; then
 		# List for OWASP DC
-		export LIST_OWASP_DC=${REPORTS_DIR}/list__${APP_GROUP}__owasp_dc.txt
+		export LIST_OWASP_DC=${BASE_DIR}/list__owasp_dc.txt
 		rm -f "${LIST_OWASP_DC}"
 		touch "${LIST_OWASP_DC}"
 		cat "${LIST_ALL}" >"${LIST_OWASP_DC}"

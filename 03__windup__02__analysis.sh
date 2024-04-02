@@ -35,9 +35,9 @@ function analyze() {
 	rm -Rf "${APP_GROUP_TMP_DIR}" "${APP_DIR_OUT}"
 
 	# -> Java binary apps
-	LIST_JAVA_BIN=${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt
+	LIST_JAVA_BIN=${REPORTS_DIR}/00__Weave/list__java-bin.txt
 	# -> Java apps initially provided as source code
-	LIST_JAVA_SRC_INIT=${REPORTS_DIR}/list__${APP_GROUP}__java-src-init.txt
+	LIST_JAVA_SRC_INIT=${REPORTS_DIR}/00__Weave/list__java-src-init.txt
 
 	# Windup can deal with compiled and source apps at the same time.
 	# Source code directories need to have a name ending by ".jar" ".war" or ".ear"

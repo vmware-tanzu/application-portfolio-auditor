@@ -25,7 +25,7 @@ ALL_KNOWN_PACKAGES="${PACKAGE_DIR_OUT}/${ALL_KNOWN_PACKAGES_SHORT}"
 TOKEN="XXXXXXXXXXX"
 JAVA_BIN_APP_FOUND="false"
 PACKAGE_FILE="${PACKAGE_DIR_OUT}/${APP_GROUP}.txt"
-JAVA_BIN_LIST="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze_packages() {

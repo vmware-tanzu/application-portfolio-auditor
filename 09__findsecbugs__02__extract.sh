@@ -13,7 +13,7 @@ STEP=$(get_step)
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__FindSecBugs"
 export LOG_FILE="${APP_DIR_OUT}".log
 
-LIST_JAVA_BIN="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+LIST_JAVA_BIN="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 SEPARATOR=","
 
@@ -47,7 +47,7 @@ function generate_csv() {
 			else
 				echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
 			fi
-		done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+		done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 		log_console_success "Results: ${RESULT_FILE}"
 	else
 		log_console_warning "No binary Java application found. Skipping FindSecBug analysis result extraction."

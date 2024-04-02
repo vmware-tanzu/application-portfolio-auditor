@@ -38,7 +38,7 @@ function extract() {
 
 		echo "${APP_NAME}${SEPARATOR}${COUNT_LICENSES}${SEPARATOR}${COUNT_COPYRIGHTS}" >>"${RESULT_FILE}"
 
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	# Adding the header
 	{

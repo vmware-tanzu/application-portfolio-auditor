@@ -101,7 +101,7 @@ function main() {
 			# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 			while read -r DIR; do
 				analyze_dir "${DIR}"
-			done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+			done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 			log_console_success "Results: ${OUT_CSV_FILE}"
 		else

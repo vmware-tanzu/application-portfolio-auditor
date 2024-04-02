@@ -18,7 +18,7 @@ STEP=$(get_step)
 
 export OUT_DIR_BEARER="${REPORTS_DIR}/${STEP}__BEARER"
 export LOG_FILE="${OUT_DIR_BEARER}.log"
-APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {

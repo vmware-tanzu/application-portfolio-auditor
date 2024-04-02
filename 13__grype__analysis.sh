@@ -17,11 +17,11 @@ STEP=$(get_step)
 GRYPE_VULN_CACHE_DIR="${DIST_DIR}/grype_cache"
 export OUT_DIR="${REPORTS_DIR}/${STEP}__GRYPE"
 export LOG_FILE="${OUT_DIR}.log"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
 
 # Analyze all applications present in provided list.
 function analyze() {
 
-	APP_LIST=${1}
 	if [[ -s "${APP_LIST}" ]]; then
 		while read -r APP; do
 			APP_NAME=$(basename "${APP}")
@@ -88,7 +88,7 @@ function main() {
 			# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 			check_debug_mode
 			mkdir -p "${GRYPE_VULN_CACHE_DIR}" "${OUT_DIR}"
-			analyze "${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt"
+			analyze
 			log_console_success "Open this directory for the results: ${OUT_DIR}"
 		else
 			log_console_error "Grype analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_GRYPE}'"

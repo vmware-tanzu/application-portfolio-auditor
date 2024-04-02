@@ -30,7 +30,7 @@ function generate_csv() {
 			[ -n "${COUNT_VULNS}" ] && VULNS=${COUNT_VULNS}
 		fi
 		echo "${APP}${SEPARATOR}${VULNS}" >>"${RESULT_FILE}"
-	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 	log_console_success "Results: ${RESULT_FILE}"
 }
 

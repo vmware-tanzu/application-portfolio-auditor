@@ -153,12 +153,12 @@ if [[ "${SKIP_APP_GROUP_ANALYSIS}" == "false" ]]; then
 			ARE_PREREQUISITES_MET=false
 		fi
 	else
-		if [[ -f "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv" ]]; then
+		if [[ -f "${REPORTS_DIR}/00__Weave/list__all_apps.csv" ]]; then
 			log_console_warning "Applications do not exist locally. Creating mock application group structure under '${APP_DIR_IN}/${APP_GROUP}'"
 			mkdir -p "${APP_DIR_IN}/${APP_GROUP}"
 			while read -r APP; do
 				touch "${APP_DIR_IN}/${APP_GROUP}/${APP}"
-			done < <(cut -d ',' -f 1 "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv")
+			done < <(cut -d ',' -f 1 "${REPORTS_DIR}/00__Weave/list__all_apps.csv")
 		else
 			log_console_error "Specified application group ('${APP_GROUP}') not found. Please use the import option or organize your applications as described in README.md."
 			ARE_PREREQUISITES_MET=false

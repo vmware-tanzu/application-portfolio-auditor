@@ -74,7 +74,7 @@ STEP=$(get_step)
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"
 LOG_FILE="${APP_DIR_OUT}".log
 
-JAVA_BIN_LIST="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
