@@ -3,24 +3,19 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ##############################################################################################################
-# Unzip all source files and copy all file directories to ${APP_DIR_SRC}.
+# Unzip all source files and copy all file directories to ${APP_GROUP_SRC_DIR}.
 ##############################################################################################################
 
 STEP=$(get_step)
 export LOG_FILE=${REPORTS_DIR}/${STEP}__unpack_sources.log
 
 function unpack() {
-	APP_DIR_INCOMING="${1}"
-	APP_DIR_SRC="${APP_DIR_INCOMING}/src"
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	log_analysis_message "group '${GROUP}'"
-
-	mkdir -p "${APP_DIR_SRC}" "${REPORTS_DIR}"
+	mkdir -p "${APP_GROUP_SRC_DIR}" "${REPORTS_DIR}"
 
 	while read -r APP; do
 
 		APP_NAME=$(basename "${APP}")
-		APP_DIR="${APP_DIR_SRC}/${APP_NAME%.*}"
+		APP_DIR="${APP_GROUP_SRC_DIR}/${APP_NAME%.*}"
 
 		log_console_step "Extracting '${APP_NAME}' to ${APP_DIR} ..."
 
@@ -40,23 +35,17 @@ function unpack() {
 			fi
 		fi
 
-	done < <(find "${APP_DIR_INCOMING}" -maxdepth 1 -mindepth 1 -type f -name '*.zip')
+	done < <(find "${APP_GROUP_DIR}" -maxdepth 1 -mindepth 1 -type f -name '*.zip')
 
 	while read -r FOLDER; do
-		cp -Rfp "${FOLDER}" "${APP_DIR_SRC}/."
-	done < <(find "${APP_DIR_INCOMING}" -maxdepth 1 -mindepth 1 -type d ! -name 'src')
+		cp -Rfp "${FOLDER}" "${APP_GROUP_SRC_DIR}/."
+	done < <(find "${APP_GROUP_DIR}" -maxdepth 1 -mindepth 1 -type d ! -name 'src')
 }
 
 function main() {
-
 	set +e
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-	for_each_group unpack
+	check_debug_mode
+	unpack
 	set -e
 }
 

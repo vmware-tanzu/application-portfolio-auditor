@@ -14,19 +14,18 @@ STEP=$(get_step)
 LOG_FILE="${REPORTS_DIR}/${STEP}__WINDUP.log"
 VERSION="${WINDUP_VERSION}"
 
+# FIXDIR
+RESULT_DIR="${REPORTS_DIR}/${STEP}__WINDUP__${APP_GROUP}"
+RESULT_SHELL_FILE="${RESULT_DIR}__results_extracted_shell.csv"
+MISSING_FILE="${RESULT_DIR}__results_missing.csv"
+RESULT_FILE="${RESULT_DIR}__results_extracted.csv"
+RESULT_REPORT_MAP="${RESULT_DIR}__report_map.js"
+LIST_JAVA_BIN="${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
+LIST_JAVA_SRC_INIT="${REPORTS_DIR}/list__${APP_GROUP}__java-src-init.txt"
+LIST_ALL_APPS="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+XSL_FILE="${CURRENT_DIR}/conf/Windup/process_WINDUP.xsl"
+
 function check_missing_apps() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	OUT_GROUP="${REPORTS_DIR}/${STEP}__WINDUP__${GROUP}"
-	RESULT_SHELL_FILE="${OUT_GROUP}__results_extracted_shell.csv"
-	MISSING_FILE="${OUT_GROUP}__results_missing.csv"
-	RESULT_FILE="${OUT_GROUP}__results_extracted.csv"
-	RESULT_REPORT_MAP="${OUT_GROUP}__report_map.js"
-	LIST_JAVA_BIN="${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
-	LIST_JAVA_SRC_INIT="${REPORTS_DIR}/list__${GROUP}__java-src-init.txt"
-
-	log_extract_message "group '${GROUP}'"
-
 	rm -f "${MISSING_FILE}" "${RESULT_REPORT_MAP}"
 
 	# Add missing entries
@@ -41,7 +40,7 @@ function check_missing_apps() {
 		else
 			echo "${APP}${SEPARATOR}n/a" >>"${MISSING_FILE}"
 		fi
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${LIST_ALL_APPS}"
 
 	# Merge results with missing entries
 	touch "${RESULT_SHELL_FILE}" "${MISSING_FILE}"
@@ -60,7 +59,7 @@ function check_missing_apps() {
 	mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
 
 	# Generate HTML report map
-	WINDUP_REPORT_DIR="${REPORTS_DIR}/${STEP}__WINDUP__${GROUP}/reports/"
+	WINDUP_REPORT_DIR="${REPORTS_DIR}/${STEP}__WINDUP__${APP_GROUP}/reports/"
 	if [[ ! -d "${WINDUP_REPORT_DIR}" ]]; then
 		if [[ -s "${LIST_JAVA_BIN}" || -s "${LIST_JAVA_SRC_INIT}" ]]; then
 			log_console_error "WINDUP result folder does not exist: ${WINDUP_REPORT_DIR}"
@@ -87,7 +86,7 @@ function check_missing_apps() {
 		fi
 		REPORT_NAME="$(basename "${REPORT_FULL_NAME}")"
 		echo "  ['${APP}', '${REPORT_NAME}']," >>"${RESULT_REPORT_MAP_TMP}"
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${LIST_ALL_APPS}"
 
 	{
 		echo "let reportMap = new Map(["
@@ -99,46 +98,35 @@ function check_missing_apps() {
 }
 
 function main() {
-
-	XSL_FILE="${CURRENT_DIR}/conf/Windup/process_WINDUP.xsl"
-
-	#set -x
-
 	while read -r FILE; do
-		REGEX="s|${STEP}__WINDUP__(.*)|\1|g"
-		GROUP=$(basename "$(dirname "${FILE}")" | sed -Ee "${REGEX}")
-		GROUP_DIR=${REPORTS_DIR}/${STEP}__WINDUP__${GROUP}
-		RESULT_FILE="${GROUP_DIR}__results_extracted_shell.csv"
-
 		# "2>/dev/null" hides all parsing errors from the console
-		xmllint --html --xmlout "${FILE}" 2>/dev/null | xsltproc --stringparam separator "${SEPARATOR}" "${XSL_FILE}" - >>"${RESULT_FILE}"
+		xmllint --html --xmlout "${FILE}" 2>/dev/null | xsltproc --stringparam separator "${SEPARATOR}" "${XSL_FILE}" - >>"${RESULT_SHELL_FILE}"
 
 		# Removing dots in numbers
-		awk 'BEGIN {OFS=FS=","} {$1;gsub(/\./,"",$2)}1' "${RESULT_FILE}" >"${RESULT_FILE}.tmp"
+		awk 'BEGIN {OFS=FS=","} {$1;gsub(/\./,"",$2)}1' "${RESULT_SHELL_FILE}" >"${RESULT_SHELL_FILE}.tmp"
 		# Removing ? in numbers
-		awk 'BEGIN {OFS=FS=","} {$1;gsub(/\?/,"",$2)}1' "${RESULT_FILE}.tmp" >"${RESULT_FILE}"
-		rm -f "${RESULT_FILE}.tmp"
+		awk 'BEGIN {OFS=FS=","} {$1;gsub(/\?/,"",$2)}1' "${RESULT_SHELL_FILE}.tmp" >"${RESULT_SHELL_FILE}"
+		rm -f "${RESULT_SHELL_FILE}.tmp"
 
 		# Cleaning up the generated windup report
 		if [[ "${IS_MAC}" == "true" ]]; then
 			## Removing trackers slowing down pages
-			find "${GROUP_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '' '/<ul class="nav navbar-nav navbar-right">/,/<\/ul>/d' {} +
+			find "${RESULT_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '' '/<ul class="nav navbar-nav navbar-right">/,/<\/ul>/d' {} +
 			## Cleanup title
-			find "${GROUP_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '' '/<strong class="wu-navbar-header">Windup<\/strong>/d' {} +
-			find "${GROUP_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '' 's/<img align="right" class="wu-navbar-header" src="\(.*\/\)brand-horizontal.png" \/>/<img align="left" class="wu-navbar-header" src="\1brand-horizontal.png" style="padding-left: 12px;"\/>/g' {} +
+			find "${RESULT_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '' '/<strong class="wu-navbar-header">Windup<\/strong>/d' {} +
+			find "${RESULT_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '' 's/<img align="right" class="wu-navbar-header" src="\(.*\/\)brand-horizontal.png" \/>/<img align="left" class="wu-navbar-header" src="\1brand-horizontal.png" style="padding-left: 12px;"\/>/g' {} +
 		else
 			## Removing trackers slowing down pages
-			find "${GROUP_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '/<ul class="nav navbar-nav navbar-right">/,/<\/ul>/d' {} +
+			find "${RESULT_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '/<ul class="nav navbar-nav navbar-right">/,/<\/ul>/d' {} +
 			## Cleanup title
-			find "${GROUP_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '/<strong class="wu-navbar-header">Windup<\/strong>/d' {} +
-			find "${GROUP_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i 's/<img align="right" class="wu-navbar-header" src="\(.*\/\)brand-horizontal.png" \/>/<img align="left" class="wu-navbar-header" src="\1brand-horizontal.png" style="padding-left: 12px;"\/>/g' {} +
+			find "${RESULT_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i '/<strong class="wu-navbar-header">Windup<\/strong>/d' {} +
+			find "${RESULT_DIR}" -maxdepth 2 -name "*.html" -type f -exec sed -i 's/<img align="right" class="wu-navbar-header" src="\(.*\/\)brand-horizontal.png" \/>/<img align="left" class="wu-navbar-header" src="\1brand-horizontal.png" style="padding-left: 12px;"\/>/g' {} +
 		fi
 
 	done < <(find "${REPORTS_DIR}" -mindepth 2 -maxdepth 2 -type f -name 'index.html' | grep "__WINDUP")
 
 	# Check and add missing entries
-	for_each_group check_missing_apps
-
+	check_missing_apps
 }
 
 main

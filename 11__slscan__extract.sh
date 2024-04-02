@@ -14,24 +14,13 @@ VERSION=${SLSCAN_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
 APP_BASE=${REPORTS_DIR}/${STEP}__SLSCAN
+# FIXDIR
+APP_DIR_OUT=${APP_BASE}__${APP_GROUP}
+RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}___results_extracted.csv"
+export LOG_FILE=${APP_DIR_OUT}.log
 
 function generate_csv() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	APP_DIR_OUT=${APP_BASE}__${GROUP}
-	RESULT_FILE="${APP_DIR_OUT}/${GROUP}___results_extracted.csv"
-
-	if [[ ! -d "${APP_DIR_OUT}" ]]; then
-		LOG_FILE=/dev/null
-		log_console_error "SLSCAN result directory does not exist: ${APP_DIR_OUT}"
-		return
-	fi
-
-	export LOG_FILE=${APP_DIR_OUT}.log
-	log_extract_message "group '${GROUP}'"
-
-	rm -f "${RESULT_FILE}"
-	echo "Applications${SEPARATOR}SLScan SAST vulns" >>"${RESULT_FILE}"
+	echo "Applications${SEPARATOR}SLScan SAST vulns" >"${RESULT_FILE}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -46,22 +35,24 @@ function generate_csv() {
 		fi
 		echo "${APP}${SEPARATOR}${VULNS}" >>"${RESULT_FILE}"
 
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
 function main() {
-
-	# Extract results only if an SLSCAN directory is present
 	if [[ -n $(find "${REPORTS_DIR}" -mindepth 1 -maxdepth 1 -type d -iname "${STEP}"'__SLSCAN*') ]]; then
-		for_each_group generate_csv
+		if [[ -d "${APP_DIR_OUT}" ]]; then
+			generate_csv
+		else
+			LOG_FILE=/dev/null
+			log_console_error "SLSCAN result directory does not exist: ${APP_DIR_OUT}"
+		fi
 	elif [[ "${ARCH}" == "arm64" ]]; then
 		exit
 	else
 		log_console_error "No SLSCAN result directory found in ${REPORTS_DIR}."
 	fi
-
 }
 
 main

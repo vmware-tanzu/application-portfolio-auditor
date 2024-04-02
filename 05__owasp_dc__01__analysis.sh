@@ -23,20 +23,18 @@ ENABLE_VERBOSE_LOG="false"
 VERSION=${OWASP_DC_VERSION}
 
 STEP=$(get_step)
-APP_BASE=${REPORTS_DIR}/${STEP}__OWASP_DC
-LOG_FILE=${APP_BASE}.log
+APP_BASE="${REPORTS_DIR}/${STEP}__OWASP_DC"
+LOG_FILE="${APP_BASE}.log"
+# FIXDIR
+APP_DIR_OUT="${APP_BASE}__${APP_GROUP}"
 
 DATA_DIR="${DIST_DIR}/owasp_data"
 CACHE_DIR="${DATA_DIR}/cache"
 
-# Analyse all applications present in the ${1} directory.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	APP_DIR_OUT=${APP_BASE}__${GROUP}
 
 	mkdir -p "${APP_DIR_OUT}"
-	log_analysis_message "group '${GROUP}'"
 
 	while read -r APP; do
 		APP_NAME=$(basename "${APP}")
@@ -44,7 +42,7 @@ function analyze() {
 
 		# OWASP DC arguments
 		ARGS=(
-			--project "[${GROUP}] ${APP_NAME}"
+			--project "[${APP_GROUP}] ${APP_NAME}"
 			-f ALL
 			--out /report
 			--scan "/apps/${APP_NAME}"
@@ -83,20 +81,18 @@ function analyze() {
 
 		log_console_info "Results: ${APP_DIR_OUT}/${APP_NAME}_dc_report.html"
 
-	done <"${REPORTS_DIR}/list__${GROUP}__owasp_dc.txt"
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__owasp_dc.txt"
 
 	log_console_success "Open this directory for all results: ${APP_DIR_OUT}"
 }
 
 function main() {
 	log_tool_info "OWASP DC (Open Web Application Security Project Dependency-Check) v${VERSION}"
-
 	if [ ! -d "${CACHE_DIR}" ]; then
 		echo "Initially creating persistent directory: ${CACHE_DIR}"
 		mkdir -p "${CACHE_DIR}"
 	fi
-
-	for_each_group analyze
+	analyze
 }
 
 main

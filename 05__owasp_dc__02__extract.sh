@@ -13,25 +13,15 @@
 VERSION=${OWASP_DC_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-APP_BASE=${REPORTS_DIR}/${STEP}__OWASP_DC
+APP_BASE="${REPORTS_DIR}/${STEP}__OWASP_DC"
+# FIXDIR
+APP_DIR_OUT="${APP_BASE}__${APP_GROUP}"
+RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}___results_extracted.csv"
+export LOG_FILE="${APP_BASE}.log"
 
 function generate_csv() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	APP_DIR_OUT=${APP_BASE}__${GROUP}
-	RESULT_FILE="${APP_DIR_OUT}/${GROUP}___results_extracted.csv"
 
-	if [[ ! -d "${APP_DIR_OUT}" ]]; then
-		LOG_FILE=/dev/null
-		log_console_error "OWASP result directory does not exist: ${APP_DIR_OUT}"
-		return
-	fi
-
-	export LOG_FILE=${APP_BASE}.log
-	log_extract_message "group '${GROUP}'"
-
-	rm -f "${RESULT_FILE}"
-	echo "Applications${SEPARATOR}OWASP Low vulns${SEPARATOR}OWASP Medium vulns${SEPARATOR}OWASP High vulns${SEPARATOR}OWASP Critical vulns${SEPARATOR}OWASP Total vuln libs" >>"${RESULT_FILE}"
+	echo "Applications${SEPARATOR}OWASP Low vulns${SEPARATOR}OWASP Medium vulns${SEPARATOR}OWASP High vulns${SEPARATOR}OWASP Critical vulns${SEPARATOR}OWASP Total vuln libs" >"${RESULT_FILE}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -70,13 +60,18 @@ function generate_csv() {
 			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
 
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
 function main() {
-	for_each_group generate_csv
+	if [[ -d "${APP_DIR_OUT}" ]]; then
+		generate_csv
+	else
+		LOG_FILE=/dev/null
+		log_console_error "OWASP result directory does not exist: ${APP_DIR_OUT}"
+	fi
 }
 
 main

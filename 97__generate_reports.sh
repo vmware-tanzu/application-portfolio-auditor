@@ -68,7 +68,6 @@ function export_vars() {
 	TOOLS_QUALITY_COUNT=0
 	TOOLS_LANGUAGE_COUNT=0
 
-	APP_GROUP=$(basename "${1}")
 	APP_COUNT=$(count_lines "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt")
 
 	CSV_URL="./${RESULT_CSV_FILE_NAME}"
@@ -360,6 +359,8 @@ function export_vars() {
 		done
 	} >"${REPORT_VARS}"
 	chmod +x "${REPORT_VARS}"
+
+	# shellcheck source=/dev/null
 	source "${REPORT_VARS}"
 }
 
@@ -795,7 +796,6 @@ function generate_reports() {
 	# shellcheck disable=SC2090
 	export GROUP_POSTFIX DROPDOWN_ITEMS
 
-	APP_GROUP=$(basename "${1}")
 	GROUP_POSTFIX=''
 	if [[ "${IS_FIRST_GROUP}" == "true" ]]; then
 		IS_FIRST_GROUP="false"
@@ -811,7 +811,7 @@ function generate_reports() {
 	INFO_RULES_REPORT="${REPORTS_DIR}/info_rules.html"
 
 	# Export all variables for the reports
-	export_vars "${1}"
+	export_vars
 
 	# Generate overview report (index)
 	dropdown index
@@ -907,6 +907,7 @@ function generate_reports() {
 		fi
 	fi
 
+	# shellcheck source=/dev/null
 	source "${DIST_DIR}/rules.counts"
 	export ARCHEO_RULES CSA_RULES CLOC_RULES FSB_RULES GRYPE_RULES INSIDER_RULES LINGUIST_RULES MAI_RULES ODC_RULES OSV_RULES BEARER_RULES PMD_RULES SCANCODE_RULES SLSCAN_RULES TRIVY_RULES WAMT_RULES WINDUP_RULES
 	${MUSTACHE} "${TEMPLATE_DIR}/info_rules.mo" >"${INFO_RULES_REPORT}"
@@ -991,8 +992,7 @@ function main() {
 	CSA_LOG="./02__CSA.log"
 	REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
 
-	for_each_group generate_reports
-
+	generate_reports
 	generate_language_report
 
 	log_console_info "Results: ${SUMMARY_CSV}"

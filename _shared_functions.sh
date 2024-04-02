@@ -127,15 +127,6 @@ function stream_edit() {
 	fi
 }
 
-function for_each_group() {
-	while read -r DIR; do
-		GROUP_NAME="$(basename "${DIR}")"
-		if [[ -z "${APP_GROUP}" || "${GROUP_NAME}" == "${APP_GROUP}" ]]; then
-			"${@}" "${DIR}"
-		fi
-	done < <(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | sort)
-}
-
 function get_step() {
 	([[ ${0} != "${BASH_SOURCE[0]}" ]] && SCRIPT="${BASH_SOURCE[0]}") || SCRIPT="${0}"
 	basename "${SCRIPT}" | cut -d'_' -f1
@@ -143,4 +134,13 @@ function get_step() {
 
 function count_lines() {
 	wc -l <"${1}" | tr -d ' '
+}
+
+function check_debug_mode() {
+	if [[ "${DEBUG}" == "true" ]]; then
+		set -x
+		exec 6>&1
+	else
+		exec 6>/dev/null
+	fi
 }

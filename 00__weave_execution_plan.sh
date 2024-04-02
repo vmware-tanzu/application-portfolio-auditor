@@ -56,9 +56,9 @@ SEPARATOR=','
 export LOG_FILE=${REPORTS_DIR}/${STEP}__Weave.log
 
 function identify() {
-	APP_FILE_LIST=${1}
-	APP_SRC_DIR=${2}
-	APP_NAME=$(basename "${APP_SRC_DIR}")
+	local -r APP_FILE_LIST=${1}
+	local -r APP_SRC_DIR=${2}
+	local -r APP_NAME=$(basename "${APP_SRC_DIR}")
 	if (grep -q '.*\.java$' "${APP_FILE_LIST}"); then
 		echo "${APP_SRC_DIR}" >>"${LIST_JAVA_SRC}"
 		echo "${APP_SRC_DIR}" >>"${LIST_JAVA_SRC_INIT}"
@@ -88,71 +88,65 @@ function sort_files() {
 	done
 }
 
-function weave() {
-	GROUP=$(basename "${1}")
-	SRC_DIR="${1}/src"
-	TMP_DIR="${1}/tmp"
-
-	# Remove tmp folder to avoid side effects
-	rm -Rf "${TMP_DIR}"
+function main() {
 
 	# All apps
-	export LIST_ALL=${REPORTS_DIR}/list__${GROUP}__all_apps.txt
-	export LIST_ALL_INIT=${REPORTS_DIR}/list__${GROUP}__all_init_apps.txt
+	export LIST_ALL=${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt
+	export LIST_ALL_INIT=${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt
 
-	export LANG_MAP_CSV=${REPORTS_DIR}/list__${GROUP}__all_apps.csv
+	export LANG_MAP_CSV=${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv
 
 	# Currently the following application type can be analyzed ...
 	# -> Java apps decompiled and initially provided as source code apps (zip/folder)
-	export LIST_JAVA_SRC=${REPORTS_DIR}/list__${GROUP}__java-src.txt
+	export LIST_JAVA_SRC=${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt
 	# -> Java binary apps
-	export LIST_JAVA_BIN=${REPORTS_DIR}/list__${GROUP}__java-bin.txt
+	export LIST_JAVA_BIN=${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt
 	# -> Java apps initially provided as source code
-	export LIST_JAVA_SRC_INIT=${REPORTS_DIR}/list__${GROUP}__java-src-init.txt
+	export LIST_JAVA_SRC_INIT=${REPORTS_DIR}/list__${APP_GROUP}__java-src-init.txt
 	# -> JavaScript / Python / C# source code apps
-	export LIST_JAVASCRIPT=${REPORTS_DIR}/list__${GROUP}__js.txt
-	export LIST_PYTHON=${REPORTS_DIR}/list__${GROUP}__python.txt
-	export LIST_DOTNET=${REPORTS_DIR}/list__${GROUP}__cs.txt
+	export LIST_JAVASCRIPT=${REPORTS_DIR}/list__${APP_GROUP}__js.txt
+	export LIST_PYTHON=${REPORTS_DIR}/list__${APP_GROUP}__python.txt
+	export LIST_DOTNET=${REPORTS_DIR}/list__${APP_GROUP}__cs.txt
 	# -> Other apps
-	export LIST_OTHER=${REPORTS_DIR}/list__${GROUP}__other.txt
+	export LIST_OTHER=${REPORTS_DIR}/list__${APP_GROUP}__other.txt
 
 	rm -f "${LIST_ALL}" "${LIST_ALL_INIT}" "${LANG_MAP_CSV}" "${LIST_JAVA_SRC}" "${LIST_JAVA_BIN}" "${LIST_JAVA_SRC_INIT}" "${LIST_JAVASCRIPT}" "${LIST_PYTHON}" "${LIST_DOTNET}" "${LIST_OTHER}"
 	touch "${LIST_ALL}" "${LIST_ALL_INIT}" "${LANG_MAP_CSV}" "${LIST_JAVA_SRC}" "${LIST_JAVA_BIN}" "${LIST_JAVA_SRC_INIT}" "${LIST_JAVASCRIPT}" "${LIST_PYTHON}" "${LIST_DOTNET}" "${LIST_OTHER}"
 
 	# Add all java binary applications to ${LIST_JAVA_BIN}
-	find "${1}" -maxdepth 1 -mindepth 1 -type f -name '*.[ejgrhw]ar' >"${LIST_JAVA_BIN}"
+	find "${APP_GROUP_DIR}" -maxdepth 1 -mindepth 1 -type f -name '*.[ejgrhw]ar' >"${LIST_JAVA_BIN}"
 
 	# Add decompiled Java apps to ${LIST_JAVA_SRC}
 	while read -r APP; do
 		APP_NAME=$(basename "${APP}")
-		echo "${SRC_DIR}/${APP_NAME}" >>"${LIST_JAVA_SRC}"
+		echo "${APP_GROUP_SRC_DIR}/${APP_NAME}" >>"${LIST_JAVA_SRC}"
 		echo "${APP_NAME}${SEPARATOR}Java" >>"${LANG_MAP_CSV}"
 		echo "${APP}" >>"${LIST_ALL_INIT}"
-	done < <(find "${1}" -maxdepth 1 -mindepth 1 -type f -name '*.[ejgrhws]ar')
+	done < <(find "${APP_GROUP_DIR}" -maxdepth 1 -mindepth 1 -type f -name '*.[ejgrhws]ar')
 
 	# Add zipped source code to their category
 	while read -r ARCHIVE; do
 		APP_NAME=$(basename "${ARCHIVE}")
 		APP_FILE_LIST=${ARCHIVE}.lst
 		unzip -Z1 "${ARCHIVE}" >"${APP_FILE_LIST}"
-		identify "${APP_FILE_LIST}" "${SRC_DIR}/${APP_NAME%.*}"
+		identify "${APP_FILE_LIST}" "${APP_GROUP_SRC_DIR}/${APP_NAME%.*}"
 		echo "${ARCHIVE}" >>"${LIST_ALL_INIT}"
-	done < <(find "${1}" -maxdepth 1 -mindepth 1 -type f -name '*.zip')
+	done < <(find "${APP_GROUP_DIR}" -maxdepth 1 -mindepth 1 -type f -name '*.zip')
 
 	# Add exploded source code directories to their category
 	while read -r DIR; do
 		DIR_NAME=$(basename "${DIR}")
 		APP_FILE_LIST=${DIR}.list
 		find "${DIR}" -type f >"${APP_FILE_LIST}"
-		identify "${APP_FILE_LIST}" "${SRC_DIR}/${DIR_NAME}"
+		identify "${APP_FILE_LIST}" "${APP_GROUP_SRC_DIR}/${DIR_NAME}"
 		echo "${DIR}" >>"${LIST_ALL_INIT}"
-	done < <(find "${1}" -maxdepth 1 -mindepth 1 -type d -not -name 'src')
+	done < <(find "${APP_GROUP_DIR}" -maxdepth 1 -mindepth 1 -type d -not -name 'src')
 
 	cat "${LIST_JAVA_SRC}" "${LIST_JAVASCRIPT}" "${LIST_PYTHON}" "${LIST_DOTNET}" "${LIST_OTHER}" >"${LIST_ALL}"
 
 	if [[ "${OWASP_ACTIVE}" == "true" ]]; then
 		# List for OWASP DC
-		export LIST_OWASP_DC=${REPORTS_DIR}/list__${GROUP}__owasp_dc.txt
+		export LIST_OWASP_DC=${REPORTS_DIR}/list__${APP_GROUP}__owasp_dc.txt
 		rm -f "${LIST_OWASP_DC}"
 		touch "${LIST_OWASP_DC}"
 		cat "${LIST_ALL}" >"${LIST_OWASP_DC}"
@@ -172,11 +166,7 @@ function weave() {
 	COUNT_OTHER_APPS=$(count_lines "${LIST_OTHER}")
 	COUNT_ALL_APPS=$(count_lines "${LIST_ALL}")
 
-	log_console_info "[${GROUP}] Identified ${COUNT_ALL_APPS} apps: Java (${COUNT_JAVA_APPS} incl. ${COUNT_JAVA_BIN_APPS} binary), C# (${COUNT_DOTNET_APPS}), JavaScript (${COUNT_JS_APPS}), Python (${COUNT_PY_APPS}), Other (${COUNT_OTHER_APPS})"
-}
-
-function main() {
-	for_each_group weave
+	log_console_info "[${APP_GROUP}] Identified ${COUNT_ALL_APPS} apps: Java (${COUNT_JAVA_APPS} incl. ${COUNT_JAVA_BIN_APPS} binary), C# (${COUNT_DOTNET_APPS}), JavaScript (${COUNT_JS_APPS}), Python (${COUNT_PY_APPS}), Other (${COUNT_OTHER_APPS})"
 }
 
 main

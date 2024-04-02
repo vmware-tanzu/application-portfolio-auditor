@@ -13,30 +13,16 @@
 VERSION=${MAI_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-APP_DIR_OUT=${REPORTS_DIR}/${STEP}__MAI
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__MAI"
+export LOG_FILE="${APP_DIR_OUT}.log"
+RESULT_FILE="${APP_DIR_OUT}/${APP_GROUP}__results_extracted.csv"
 
 function generate_csv() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-
-	RESULT_FILE="${APP_DIR_OUT}/${GROUP}__results_extracted.csv"
-
-	if [[ ! -d "${APP_DIR_OUT}" ]]; then
-		LOG_FILE=/dev/null
-		log_console_error "MAIN result directory does not exist: ${APP_DIR_OUT}"
-		return
-	fi
-
-	export LOG_FILE=${APP_DIR_OUT}.log
-	log_extract_message "group '${GROUP}'"
-
-	rm -f "${RESULT_FILE}"
-	echo "Applications${SEPARATOR}MAI unique tags" >>"${RESULT_FILE}"
-
+	echo "Applications${SEPARATOR}MAI unique tags" >"${RESULT_FILE}"
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
 		log_extract_message "app '${APP}'"
-		HTML_IN="${APP_DIR_OUT}/mai__${GROUP}__${APP}.html"
+		HTML_IN="${APP_DIR_OUT}/mai__${APP_GROUP}__${APP}.html"
 		TAGS="n/a"
 		if [ -f "${HTML_IN}" ]; then
 			TAGS="0"
@@ -44,14 +30,18 @@ function generate_csv() {
 			[ -n "${COUNT_TAGS}" ] && TAGS=${COUNT_TAGS}
 		fi
 		echo "${APP}${SEPARATOR}${TAGS}" >>"${RESULT_FILE}"
-
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
-
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
 function main() {
-	for_each_group generate_csv
+	if [[ -d "${APP_DIR_OUT}" ]]; then
+		generate_csv
+	else
+		LOG_FILE=/dev/null
+		log_console_error "MAIN result directory does not exist: ${APP_DIR_OUT}"
+		return
+	fi
 }
 
 main

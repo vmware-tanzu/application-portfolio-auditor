@@ -79,26 +79,19 @@ function unpack() {
 
 # Repack applications to a single huge application without sub-WAR/JAR file
 function unpack_and_decompile() {
-	APP_DIR_INCOMING="${1}"
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	APP_DIR_SRC="${APP_DIR_INCOMING}/src"
-	APP_DIR_TMP="${APP_DIR_INCOMING}/tmp"
-
-	rm -Rf "${APP_DIR_SRC}" "${APP_DIR_TMP}"
-	mkdir -p "${APP_DIR_SRC}" "${REPORTS_DIR}"
-
-	log_analysis_message "group '${GROUP}'"
+	rm -Rf "${APP_GROUP_SRC_DIR}" "${APP_GROUP_TMP_DIR}"
+	mkdir -p "${APP_GROUP_SRC_DIR}" "${REPORTS_DIR}"
 
 	while read -r APP; do
 
-		mkdir -p "${APP_DIR_TMP}"
+		mkdir -p "${APP_GROUP_TMP_DIR}"
 
 		log_console_step "Preparing '${APP}' ... "
-		cp "${APP}" "${APP_DIR_TMP}"
+		cp "${APP}" "${APP_GROUP_TMP_DIR}"
 
 		APP_NAME=$(basename "${APP}")
 
-		while [ "$(find "${APP_DIR_TMP}" -type f -iname '*.war' \
+		while [ "$(find "${APP_GROUP_TMP_DIR}" -type f -iname '*.war' \
 			-o -type f -iname '*.ear' \
 			-o -type f -iname '*.jar' \
 			-o -type f -iname '*.rar' \
@@ -108,8 +101,8 @@ function unpack_and_decompile() {
 
 			while read -r ARCHIVE; do
 				PARENT_DIR_NAME=$(basename "$(dirname "${ARCHIVE}")")
-				TMP_DIR_NAME=$(basename "${APP_DIR_TMP}")
-				ARCHIVE_SHORT_NAME="${ARCHIVE:${#APP_DIR_TMP}+1}"
+				TMP_DIR_NAME=$(basename "${APP_GROUP_TMP_DIR}")
+				ARCHIVE_SHORT_NAME="${ARCHIVE:${#APP_GROUP_TMP_DIR}+1}"
 				SHA1_LONG=$(sha1sum "${ARCHIVE}")
 				SHA1=$(echo "${SHA1_LONG}" | cut -d' ' -f 1)
 
@@ -237,7 +230,7 @@ function unpack_and_decompile() {
 						mv "${ARCHIVE}" "${ARCHIVE}.ignored_maven"
 					fi
 				fi
-			done < <(find "${APP_DIR_TMP}" -type f -iname '*.war' \
+			done < <(find "${APP_GROUP_TMP_DIR}" -type f -iname '*.war' \
 				-o -type f -iname '*.ear' \
 				-o -type f -iname '*.jar' \
 				-o -type f -iname '*.rar' \
@@ -246,11 +239,11 @@ function unpack_and_decompile() {
 				-o -type f -iname '*.sar')
 		done
 
-		APP_SRC="${APP_DIR_SRC}/${APP_NAME}"
+		APP_SRC="${APP_GROUP_SRC_DIR}/${APP_NAME}"
 		rm -Rf "${APP_SRC}"
 		mkdir -p "${APP_SRC}"
 
-		APP_TMP=${APP_DIR_TMP}/${APP_NAME}
+		APP_TMP=${APP_GROUP_TMP_DIR}/${APP_NAME}
 		APP_TMP_NAME="${APP_TMP%.*}_${APP_TMP##*.}"
 
 		if [[ "${PRE_ANALYSIS_ACTIVE}" == "false" ]]; then
@@ -268,12 +261,12 @@ function unpack_and_decompile() {
 		else
 			log_console_step "Identified '${APP_TMP_NAME}' with a total of $(find "${APP_TMP_NAME}" -name '*.class' | wc -l | tr -d ' ') classes"
 		fi
-		# Note: Here we do not delete ${APP_DIR_TMP} as it creates some issues with the containerized fernflower execution. 
+		# Note: Here we do not delete ${APP_GROUP_TMP_DIR} as it creates some issues with the containerized fernflower execution.
 		rm -Rf "${APP_TMP}" "${APP_TMP_NAME}"
 
-	done <"${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt"
 
-	rm -Rf "${APP_DIR_TMP}"
+	rm -Rf "${APP_GROUP_TMP_DIR}"
 
 }
 
@@ -287,24 +280,22 @@ function check_status() {
 
 function main() {
 
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-		FERNFLOWER_LOG_LEVEL="INFO"
-	else
-		exec 6>/dev/null
-	fi
+	log_tool_info "Fernflower v${VERSION}"
 
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_FERNFLOWER}") ]]; then
 
+		check_debug_mode
+		if [[ "${DEBUG}" == "true" ]]; then
+			FERNFLOWER_LOG_LEVEL="INFO"
+		fi
+
 		set +e
-		log_tool_info "Fernflower v${VERSION}"
 
 		[[ "${USE_FINDJAR}" == "true" ]] && { check_status "findjar.com" "${FINDJAR_BASE_URL}"; }
 		check_status "Maven Search" "${MAVEN_SEARCH_BASE_URL}"
 		check_status "MVN Repository" "${MVNREPOSITORY_BASE_URL}"
 
-		for_each_group unpack_and_decompile
+		unpack_and_decompile
 
 		if [[ "${PRE_ANALYSIS_ACTIVE}" == "true" ]]; then
 

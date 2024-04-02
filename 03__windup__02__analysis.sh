@@ -26,46 +26,42 @@ STEP=$(get_step)
 INCLUDE_PACKAGES=()
 EXCLUDE_PACKAGES=()
 
-LOG_FILE="${REPORTS_DIR}/${STEP}__WINDUP.log"
+BASE_DIR="${REPORTS_DIR}/${STEP}__WINDUP"
+LOG_FILE="${BASE_DIR}.log"
+# FIXDIR
+APP_DIR_OUT="${BASE_DIR}__${APP_GROUP}"
 
-# Analyse all applications present in the ${1} directory.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
 
-	APP_DIR_INCOMING=${1}
-	# Temporary folder for the analyzed applications
-	APP_DIR_IN_TMP=${APP_DIR_INCOMING}/tmp
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	APP_DIR_OUT=${REPORTS_DIR}/${STEP}__WINDUP__${GROUP}
-	log_analysis_message "group '${GROUP}'"
-
-	rm -Rf "${APP_DIR_IN_TMP}"
+	rm -Rf "${APP_GROUP_TMP_DIR}" "${APP_DIR_OUT}"
 
 	# -> Java binary apps
-	LIST_JAVA_BIN=${REPORTS_DIR}/list__${GROUP}__java-bin.txt
+	LIST_JAVA_BIN=${REPORTS_DIR}/list__${APP_GROUP}__java-bin.txt
 	# -> Java apps initially provided as source code
-	LIST_JAVA_SRC_INIT=${REPORTS_DIR}/list__${GROUP}__java-src-init.txt
+	LIST_JAVA_SRC_INIT=${REPORTS_DIR}/list__${APP_GROUP}__java-src-init.txt
 
 	# Windup can deal with compiled and source apps at the same time.
 	# Source code directories need to have a name ending by ".jar" ".war" or ".ear"
 	if [[ -s "${LIST_JAVA_BIN}" || -s "${LIST_JAVA_SRC_INIT}" ]]; then
 
-		mkdir -p "${APP_DIR_OUT}" "${APP_DIR_IN_TMP}"
+		mkdir -p "${APP_DIR_OUT}" "${APP_GROUP_TMP_DIR}"
 
 		while read -r FILE; do
-			cp -fp "${FILE}" "${APP_DIR_IN_TMP}/." || true
+			cp -fp "${FILE}" "${APP_GROUP_TMP_DIR}/." || true
 		done <"${LIST_JAVA_BIN}"
 
 		# Needed to make sure that the source code directories are visible for Windup
 		while read -r DIR; do
 			BASENAME=$(basename "${DIR}")
-			cp -Rfp "${DIR}" "${APP_DIR_IN_TMP}/." || true
-			mv "${APP_DIR_IN_TMP}/${BASENAME}" "${APP_DIR_IN_TMP}/${BASENAME}_SRC.jar"
+			cp -Rfp "${DIR}" "${APP_GROUP_TMP_DIR}/." || true
+			mv "${APP_GROUP_TMP_DIR}/${BASENAME}" "${APP_GROUP_TMP_DIR}/${BASENAME}_SRC.jar"
 		done <"${LIST_JAVA_SRC_INIT}"
 
 		local ARGS=(
 			-b
 			--target "${TARGET}"
-			--input "/${GROUP}"
+			--input "/${APP_GROUP}"
 			--output "/cache"
 			--overwrite
 		)
@@ -88,7 +84,7 @@ function analyze() {
 		log_console_info "EXCLUDE: ${EXCLUDE_PACKAGES[*]:-none}"
 
 		set +e
-		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR_IN_TMP}:/${GROUP}:ro" -v "${APP_DIR_OUT}:/out:delegated" -v "tmpfs:/cache:delegated" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
+		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_GROUP_TMP_DIR}:/${APP_GROUP}:ro" -v "${APP_DIR_OUT}:/out:delegated" -v "tmpfs:/cache:delegated" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 
 		# Hack to fix the issue with files created with root user
 		if sudo -n ls >/dev/null 2>&1; then
@@ -97,7 +93,7 @@ function analyze() {
 		set -e
 
 		# Cleanup
-		rm -Rf "${APP_DIR_IN_TMP}"
+		rm -Rf "${APP_GROUP_TMP_DIR}"
 
 		if [[ -s "${APP_DIR_OUT}/index.html" ]]; then
 			log_console_success "Results: ${APP_DIR_OUT}/index.html"
@@ -126,7 +122,6 @@ function load_packages() {
 }
 
 function main() {
-
 	log_tool_info "Windup v${VERSION}"
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_WINDUP}") ]]; then
 
@@ -137,7 +132,7 @@ function main() {
 		load_packages INCLUDE "${INCLUDE_FILES[@]}"
 
 		# Run Windup
-		for_each_group analyze
+		analyze
 
 	else
 		log_console_error "Windup analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_WINDUP}'"

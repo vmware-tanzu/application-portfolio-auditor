@@ -19,17 +19,13 @@ STEP=$(get_step)
 APP_DIR_OUT=${REPORTS_DIR}/${STEP}__MAI
 export LOG_FILE=${APP_DIR_OUT}.log
 
-# Analyse all applications present in the ${1} directory.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
-
-	GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-
 	while read -r APP; do
 		set +e
 		APP_NAME=$(basename "${APP}")
 		log_analysis_message "app '${APP_NAME}'"
-		MAI_OUT=${APP_DIR_OUT}/mai__${GROUP}__${APP_NAME}
+		MAI_OUT=${APP_DIR_OUT}/mai__${APP_GROUP}__${APP_NAME}
 
 		if [[ -f "${APP}" || -d "${APP}" ]]; then
 			APP_DIR=$(dirname "${APP}")
@@ -66,14 +62,13 @@ function analyze() {
 			rm -Rf "${MAI_OUT}"
 		fi
 		set -e
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 }
 
 function main() {
 	log_tool_info "Microsoft Application Inspector (MAI) v${VERSION}"
 	mkdir -p "${APP_DIR_OUT}"
-
-	for_each_group analyze
+	analyze
 	log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
 }
 

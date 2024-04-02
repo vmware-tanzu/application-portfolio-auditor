@@ -15,11 +15,12 @@
 VERSION=${TRIVY_VERSION}
 STEP=$(get_step)
 TRIVY_VULN_CACHE_DIR="${DIST_DIR}/trivy_cache"
-TRIVY_OFFLINE_ARGS=()
 
 export LOG_FILE=${REPORTS_DIR}/${STEP}__TRIVY.log
+# FIXDIR
+export OUT_DIR="${REPORTS_DIR}/${STEP}__TRIVY__${APP_GROUP}"
 
-# Analyse all applications present in provided list.
+# Analyze all applications present in provided list.
 function analyze() {
 
 	APP_LIST=${1}
@@ -64,37 +65,17 @@ function analyze() {
 	fi
 }
 
-# Analyse all applications present in the ${1} directory.
-function analyze_group() {
-	GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-
-	export OUT_DIR="${REPORTS_DIR}/${STEP}__TRIVY__${GROUP}"
-	mkdir -p "${OUT_DIR}"
-
-	analyze "${REPORTS_DIR}/list__${GROUP}__all_init_apps.txt"
-
-	log_console_success "Open this directory for the results: ${OUT_DIR}"
-}
-
 function main() {
-
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-
 	log_tool_info "Trivy v${VERSION}"
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_TRIVY}") ]]; then
-		mkdir -p "${TRIVY_VULN_CACHE_DIR}"
-		for_each_group analyze_group
+		# Analyze all applications present in the ${APP_GROUP_DIR} directory.
+		check_debug_mode
+		mkdir -p "${TRIVY_VULN_CACHE_DIR}" "${OUT_DIR}"
+		analyze "${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt"
+		log_console_success "Open this directory for the results: ${OUT_DIR}"
 	else
 		log_console_error "Trivy analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_TRIVY}'"
 	fi
-
 }
 
 main

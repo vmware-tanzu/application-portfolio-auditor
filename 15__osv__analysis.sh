@@ -14,10 +14,12 @@
 # ------ Do not modify
 VERSION=${OSV_VERSION}
 STEP=$(get_step)
+BASE_DIR="${REPORTS_DIR}/${STEP}__OSV"
+export LOG_FILE="${BASE_DIR}.log"
+export OUT_DIR_SYFT="${BASE_DIR}"
+export OUT_DIR_OSV="${BASE_DIR}"
 
-export LOG_FILE=${REPORTS_DIR}/${STEP}__OSV.log
-
-# Analyse all applications present in provided list.
+# Analyze all applications present in provided list.
 function analyze() {
 
 	APP_LIST=${1}
@@ -82,43 +84,22 @@ function analyze() {
 	fi
 }
 
-# Analyse all applications present in the ${1} directory.
-function analyze_group() {
-	GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-
-	export OUT_DIR_SYFT="${REPORTS_DIR}/${STEP}__OSV"
-	export OUT_DIR_OSV="${REPORTS_DIR}/${STEP}__OSV"
-
-	mkdir -p "${OUT_DIR_SYFT}" "${OUT_DIR_OSV}"
-
-	analyze "${REPORTS_DIR}/list__${GROUP}__all_init_apps.txt"
-
-	log_console_success "Open this directory for the results: ${OUT_DIR_OSV}"
-}
-
 function main() {
-
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-
 	log_tool_info "Syft v${SYFT_VERSION}"
 	log_tool_info "OSV v${VERSION}"
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_SYFT}") ]]; then
 		if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_OSV}") ]]; then
-			for_each_group analyze_group
+			# Analyze all applications present in the ${APP_GROUP_DIR} directory.
+			check_debug_mode
+			mkdir -p "${OUT_DIR_SYFT}" "${OUT_DIR_OSV}"
+			analyze "${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt"
+			log_console_success "Open this directory for the results: ${OUT_DIR_OSV}"
 		else
 			log_console_error "OSV analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_OSV}'"
 		fi
 	else
 		log_console_error "OSV analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_SYFT}'"
 	fi
-
 }
 
 main

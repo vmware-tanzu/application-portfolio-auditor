@@ -16,12 +16,12 @@ THREADS=10
 VERSION=${BEARER_VERSION}
 STEP=$(get_step)
 
-export LOG_FILE=${REPORTS_DIR}/${STEP}__BEARER.log
+export OUT_DIR_BEARER="${REPORTS_DIR}/${STEP}__BEARER"
+export LOG_FILE="${OUT_DIR_BEARER}.log"
+APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_init_apps.txt"
 
-# Analyse all applications present in provided list.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
-
-	local -r APP_LIST=${1}
 	if [[ -s "${APP_LIST}" ]]; then
 		while read -r APP; do
 			local APP_NAME=$(basename "${APP}")
@@ -62,29 +62,18 @@ function analyze() {
 			set -e
 		done <"${APP_LIST}"
 	fi
-}
-
-# Analyse all applications present in the ${1} directory.
-function analyze_group() {
-	local -r GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-	analyze "${REPORTS_DIR}/list__${GROUP}__all_init_apps.txt"
 	log_console_success "Open this directory for the results: ${OUT_DIR_BEARER}"
 }
 
 function main() {
-
 	log_tool_info "Bearer v${VERSION}"
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_BEARER}") ]]; then
-		export OUT_DIR_BEARER="${REPORTS_DIR}/${STEP}__BEARER"
 		rm -Rf "${OUT_DIR_BEARER}"
 		mkdir -p "${OUT_DIR_BEARER}"
-		for_each_group analyze_group
+		analyze
 	else
 		log_console_error "Bearer analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_BEARER}'"
 	fi
-
 }
 
 main

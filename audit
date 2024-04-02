@@ -252,7 +252,12 @@ export PACKAGE_ZIP="false"
 
 export WINDUP_INCLUDE_PACKAGES_FILE=""
 export WINDUP_EXCLUDE_PACKAGES_FILE=""
-export TARGET_GROUP=""
+
+export APP_GROUP=""
+export APP_GROUP_DIR=""
+export APP_GROUP_SRC_DIR=""
+export APP_GROUP_TMP_DIR=""
+
 export IMPORT_DIR=""
 export DEBUG=""
 export TIMESTAMP_SET="false"
@@ -390,7 +395,7 @@ while true; do
 		shift 2
 		;;
 	-g | --app-group)
-		TARGET_GROUP="${2}"
+		APP_GROUP="${2}"
 		shift 2
 		;;
 	-d | --import-dir)
@@ -528,8 +533,8 @@ if [[ "${REPORT_ACTIVE}" == "true" ]] && [[ "${TIMESTAMP_SET}" == "false" ]]; th
 		else
 			TIMESTAMP=$(echo "${REPORT}" | cut -c 1-20)
 			TIMESTAMP_SET="true"
-			TARGET_GROUP=$(echo "${REPORT}" | cut -c 23-)
-			echo -e "You have chosen the report '${GREEN}${REPORT}${N}' (TIMESTAMP: ${TIMESTAMP} - GROUP: ${TARGET_GROUP})"
+			APP_GROUP=$(echo "${REPORT}" | cut -c 23-)
+			echo -e "You have chosen the report '${GREEN}${REPORT}${N}' (TIMESTAMP: ${TIMESTAMP} - GROUP: ${APP_GROUP})"
 			break
 		fi
 	done
@@ -539,12 +544,18 @@ fi
 [[ "${DEBUG}" == "true" ]] && set -x
 
 if [[ -n "${IMPORT_DIR}" ]]; then
-	TARGET_GROUP=$(basename "${IMPORT_DIR}")
+	APP_GROUP=$(basename "${IMPORT_DIR}")
 fi
 
 # Check if an application group has been selected
-if [[ "${TARGET_GROUP}" != "" ]]; then
-	REPORTS_DIR=${REPORTING_DIR}/${TIMESTAMP}__${TARGET_GROUP}
+if [[ "${APP_GROUP}" != "" ]]; then
+	REPORTS_DIR=${REPORTING_DIR}/${TIMESTAMP}__${APP_GROUP}
+	APP_GROUP_DIR="${APP_DIR_IN}/${APP_GROUP}"
+	APP_GROUP_SRC_DIR="${APP_GROUP_DIR}/src"
+	APP_GROUP_TMP_DIR="${APP_GROUP_DIR}/tmp"
+	
+	# Remove tmp folder to avoid side effects
+	rm -Rf "${APP_GROUP_TMP_DIR}"
 else
 	echo -e "${ORANGE}No application group selected. Either select a group with '-g', point to a local directory with '-d', or use '-r' to re-generate an existing report.${N}"
 	echo ""

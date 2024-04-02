@@ -129,6 +129,7 @@ function generate_timeline_json() {
 # Generate timeline HTML report
 function generate_timeline_report() {
 	local -r REPORT_VARS="${REPORTS_DIR}/98__report_vars.sh"
+	# shellcheck source=/dev/null
 	source "${REPORT_VARS}"
 	{
 		${MUSTACHE} "${TEMPLATE_DIR}/info_timeline_01.mo"

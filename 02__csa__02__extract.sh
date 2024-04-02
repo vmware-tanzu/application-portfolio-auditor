@@ -20,25 +20,19 @@ RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
 export LOG_FILE=/dev/null
 
 function check_missing_apps() {
-	GROUP_DIR=${1}
-	GROUP=$(basename "${GROUP_DIR}")
-
-	log_extract_message "group '${GROUP}'"
-
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
 		if [[ -f "${RESULT_BAGGER_FILE}" ]]; then
-			if ! grep -q "${GROUP}${S}${APP}${S}" "${RESULT_BAGGER_FILE}"; then
-				echo "${GROUP}${S}${APP}${S}${APP}${S}n/a${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}" >>"${MISSING_FILE}"
+			if ! grep -q "${APP_GROUP}${S}${APP}${S}" "${RESULT_BAGGER_FILE}"; then
+				echo "${APP_GROUP}${S}${APP}${S}${APP}${S}n/a${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}" >>"${MISSING_FILE}"
 			fi
 		else
-			echo "${GROUP}${S}${APP}${S}${APP}${S}n/a${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}" >>"${MISSING_FILE}"
+			echo "${APP_GROUP}${S}${APP}${S}${APP}${S}n/a${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}${S}" >>"${MISSING_FILE}"
 		fi
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
 }
 
 function main() {
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_CSA_BAGGER}") ]]; then
 		# Extract results using bagger
 		rm -f "${RESULT_BAGGER_FILE}"
@@ -56,7 +50,7 @@ function main() {
 
 	# Check missing entries
 	rm -f "${MISSING_FILE}"
-	for_each_group check_missing_apps
+	check_missing_apps
 
 	# Add missing entries
 	touch "${RESULT_BAGGER_FILE}" "${MISSING_FILE}"

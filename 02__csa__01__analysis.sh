@@ -19,35 +19,30 @@ DB_DIR_OUT=${REPORTS_DIR}/${STEP}__CSA/db
 LOG_FILE=${APP_DIR_OUT}.log
 LAUNCH_UI_SCRIPT=${APP_DIR_OUT}/../launch_csa_ui.sh
 
-# Analyse all applications present in the ${1} directory.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
-
-	BASE_DIR="${1}"
-	SUB_DIR_NAME=$(basename "${BASE_DIR}")
-	log_analysis_message "group '${SUB_DIR_NAME}'"
-
 	declare APP_SUB_DIR_IN TYPE EXT
 	# Analyze decompiled apps if existing
-	if [ -d "${BASE_DIR}/src" ]; then
-		APP_SUB_DIR_IN="${BASE_DIR}/src"
+	if [ -d "${APP_GROUP_SRC_DIR}" ]; then
+		APP_SUB_DIR_IN="${APP_GROUP_SRC_DIR}"
 		TYPE="d"
 		EXT="/"
 	else
-		## DOES NOT REALLY WORKS BY PROVIDING APPS DIRECTLY (WRONG GENERATED RESULTS)
-		APP_SUB_DIR_IN="${BASE_DIR}"
+		# FIXME: Does not really work by providing apps directly (incorrect results)
+		APP_SUB_DIR_IN="${APP_GROUP_DIR}"
 		TYPE="f"
 		EXT=""
 	fi
 
-	APP_CONF="${APP_DIR_OUT}/conf-${SUB_DIR_NAME}.yml"
+	APP_CONF="${APP_DIR_OUT}/conf-${APP_GROUP}.yml"
 
 	# Build the configuration file (${APP_CONF})
-	echo "runName: ${SUB_DIR_NAME}" >"${APP_CONF}"
+	echo "runName: ${APP_GROUP}" >"${APP_CONF}"
 	echo "applications:" >>"${APP_CONF}"
 
 	while read -r APP; do
 		APP_NAME=$(echo "${APP}" | rev | cut -d'/' -f1 | rev)
-		APP_SHORT="/apps/${APP##$BASE_DIR}"
+		APP_SHORT="/apps/${APP##$APP_GROUP_DIR}"
 		cat >>"${APP_CONF}" <<EOF
 - name: ${APP_NAME}
   path: ${APP_SHORT}${EXT}
@@ -77,9 +72,9 @@ EOF
 
 	set +e
 	(time ${CONTAINER_ENGINE} run --rm \
-		-v "${APP_DIR_OUT}:/out:delegated" -v "${DB_DIR_OUT}:/db" -v "${BASE_DIR}:/apps" \
+		-v "${APP_DIR_OUT}:/out:delegated" -v "${DB_DIR_OUT}:/db" -v "${APP_GROUP_DIR}:/apps" \
 		"${CONTAINER_IMAGE_NAME_CSA}" \
-		analyze --database-dir="/db" --config-file="/out/conf-${SUB_DIR_NAME}.yml" --output-dir="/out" --display-rule-metrics --display-ignored-files --export=csv,html --export-dir="/out/export" --export-file-name="export") >>"${LOG_FILE}" 2>&1
+		analyze --database-dir="/db" --config-file="/out/conf-${APP_GROUP}.yml" --output-dir="/out" --display-rule-metrics --display-ignored-files --export=csv,html --export-dir="/out/export" --export-file-name="export") >>"${LOG_FILE}" 2>&1
 	set -e
 }
 
@@ -97,7 +92,7 @@ function main() {
 	log_tool_info "Cloud Suitability Analyzer (CSA) v${VERSION}"
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_CSA}") ]]; then
 		mkdir -p "${DB_DIR_OUT}"
-		for_each_group analyze
+		analyze
 		create_launch_script
 		log_console_success "CSA analysis completed."
 		log_console_info " Log file: '${LOG_FILE}'"
