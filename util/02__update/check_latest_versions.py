@@ -189,7 +189,7 @@ if __name__ == '__main__':
         (print_bold_message, '', r'', 'Application Analysis Tools', '', None),
         (check_github, 'pmd/pmd', r'.*pmd_releases/(.+)', 'PMD', PMD_VERSION, None),
         ## OWASP DC 9.x requires major changes before updating
-        (check_github, 'jeremylong/DependencyCheck', r'.*/tag/v(.+)', 'OWASP DC', OWASP_DC_VERSION, '9.0.10'),
+        (check_github, 'jeremylong/DependencyCheck', r'.*/tag/v(.+)', 'OWASP DC', OWASP_DC_VERSION, '9.1.0'),
         ## Find Security Bugs' latest version does not provide a pre-built CLI binary yet
         (check_github, 'find-sec-bugs/find-sec-bugs', r'.*/tag/version-(.+)', 'Find Security Bugs', FSB_VERSION, '1.13.0'),
         (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, None),
