@@ -79,7 +79,7 @@ function export_vars() {
 	WAMT_URL="./04__WAMT/"
 	WAMT_LOG="./04__WAMT.log"
 
-	ODC_URL="./05__OWASP_DC__${APP_GROUP}/"
+	ODC_URL="./05__OWASP_DC/"
 	ODC_LOG="./05__OWASP_DC.log"
 
 	SCANCODE_URL="./06__SCANCODE__${APP_GROUP}/"
@@ -451,13 +451,13 @@ function generate_security_csv() {
 	TMP_CSV=${1}
 	rm -f "${TMP_CSV}"
 
-	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
 	export FSB_CSV_FILE="${REPORTS_DIR}/09__FindSecBugs/${APP_GROUP}___results_extracted.csv"
 	export FSB_CSV="./09__FindSecBugs/${APP_GROUP}___results_extracted.csv"
 	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
 	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
 	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}/results_extracted.csv"
 	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}/results_extracted.csv"
+	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC/_results_extracted.csv"
 	export OSV_CSV_FILE="${REPORTS_DIR}/15__OSV/_results__security__osv.csv"
 	export BEARER_CSV_FILE="${REPORTS_DIR}/17__BEARER/_results__security__bearer.csv"
 

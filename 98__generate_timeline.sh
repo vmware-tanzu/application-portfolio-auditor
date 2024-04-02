@@ -63,7 +63,7 @@ function generate_timeline_json() {
 	local -r CSA_LOG="./02__CSA.log"
 	local -r WINDUP_LOG="./03__WINDUP.log"
 	local -r WAMT_LOG="./04__WAMT.log"
-	local -r ODC_LOG="./05__OWASP_DC__${APP_GROUP}.log"
+	local -r ODC_LOG="./05__OWASP_DC.log"
 	local -r SCANCODE_LOG="./06__SCANCODE.log"
 	local -r PMD_LOG="./07__PMD.log"
 	local -r LANGUAGES_LOG="./08__LINGUIST.log"
