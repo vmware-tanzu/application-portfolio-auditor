@@ -356,6 +356,7 @@ function export_vars() {
 		for VARIABLE in "${REPORT_VARIABLES[@]}"; do
 			echo "$(declare -p ${VARIABLE})"
 		done
+		echo "export REPORT_TIMESTAMP='${REPORT_TIMESTAMP}'"
 	} >"${REPORT_VARS}"
 	chmod +x "${REPORT_VARS}"
 
@@ -896,7 +897,7 @@ function generate_reports() {
 # Generate HTML file vizualising the CLOC and Linguist results
 function generate_language_report() {
 
-	export APP_DATE LANGUAGES_REPORT REPORT_TIMESTAMP HEIGHT LINGUIST_CSV CLOC_CSV LANGUAGES_LOG
+	export APP_DATE LANGUAGES_REPORT HEIGHT LINGUIST_CSV CLOC_CSV LANGUAGES_LOG
 	CLOC_CSV="./08__LINGUIST/_CLOC_results_extracted.csv"
 	LINGUIST_CSV="./08__LINGUIST/_LINGUIST_results_extracted.csv"
 	OUTPUT_CLOC_FILE="${REPORTS_DIR}/08__LINGUIST/_CLOC_results_generated.txt"
@@ -908,7 +909,6 @@ function generate_language_report() {
 		APP_DATE="$(echo "${TIMESTAMP}" | cut -d'_' -f 1-3 | sed 's/_/./g') at $(echo "${TIMESTAMP}" | cut -d'_' -f 5-7 | sed 's/_/:/g')"
 
 		LANGUAGES_REPORT="${REPORTS_DIR}/languages.html"
-		REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
 		# HEIGHT: LINES x23 + 40
 		APPS=$(uniq <"${OUTPUT_LINGUIST_FILE}" | wc -l)
 		CALCULATED_HEIGHT=$(((APPS - 2) * 23 + 40))
@@ -941,7 +941,7 @@ function main() {
 	export APP_DATE LINK_REPORT CSA_LOG REPORT_TIMESTAMP
 	APP_DATE="$(echo "${TIMESTAMP}" | cut -d'_' -f 1-3 | sed 's/_/./g') at $(echo "${TIMESTAMP}" | cut -d'_' -f 5-7 | sed 's/_/:/g')"
 	CSA_LOG="./02__CSA.log"
-	REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
+	export REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
 
 	generate_reports
 	generate_language_report
