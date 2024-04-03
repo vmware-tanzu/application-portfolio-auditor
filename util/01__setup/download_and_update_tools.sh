@@ -205,6 +205,7 @@ else
 		--build-arg IMG_BUILD="alpine:latest" \
 		--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}" .
+	#--build-arg IMG_SHELL="busybox:1.36.1-uclibc" \
 	popd &>/dev/null
 
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_CSA}" | gzip >"${DIST_CSA}"

@@ -44,6 +44,7 @@ function usage() {
 	printf "    %s download           Download, prepare and update all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s package            Package all scripts, used components and analysis tools into a portable zip distribution\n" "$(basename "$0")"
 	printf "    %s validate           Validate the architecture and security of the used container images"
+	printf "    %s reports            Validate the generated reports"
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
@@ -128,6 +129,9 @@ function run_short_scripts() {
 		;;
 	validate| valid)
 		SHORT_SCRIPTS+=('util/03__validate/check_container_image_architecture.sh' 'util/03__validate/check_container_image_security.sh')
+		;;
+	report| reports)
+		SHORT_SCRIPTS+=('util/03__validate/check_reports.sh')
 		;;
 	*)
 		log_console_error "Unsupported 'Application Portfolio Auditor' command ('${1}') - Supported ones: 'setup', 'check', 'update', 'package', 'run'"
