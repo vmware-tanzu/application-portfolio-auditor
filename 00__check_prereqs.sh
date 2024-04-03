@@ -10,7 +10,8 @@
 ##############################################################################################################
 
 # ------ Do not modify
-NEEDED_MIN_FREE_DISK_SPACE_IN_GB=10
+NEEDED_MIN_FREE_DISK_SPACE_IN_GB=20
+RECOMMENDED_MIN_CONTAINER_ENGINE_MEMORY_IN_GB=15
 
 ARE_PREREQUISITES_MET=true
 IS_CONTAINER_ENGINE_CHECKED=false
@@ -63,6 +64,15 @@ function check_container_engine() {
 					fi
 				fi
 				IS_CONTAINER_ENGINE_RUNNING=false
+			fi
+
+			if [[ "${IS_CONTAINER_ENGINE_RUNNING}" == "true" ]]; then
+				# Check memory limit
+				CONTAINER_ENGINE_MEM_TOTAL=$(${CONTAINER_ENGINE} info --format '{{.MemTotal}}' | awk '{print $1/1024/1024/1024}')
+				CONTAINER_ENGINE_MEM_TOTAL_IN_GB=${CONTAINER_ENGINE_MEM_TOTAL%.*}
+				if ((CONTAINER_ENGINE_MEM_TOTAL_IN_GB < RECOMMENDED_MIN_CONTAINER_ENGINE_MEMORY_IN_GB)); then
+					log_console_warning "Current container engine (${CONTAINER_ENGINE}) memory limit (${CONTAINER_ENGINE_MEM_TOTAL} GB) is beyond the recommended minimum (${RECOMMENDED_MIN_CONTAINER_ENGINE_MEMORY_IN_GB} GB). Please increase it to speed up analysis and prevent memory issues."
+				fi
 			fi
 			set -e
 		fi
@@ -246,9 +256,9 @@ if [[ "${WINDUP_ACTIVE}" == "true" ]]; then
 		ARE_PREREQUISITES_MET=false
 	fi
 	check_container_engine "${CONTAINER_IMAGE_NAME_WINDUP}" "${DIST_DIR}/oci__windup_${WINDUP_VERSION}.img"
-	if [[ -z "${WINDUP_INCLUDE_PACKAGES_FILE}" && -z "${WINDUP_EXCLUDE_PACKAGES_FILE}" ]]; then
-		log_console_warning "Windup Analysis is active, but no list of packages to include/exclude has been set. It might take a long time to run."
-	fi
+	#if [[ -z "${WINDUP_INCLUDE_PACKAGES_FILE}" && -z "${WINDUP_EXCLUDE_PACKAGES_FILE}" ]]; then
+	#	log_console_warning "Windup Analysis is active, but no list of packages to include/exclude has been set. It might take a long time to run."
+	#fi
 fi
 
 # 04
