@@ -31,7 +31,7 @@ function generate_csv() {
 		APP="$(basename "${FILE}")"
 		log_extract_message "app '${APP}'"
 
-		WAMT_FILE="${APP_DIR_OUT}/${APP_GROUP}__${APP}.html"
+		WAMT_FILE="${APP_DIR_OUT}/${APP}.html"
 		if [[ -f "${WAMT_FILE}" ]]; then
 			TEMP_TABLE_FILE="${RESULT_FILE}.tmp"
 			sed -n '/<table summary="This table summarizes how many rules and rule results are included in the report for each rule severity. A description for each rule severity is also provid*/,/<\/table>/p' "${WAMT_FILE}" >"${TEMP_TABLE_FILE}"
