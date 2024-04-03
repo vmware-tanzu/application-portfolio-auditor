@@ -31,7 +31,8 @@ util/00__release/git*
 util/00__release/json-v2.sh
 /docs/
 py_env
-reports/*
+reports*
 /tmp/
 /work-in-progress/
 node_modules
+/util/05__build_docker
