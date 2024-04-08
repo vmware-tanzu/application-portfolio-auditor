@@ -43,8 +43,8 @@ function usage() {
 	printf "    %s check              Check available updates for all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s download           Download, prepare and update all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s package            Package all scripts, used components and analysis tools into a portable zip distribution\n" "$(basename "$0")"
-	printf "    %s validate           Validate the architecture and security of the used container images"
-	printf "    %s reports            Validate the generated reports"
+	printf "    %s validate           Validate the architecture and security of the used container images\n" "$(basename "$0")"
+	printf "    %s reports            Validate the generated reports\n"  "$(basename "$0")"
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
