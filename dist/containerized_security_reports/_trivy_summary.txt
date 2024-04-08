@@ -8,9 +8,8 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 oci__csa-bagger_1.0.2.img
 Total: 86 (UNKNOWN: 0, LOW: 57, MEDIUM: 15, HIGH: 13, CRITICAL: 1)
 
-oci__csa_4.1.13.img
+oci__csa_4.1.14.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 oci__fernflower_241.14494.158.img
 Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)

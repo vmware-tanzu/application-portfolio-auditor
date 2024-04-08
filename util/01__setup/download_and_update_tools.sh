@@ -29,13 +29,13 @@ source "${HOME_DIR}/_versions.sh"
 
 # Determining platform architecture for the build
 ARCH="$(uname -m)"
-export DOCKER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
-export DOCKER_PLATFORM="linux/${DOCKER_ARCH}"
+export CONTAINER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
+export CONTAINER_PLATFORM="linux/${CONTAINER_ARCH}"
 
-if [[ "${DOCKER_ARCH}" == "arm64" ]]; then
-	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}v8"
+if [[ "${CONTAINER_ARCH}" == "arm64" ]]; then
+	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${CONTAINER_ARCH}v8"
 else
-	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${DOCKER_ARCH}"
+	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${CONTAINER_ARCH}"
 fi
 
 # shellcheck disable=SC1091
@@ -119,7 +119,7 @@ function download_container_image() {
 	NAME="${1}"
 	CONTAINER_IMAGE_NAME="${2}"
 	LOCAL_IMG="${3}"
-	PLATFORM=${4:-${DOCKER_PLATFORM}}
+	PLATFORM=${4:-${CONTAINER_PLATFORM}}
 	# Extract "REPO" and "VERSION" from container image name
 	REPO="${CONTAINER_IMAGE_NAME%%:*}"
 	VERSION="${CONTAINER_IMAGE_NAME#*:}"
@@ -170,7 +170,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/fernflower" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_GRADLE="${IMG_GRADLE_8_JDK_21}" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}" \
 		--build-arg FERNFLOWER_VERSION="${FERNFLOWER_VERSION}" \
@@ -200,11 +200,14 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/csa" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	export DOCKER_BUILDKIT=1
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
+		--build-arg ARCH="${CONTAINER_ARCH}" \
 		--build-arg CSA_VERSION="${CSA_VERSION}" \
-		--build-arg IMG_BUILD="alpine:latest" \
+		--build-arg IMG_BUILD="ubuntu:24.04" \
 		--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}" .
+	#--build-arg IMG_BUILD="alpine:latest" \
 	#--build-arg IMG_SHELL="busybox:1.36.1-uclibc" \
 	popd &>/dev/null
 
@@ -225,7 +228,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/csa-bagger" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg CSA_BAGGER_VERSION="${CSA_BAGGER_VERSION}" \
 		--build-arg IMG_MAVEN="${IMG_MAVEN_3_JDK_21}" \
 		--build-arg IMG_SLIM="debian:12.5-slim" \
@@ -274,7 +277,7 @@ else
 		cp -f windup-cli-${WINDUP_VERSION}.Final-offline.zip.orig windup-cli-${WINDUP_VERSION}.Final-offline.zip
 	fi
 
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_11}" \
 		--build-arg WINDUP_VERSION="${WINDUP_VERSION}" \
@@ -325,7 +328,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/wamt" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}-alpine" \
 		--build-arg WAMT_VERSION="${WAMT_VERSION}" \
@@ -357,7 +360,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/owasp-dependency-check" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_GO="golang:1.22.1-alpine" \
 		--build-arg IMG_JLINK="azul/zulu-openjdk-alpine:20" \
 		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
@@ -436,7 +439,7 @@ else
 	cp "${SCRIPT_PATH}/../../dist/containerized/scancode-toolkit/template.html" src/formattedcode/templates/html-app/template.html
 
 	# Build container image
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_SCANCODE}" .
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_SCANCODE}" .
 
 	popd &>/dev/null
 
@@ -465,7 +468,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/pmd" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_21}" \
 		--build-arg PMD_VERSION="${PMD_VERSION}" \
@@ -501,7 +504,7 @@ else
 	rm Dockerfile
 	wget -q -O "Dockerfile" https://raw.githubusercontent.com/crazy-max/docker-linguist/master/Dockerfile
 	sed -i '' -e "s/.*ARG LINGUIST_VERSION=.*/ARG LINGUIST_VERSION=\"${LINGUIST_VERSION}\"/" Dockerfile
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_LINGUIST}" .
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_LINGUIST}" .
 	popd &>/dev/null
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_LINGUIST}" | gzip >"${DIST_DIR}/${LINGUIST_IMG}"
 	rm -Rf /tmp/linguist
@@ -523,7 +526,7 @@ else
 	simple_check_and_download "CLOC" "containerized/cloc/cloc-${CLOC_VERSION}.tar.gz" "https://github.com/AlDanial/cloc/releases/download/v${CLOC_VERSION}/cloc-${CLOC_VERSION}.tar.gz" "${CLOC_VERSION}"
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/cloc" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg CLOC_VERSION="${CLOC_VERSION}" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CLOC}" .
@@ -573,7 +576,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/findsecbugs" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_JAVA="${IMG_ECLIPSE_TEMURIN_11}" \
 		--build-arg FSB_VERSION="${FSB_VERSION}" \
@@ -600,7 +603,7 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/mai" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BASE="alpine:latest" \
 		--build-arg IMG_DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}" \
 		--build-arg MAI_VERSION="${MAI_VERSION}" \
@@ -671,7 +674,7 @@ else
 	# Build container image including cache as it otherwise does not work in an airgapped environmment with podman
 	## https://aquasecurity.github.io/trivy/v0.43/docs/advanced/air-gap/
 	pushd "${SCRIPT_PATH}/../../dist/containerized/trivy" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg TRIVY_VERSION="${TRIVY_VERSION}" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_TRIVY}" .
 	popd &>/dev/null
@@ -706,9 +709,9 @@ else
 
 	# Build container image (custom build as official image only available for x86)
 	pushd "${SCRIPT_PATH}/../../dist/containerized/bearer" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" \
-		--build-arg IMG_BASE="ubuntu:24.04" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg IMG_BUILD="ubuntu:24.04" \
+		--build-arg IMG_BASE="ubuntu:24.04" \
 		--build-arg BEARER_VERSION="${BEARER_VERSION}" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_BEARER}" .
 	popd &>/dev/null
@@ -786,7 +789,7 @@ fi
 echo "[INFO] Downloading and transforming all required images"
 mkdir -p "${DIST_STATIC}/img/"
 pushd "${SCRIPT_PATH}/../../dist/containerized/external-assets-downloader" &>/dev/null
-${CONTAINER_ENGINE} buildx build --platform "${DOCKER_PLATFORM}" -f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER}" . &>/dev/null
+${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" -f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER}" . &>/dev/null
 ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating/static/img:/out/public/img:delegated" --name Downloader "${CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER}"
 popd &>/dev/null
 
