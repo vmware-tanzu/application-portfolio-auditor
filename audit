@@ -34,6 +34,32 @@ source "${CURRENT_DIR}/_shared_functions.sh"
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_versions.sh"
 
+function versions() {
+
+	# Display all current versions in use
+	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N}"
+	echo -e "-> CSA v.${CSA_VERSION}"
+	echo -e "-> Windup v.${WINDUP_VERSION}"
+	echo -e "-> WAMT v.${WAMT_VERSION}"
+	echo -e "-> Linguist v.${LINGUIST_VERSION}"
+	echo -e "-> CLOC v.${CLOC_VERSION}"
+	echo -e "-> Scancode v.${SCANCODE_VERSION}"
+	echo -e "-> PMD v.${PMD_VERSION}"
+	echo -e "-> Microsoft Application Inspector v.${MAI_VERSION}"
+	echo -e "-> Archeo v.${TOOL_VERSION}"
+	echo -e "-> OWASP Dependency-Check v.${OWASP_DC_VERSION}"
+	echo -e "-> Find Security Bug v.${FSB_VERSION}"
+	echo -e "-> SAST-Scan (slscan) v.${SLSCAN_VERSION}"
+	echo -e "-> Insider v.${INSIDER_VERSION}"
+	echo -e "-> Grype v.${GRYPE_VERSION}"
+	echo -e "-> Syft v.${SYFT_VERSION}"
+	echo -e "-> Trivy v.${TRIVY_VERSION}"
+	echo -e "-> OSV v.${OSV_VERSION}"
+	echo -e "-> Bearer v.${BEARER_VERSION}"
+	exit
+
+}
+
 function usage() {
 
 	echo -e "${B}Usage:${N}"
@@ -43,8 +69,9 @@ function usage() {
 	printf "    %s check              Check available updates for all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s download           Download, prepare and update all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s package            Package all scripts, used components and analysis tools into a portable zip distribution\n" "$(basename "$0")"
-	printf "    %s validate           Validate the architecture and security of the used container images\n" "$(basename "$0")"
 	printf "    %s reports            Validate the generated reports\n"  "$(basename "$0")"
+	printf "    %s validate           Validate the architecture and security of the used container images\n" "$(basename "$0")"
+	printf "    %s version            Display all tool versions in use\n" "$(basename "$0")"
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
@@ -129,6 +156,10 @@ function run_short_scripts() {
 		;;
 	validate| valid)
 		SHORT_SCRIPTS+=('util/03__validate/check_container_image_architecture.sh' 'util/03__validate/check_container_image_security.sh')
+		;;
+	version| versions |v)
+		versions
+		exit
 		;;
 	report| reports)
 		SHORT_SCRIPTS+=('util/03__validate/check_reports.sh')
@@ -443,34 +474,10 @@ done
 
 if [[ "${USAGE_ACTIVE}" == "true" ]]; then
 	usage
-
 elif [[ "${VERSION_ACTIVE}" == "true" ]]; then
-	# Display all current versions in use
-	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N}"
-	echo -e "-> CSA v.${CSA_VERSION}"
-	echo -e "-> Windup v.${WINDUP_VERSION}"
-	echo -e "-> WAMT v.${WAMT_VERSION}"
-	echo -e "-> Linguist v.${LINGUIST_VERSION}"
-	echo -e "-> CLOC v.${CLOC_VERSION}"
-	echo -e "-> Scancode v.${SCANCODE_VERSION}"
-	echo -e "-> PMD v.${PMD_VERSION}"
-	echo -e "-> Microsoft Application Inspector v.${MAI_VERSION}"
-	echo -e "-> Archeo v.${TOOL_VERSION}"
-	echo -e "-> OWASP Dependency-Check v.${OWASP_DC_VERSION}"
-	echo -e "-> Find Security Bug v.${FSB_VERSION}"
-	echo -e "-> SAST-Scan (slscan) v.${SLSCAN_VERSION}"
-	echo -e "-> Insider v.${INSIDER_VERSION}"
-	echo -e "-> Grype v.${GRYPE_VERSION}"
-	echo -e "-> Syft v.${SYFT_VERSION}"
-	echo -e "-> Trivy v.${TRIVY_VERSION}"
-	echo -e "-> OSV v.${OSV_VERSION}"
-	echo -e "-> Bearer v.${BEARER_VERSION}"
-	exit
-
+	versions
 elif [[ ! $# -eq 0 && -n "${1}" &&  "${1}" != "run" ]]; then
-
 	run_short_scripts "${1}"
-
 fi
 
 # Check if an analysis tool has been selected
