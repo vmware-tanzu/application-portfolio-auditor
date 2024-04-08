@@ -200,9 +200,9 @@ else
 
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/csa" &>/dev/null
-	export DOCKER_BUILDKIT=1
+	CSA_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "x86_64")"
 	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
-		--build-arg ARCH="${CONTAINER_ARCH}" \
+		--build-arg ARCH="${CSA_ARCH}" \
 		--build-arg CSA_VERSION="${CSA_VERSION}" \
 		--build-arg IMG_BUILD="ubuntu:24.04" \
 		--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
