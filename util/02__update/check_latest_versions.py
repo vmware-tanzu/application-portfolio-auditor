@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2019-2023 VMware, Inc.
+# Copyright 2019-2024 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 """This scripts automatically checks for updates on the used tools."""
 
