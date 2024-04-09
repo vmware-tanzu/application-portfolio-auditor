@@ -151,8 +151,8 @@ function compute_audit_duration() {
 			HOURS=$((time_difference / 3600))
 			MINUTES=$(((time_difference % 3600) / 60))
 			SECONDS=$((time_difference % 60))
-			if (( HOURS > 0 )); then
-				if (( HOURS == 1)); then
+			if ((HOURS > 0)); then
+				if ((HOURS == 1)); then
 					AUDIT_DURATION="( 1 hour "
 				else
 					AUDIT_DURATION="( $HOURS hours "
@@ -168,7 +168,6 @@ function compute_audit_duration() {
 		log_error "No time data found"
 	fi
 }
-
 
 # Generate timeline HTML report
 function generate_timeline_report() {
