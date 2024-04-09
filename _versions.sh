@@ -7,7 +7,7 @@
 ##############################################################################################################
 
 # Current version of Application Portfolio Auditor
-export TOOL_VERSION='2.1.2'
+export TOOL_VERSION='2.2.0'
 
 # List of the versions for all tools in use.
 
