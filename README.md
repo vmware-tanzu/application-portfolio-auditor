@@ -70,7 +70,7 @@ This table summarizes all prerequisites to use Application Portfolio Auditor:
 <details>
 <summary>What <b>types of applications</b> can be analyzed?</summary>
 <br/>
-Most modern application implemented leveraging modern programming languages are supported (Java, Python, .NET, NodeJS). As well binaries as source code can be analyzed.
+Most modern applications implemented leveraging modern programming languages are supported (Java, Python, .NET, NodeJS). As well binaries as source code can be analyzed.
 </details>
 
 <!-- faq 3 -->
@@ -86,11 +86,11 @@ Please check the <a href="https://github.com/vmware-tanzu/application-portfolio-
 <br/>
 First, make sure that you are meeting all prerequisites. Especially ensure you have enough RAM allocated to your docker environment.
 
-If a restart, some cleanup or a glance at the documentation does not further helps, you can <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/issues/new/choose">create</a> an issue on GitHub. For specifics on what to include in your report, please follow the pull request guidelines above and share:
+If a restart, some cleanup or a glance at the documentation does not further help, you can <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/issues/new/choose">create</a> an issue on GitHub. For specifics on what to include in your report, please follow the pull request guidelines above and share:
 <ul>
   <li>What happened: Also tell us, what did you expect to happen.</li>
   <li>Version used: What version of application-portfolio-auditor are you running.</li>
-  <li>Environment: What Operating System, Chip (Intel/Apple Silicon) is the software running on.</li>
+  <li>Environment: What Operating System, chipset (Intel/Apple Silicon) is the software running on.</li>
   <li>Any other potentially relevant information like the browser of JDK used.</li>
 </ul>
 </details>
