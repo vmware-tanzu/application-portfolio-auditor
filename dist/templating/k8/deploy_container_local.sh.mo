@@ -12,8 +12,11 @@ IMG_NAME="audit-report-${REPORT_NAME}-img:${VERSION}"
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
-# Build container image
-DOCKER_BUILDKIT=1 docker build -f "${SCRIPT_DIR}/deploy/Dockerfile" -t "${IMG_NAME}" .
+# Delete existing local image
+{{CONTAINER_ENGINE}} images -a | grep "audit-report-${REPORT_NAME}-img" | awk '{print $3}' | xargs -r "{{CONTAINER_ENGINE}}" rmi --force
+
+# Build local container image
+DOCKER_BUILDKIT=1 {{CONTAINER_ENGINE}} buildx build --build-arg ARCH="$(uname -m)" -f "${SCRIPT_DIR}/deploy/Dockerfile" -t "${IMG_NAME}" .
 
 # Run container image
-docker run --rm -it --name "audit-report-${REPORT_NAME}" -p 80:80 "${IMG_NAME}"
+{{CONTAINER_ENGINE}} run --rm -it --name "audit-report-${REPORT_NAME}" -p 80:80 "${IMG_NAME}"

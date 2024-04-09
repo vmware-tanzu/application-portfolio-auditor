@@ -194,24 +194,39 @@ else
 	find "${DIST_DIR}" -type f -iname 'oci__csa*.img' ! -name 'oci__csa*bagger*.img' -delete
 	find "${DIST_DIR}" -type f -iname 'cloud-suitability-analyzer-*.zip' -delete
 
-	# wget -q -O "csa-l" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa-l"
-	# wget -q -O "csa" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/csa"
-	# wget -q -O "CSA-UserManual.pdf" "https://github.com/vmware-tanzu/cloud-suitability-analyzer/releases/download/v${CSA_VERSION}/CSA-UserManual.pdf"
-
 	# Build container image
 	pushd "${SCRIPT_PATH}/../../dist/containerized/csa" &>/dev/null
-	CSA_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "x86_64")"
 	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
-		--build-arg ARCH="${CSA_ARCH}" \
+		--build-arg ARCH="${ARCH}" \
 		--build-arg CSA_VERSION="${CSA_VERSION}" \
 		--build-arg IMG_BUILD="ubuntu:24.04" \
 		--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}" .
-	#--build-arg IMG_BUILD="alpine:latest" \
-	#--build-arg IMG_SHELL="busybox:1.36.1-uclibc" \
 	popd &>/dev/null
 
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_CSA}" | gzip >"${DIST_CSA}"
+fi
+
+if [[ "${ARCH}" == "arm64" ]]; then
+	# Build x86_64 container image for potential K8s deployment on non-ARM K8 cluster
+	DIST_CSA_X86="${DIST_DIR}/oci__csa_${CSA_VERSION}_x86.img"
+	if [ -f "${DIST_CSA_X86}" ]; then
+		echo "[INFO] 'CSA' x86 (${CSA_VERSION}) is already available"
+	else
+		# Delete previous versions
+		find "${DIST_DIR}" -type f -iname 'oci__csa*_x86.img' ! -name 'oci__csa*bagger*.img' -delete
+
+		# Build container image
+		pushd "${SCRIPT_PATH}/../../dist/containerized/csa" &>/dev/null
+		${CONTAINER_ENGINE} buildx build --platform "linux/amd64" \
+			--build-arg ARCH="x86_64" \
+			--build-arg CSA_VERSION="${CSA_VERSION}" \
+			--build-arg IMG_BUILD="ubuntu:24.04" \
+			--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
+			-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}_x86" .
+		popd &>/dev/null
+		${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_CSA}_x86" | gzip >"${DIST_CSA_X86}"
+	fi
 fi
 
 # 02 CSA - Bagger build

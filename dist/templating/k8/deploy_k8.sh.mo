@@ -38,12 +38,12 @@ if [ -z "${K8_COMMAND}" ]; then
 fi
 
 # Build container image
-DOCKER_BUILDKIT=1 docker build -f "${SCRIPT_DIR}/deploy/Dockerfile" -t "${IMG_NAME}" --platform=linux/amd64 .
+DOCKER_BUILDKIT=1 {{CONTAINER_ENGINE}} buildx build --build-arg ARCH="x86_64" -f "${SCRIPT_DIR}/deploy/Dockerfile" -t "${IMG_NAME}" --platform=linux/amd64 .
 
 # Tag and push image to a harbor registry
 if [ -n "${HARBOR_PROJECT}" ]; then
-	docker tag "${IMG_NAME}" "${HARBOR_PROJECT}/${IMG_NAME}"
-	docker push "${HARBOR_PROJECT}/${IMG_NAME}"
+	{{CONTAINER_ENGINE}} tag "${IMG_NAME}" "${HARBOR_PROJECT}/${IMG_NAME}"
+	{{CONTAINER_ENGINE}} push "${HARBOR_PROJECT}/${IMG_NAME}"
 	IMG_NAME="${HARBOR_PROJECT}/${IMG_NAME}"
 fi
 
