@@ -195,7 +195,7 @@ if __name__ == '__main__':
         (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, None),
         (check_github, 'AlDanial/cloc', r'.*/tag/v(.+)', 'CLOC', CLOC_VERSION, None),
         ## Windup: Versions from 6.2.x do not allow multiple targets
-        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.6'),
+        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.7'),
         (check_github, 'vmware-tanzu/cloud-suitability-analyzer', r'.*/tag/v(.+)', 'CSA', CSA_VERSION, None),
         (check_github, 'microsoft/ApplicationInspector', r'.*/tag/v(.+)', 'MAI', MAI_VERSION, None),
         (check_github, 'github/linguist', r'.*/tag/v(.+)', 'Linguist', LINGUIST_VERSION, None),
