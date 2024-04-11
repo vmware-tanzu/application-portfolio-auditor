@@ -39,7 +39,7 @@ export SYFT_VERSION='1.1.1'
 export GRYPE_VERSION='0.75.0'
 export TRIVY_VERSION='0.50.1'
 export OSV_VERSION='1.7.0'
-export BEARER_VERSION='1.43.1'
+export BEARER_VERSION='1.43.2'
 
 # Supporting frameworks
 export FERNFLOWER_VERSION='241.14494.240'
