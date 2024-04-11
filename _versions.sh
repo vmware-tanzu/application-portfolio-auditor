@@ -77,7 +77,7 @@ export CONTAINER_IMAGE_NAME_BEARER="bearer/bearer:v${BEARER_VERSION}"
 export CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER="external-assets-downloader:1.0"
 export CONTAINER_IMAGE_NAME_NGINX="nginx:${NGINX_VERSION}-alpine3.18"
 ## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
+export DONET_RUNTIME_VERSION='8.0.4-alpine3.19'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
 export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"
