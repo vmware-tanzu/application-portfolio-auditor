@@ -1,25 +1,25 @@
 
-oci__bearer_1.43.1.img
-Total: 11 (UNKNOWN: 0, LOW: 2, MEDIUM: 9, HIGH: 0, CRITICAL: 0)
+oci__bearer_1.43.2.img
+Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 oci__cloc_2.00.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 oci__csa-bagger_1.0.2.img
-Total: 86 (UNKNOWN: 0, LOW: 57, MEDIUM: 15, HIGH: 13, CRITICAL: 1)
+Total: 78 (UNKNOWN: 0, LOW: 57, MEDIUM: 15, HIGH: 5, CRITICAL: 1)
 
-oci__csa_4.1.14.img
+oci__csa_4.1.15.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
-oci__fernflower_241.14494.158.img
+oci__fernflower_241.14494.240.img
 Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
 
 oci__findsecbugs_1.12.0.img
 Total: 50 (UNKNOWN: 0, LOW: 25, MEDIUM: 25, HIGH: 0, CRITICAL: 0)
 Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
-oci__grype_0.74.7.img
-Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 0, CRITICAL: 0)
+oci__grype_0.75.0.img
 
 oci__insider_3.0.0.img
 Total: 50 (UNKNOWN: 0, LOW: 2, MEDIUM: 10, HIGH: 34, CRITICAL: 4)
@@ -28,22 +28,23 @@ oci__linguist_7.29.0.img
 Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 oci__mai_1.9.22.img
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 2 (UNKNOWN: 0, LOW: 2, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 oci__osv_1.7.0.img
-Total: 7 (UNKNOWN: 0, LOW: 0, MEDIUM: 6, HIGH: 1, CRITICAL: 0)
+Total: 10 (UNKNOWN: 0, LOW: 2, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 
 oci__owasp-dependency-check_8.4.3.img
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 2 (UNKNOWN: 0, LOW: 2, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 Total: 14 (UNKNOWN: 0, LOW: 1, MEDIUM: 6, HIGH: 6, CRITICAL: 1)
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 oci__pmd_7.0.0.img
 Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
 
 oci__sast-scan_2.1.1.img
-Total: 1351 (UNKNOWN: 0, LOW: 544, MEDIUM: 765, HIGH: 42, CRITICAL: 0)
+Total: 1414 (UNKNOWN: 0, LOW: 550, MEDIUM: 823, HIGH: 41, CRITICAL: 0)
 Total: 34 (UNKNOWN: 0, LOW: 1, MEDIUM: 12, HIGH: 20, CRITICAL: 1)
-Total: 12 (UNKNOWN: 0, LOW: 0, MEDIUM: 10, HIGH: 0, CRITICAL: 2)
+Total: 14 (UNKNOWN: 0, LOW: 0, MEDIUM: 12, HIGH: 0, CRITICAL: 2)
 Total: 31 (UNKNOWN: 0, LOW: 2, MEDIUM: 18, HIGH: 10, CRITICAL: 1)
 Total: 11 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 6, CRITICAL: 0)
 Total: 13 (UNKNOWN: 0, LOW: 0, MEDIUM: 4, HIGH: 9, CRITICAL: 0)
@@ -52,18 +53,17 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 Total: 14 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 8, CRITICAL: 1)
 
 oci__scancode-toolkit_32.1.0.img
-Total: 579 (UNKNOWN: 3, LOW: 200, MEDIUM: 250, HIGH: 124, CRITICAL: 2)
+Total: 677 (UNKNOWN: 18, LOW: 192, MEDIUM: 340, HIGH: 125, CRITICAL: 2)
 Total: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 4, HIGH: 2, CRITICAL: 0)
 
-oci__syft_1.1.0.img
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+oci__syft_1.1.1.img
 
 oci__trivy_0.50.1.img
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 2 (UNKNOWN: 0, LOW: 2, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
 oci__wamt_24.0.0.1.img
-Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+Total: 2 (UNKNOWN: 0, LOW: 2, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 
 oci__windup_6.1.11.img
 Total: 42 (UNKNOWN: 0, LOW: 25, MEDIUM: 17, HIGH: 0, CRITICAL: 0)
