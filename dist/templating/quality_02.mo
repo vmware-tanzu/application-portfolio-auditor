@@ -211,13 +211,13 @@ function drawTable(data) {
       } else if (d.name.includes("Archeo")) {
         return "./16__ARCHEO/"+d.app+".html";
       } else if (d.name.includes("PMD")) {
-        return "./07__PMD/pmd/{{APP_GROUP}}__"+d.app+"_pmd.html";
+        return "./07__PMD/pmd/"+d.app+"_pmd.html";
       } else if (d.name.includes("Copy-pasted")) {
-        return "./07__PMD/cpd/{{APP_GROUP}}__"+d.app+"__cpd.xml";
+        return "./07__PMD/cpd/"+d.app+"__cpd.xml";
       } else if (d.name.includes("ScanCode")) {
-        return "./06__SCANCODE__{{APP_GROUP}}/"+d.app+"/index.html";
+        return "./06__SCANCODE/"+d.app+"/index.html";
       } else if (d.name.includes("MAI")) {
-        return "./10__MAI/mai__{{APP_GROUP}}__"+d.app+".html";
+        return "./10__MAI/"+d.app+".html";
       } else {
         return '';
       }

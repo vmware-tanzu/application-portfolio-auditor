@@ -13,19 +13,17 @@ STEP=$(get_step)
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__FindSecBugs"
 export LOG_FILE="${APP_DIR_OUT}".log
 
+LIST_JAVA_BIN="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
+
 SEPARATOR=","
 
 function generate_csv() {
-	GROUP=$(basename "${1}")
-	log_extract_message "group '${GROUP}'"
-	LIST_JAVA_BIN="${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
 	if [[ -s "${LIST_JAVA_BIN}" ]]; then
-		RESULT_FILE="${APP_DIR_OUT}/${GROUP}___results_extracted.csv"
-		rm -f "${RESULT_FILE}"
-		echo "Applications${SEPARATOR}FSB Low Bugs${SEPARATOR}FSB Medium Bugs${SEPARATOR}FSB High Bugs${SEPARATOR}FSB Total Bugs" >>"${RESULT_FILE}"
+		RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+		echo "Applications${SEPARATOR}FSB Low Bugs${SEPARATOR}FSB Medium Bugs${SEPARATOR}FSB High Bugs${SEPARATOR}FSB Total Bugs" >"${RESULT_FILE}"
 		while read -r APP_FILE; do
 			APP="$(basename "${APP_FILE}")"
-			FILE="${APP_DIR_OUT}/${GROUP}__${APP}.html"
+			FILE="${APP_DIR_OUT}/${APP}.html"
 			COUNT_HIGH=''
 			COUNT_MED=''
 			COUNT_LOW=''
@@ -49,7 +47,7 @@ function generate_csv() {
 			else
 				echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
 			fi
-		done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+		done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 		log_console_success "Results: ${RESULT_FILE}"
 	else
 		log_console_warning "No binary Java application found. Skipping FindSecBug analysis result extraction."
@@ -58,7 +56,7 @@ function generate_csv() {
 
 function main() {
 	if [[ -d "${APP_DIR_OUT}" ]]; then
-		for_each_group generate_csv
+		generate_csv
 	else
 		log_console_error "FindSecBugs missing directory: ${APP_DIR_OUT}"
 	fi

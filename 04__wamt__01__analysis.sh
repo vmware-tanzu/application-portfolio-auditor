@@ -74,13 +74,11 @@ STEP=$(get_step)
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"
 LOG_FILE="${APP_DIR_OUT}".log
 
-# Analyse all applications present in the ${1} directory.
-function analyze() {
-	GROUP=$(basename "${1}")
-	APP_FOUND="false"
-	JAVA_BIN_LIST="${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
+JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
-	log_analysis_message "group '${GROUP}'"
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
+function analyze() {
+	APP_FOUND="false"
 
 	while read -r APP; do
 		APP_FOUND="true"
@@ -96,7 +94,7 @@ function analyze() {
 			--targetCloud="${TARGET_CLOUD}"
 			--sourceJava="${SOURCE_JAVA}"
 			--targetJava="${TARGET_JAVA}"
-			--output="/out/${GROUP}__${APP_NAME}.html"
+			--output="/out/${APP_NAME}.html"
 		)
 		set +e
 		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name WAMT "${CONTAINER_IMAGE_NAME_WAMT}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
@@ -114,7 +112,7 @@ function main() {
 	log_tool_info "IBM WAMT (WebSphere Application Server Migration Toolkit) v${VERSION}"
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_WAMT}") ]]; then
 		mkdir -p "${APP_DIR_OUT}"
-		for_each_group analyze
+		analyze
 	else
 		log_console_error "IBM WAMT analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_WAMT}'"
 	fi

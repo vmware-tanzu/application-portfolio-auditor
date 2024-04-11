@@ -147,9 +147,9 @@ function drawTable(data) {
       } else if (d.name.includes("CSA")) {
         return "{{CSA_URL}}#/application?app="+d.app;
       } else if (d.name.includes("WINDUP")) {
-        return "./03__WINDUP__{{APP_GROUP}}/reports/"+reportMap.get(d.app);
+        return "./03__WINDUP/reports/"+reportMap.get(d.app);
       } else if (d.name.includes("WAMT")) {
-        return "./04__WAMT/{{APP_GROUP}}__"+d.app+".html";
+        return "./04__WAMT/"+d.app+".html";
       } else {
         return '';
       }

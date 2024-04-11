@@ -15,14 +15,13 @@
 VERSION=${INSIDER_VERSION}
 STEP=$(get_step)
 
-APP_BASE=${REPORTS_DIR}/${STEP}__INSIDER
-export LOG_FILE="${APP_BASE}.log"
+export APP_DIR_OUT=${REPORTS_DIR}/${STEP}__INSIDER
+export LOG_FILE="${APP_DIR_OUT}.log"
 
 ANALYZABLE_APP_FOUND="false"
 
-# Analyse all applications present in provided list.
+# Analyze all applications present in provided list.
 function analyze() {
-
 	LANGUAGE=${1}
 	APP_LIST=${2}
 
@@ -67,41 +66,22 @@ function analyze() {
 	fi
 }
 
-# Analyse all applications present in the ${1} directory.
-function analyze_group() {
-	GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-
-	export APP_DIR_OUT="${APP_BASE}__${GROUP}"
-	mkdir -p "${APP_DIR_OUT}"
-
-	analyze java "${REPORTS_DIR}/list__${GROUP}__java-src.txt"
-	analyze csharp "${REPORTS_DIR}/list__${GROUP}__cs.txt"
-
-	if [[ "${ANALYZABLE_APP_FOUND}" == "true" ]]; then
-		log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
-	else
-		log_console_warning "No suitable app found. Skipping INSIDER analysis."
-	fi
-}
-
 function main() {
-
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-
 	log_tool_info "Insider Static Application Security Testing (SAST) v${VERSION}"
-
 	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_INSIDER}")" ]]; then
-		for_each_group analyze_group
+		# Analyze all applications present in the ${APP_GROUP_DIR} directory.
+		check_debug_mode
+		mkdir -p "${APP_DIR_OUT}"
+		analyze java "${REPORTS_DIR}/00__Weave/list__java-src.txt"
+		analyze csharp "${REPORTS_DIR}/00__Weave/list__cs.txt"
+		if [[ "${ANALYZABLE_APP_FOUND}" == "true" ]]; then
+			log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
+		else
+			log_console_warning "No suitable app found. Skipping INSIDER analysis."
+		fi
 	else
 		log_console_error "INSIDER analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_INSIDER}'"
 	fi
-
 }
 
 main

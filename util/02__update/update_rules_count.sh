@@ -7,7 +7,7 @@
 ##############################################################################################################
 
 # ----- Please adjust
-LOCAL_WINDUP_REPORT="$(pwd)/reports/2023_10_25__12_30_48__large/03__WINDUP__large"
+LOCAL_WINDUP_REPORT="$(pwd)/reports/2023_10_25__12_30_48__large/"
 
 # ------ Do not modify
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")

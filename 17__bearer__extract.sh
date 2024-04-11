@@ -11,26 +11,14 @@
 VERSION=${BEARER_VERSION}
 STEP=$(get_step)
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__BEARER"
-export LOG_FILE=${REPORTS_DIR}/${STEP}__BEARER.log
+export LOG_FILE="${APP_DIR_OUT}.log"
+RESULT_FILE="${APP_DIR_OUT}/_results__security__bearer.csv"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
 
 SEPARATOR=","
 
 function generate_csv() {
-	GROUP=$(basename "${1}")
-	APP_DIR_OUT="${REPORTS_DIR}/${STEP}__BEARER"
-	RESULT_FILE="${APP_DIR_OUT}/_results__security__bearer.csv"
-
-	if [[ ! -d "${APP_DIR_OUT}" ]]; then
-		LOG_FILE=/dev/null
-		log_console_error "Bearer result directory does not exist: ${APP_DIR_OUT}"
-		exit
-	fi
-
-	log_extract_message "group '${GROUP}'"
-
-	rm -f "${RESULT_FILE}"
-	echo "Applications${SEPARATOR}Bearer vulns" >>"${RESULT_FILE}"
-
+	echo "Applications${SEPARATOR}Bearer vulns" >"${RESULT_FILE}"
 	while read -r APP; do
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
@@ -54,15 +42,16 @@ function generate_csv() {
 		else
 			echo "${APP_NAME}${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
-	done <"${REPORTS_DIR}/list__${GROUP}__all_init_apps.txt"
+	done <"${APP_LIST}"
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
 function main() {
 	if [[ -d "${APP_DIR_OUT}" ]]; then
-		for_each_group generate_csv
+		generate_csv
 	else
-		log_console_error "Bearer missing directory: ${APP_DIR_OUT}"
+		LOG_FILE=/dev/null
+		log_console_error "Bearer result directory does not exist: ${APP_DIR_OUT}"
 	fi
 }
 

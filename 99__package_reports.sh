@@ -13,7 +13,7 @@
 # k8: Different descriptors are created to deploy the results on kubernetes.
 #     In the additional created folder (named *_K8), you will find:
 #     -> a 'reports' directory containing the generate report content.
-#     -> a 'deploy' directory containing the descriptions to deploy reports on docker / kubernetes.
+#     -> a 'deploy' directory containing the descriptions to deploy reports as local container / kubernetes.
 ##############################################################################################################
 
 # ----- Please adjust
@@ -32,6 +32,7 @@ export LOG_FILE=/dev/null
 export CF_APP_NAME
 export K8_REPORT_NAME
 export K8_REPORT_VERSION="${TOOL_VERSION}"
+export ARCH="$(uname -m)"
 
 REPORTS_DIR_CF="${REPORTS_DIR}_CF"
 REPORTS_DIR_K8="${REPORTS_DIR}_K8"
@@ -44,11 +45,7 @@ function generate_cf_deployment() {
 	mkdir -p "${REPORTS_DIR_CF_PUBLIC}" "${REPORTS_DIR_CF_CSA}"
 
 	T=$(echo "${TIMESTAMP}" | tr '_' '-')
-	if [[ "${TARGET_GROUP}" != "" ]]; then
-		CF_APP_NAME="${CF_NAME_PREFIX}-${T}--${TARGET_GROUP}"
-	else
-		CF_APP_NAME="${CF_NAME_PREFIX}-${T}"
-	fi
+	CF_APP_NAME="${CF_NAME_PREFIX}-${T}--${APP_GROUP}"
 
 	cp -Rfp "${REPORTS_DIR}/" "${REPORTS_DIR_CF_PUBLIC}/."
 
@@ -92,11 +89,7 @@ function generate_k8_deployment() {
 	mkdir -p "${REPORTS_DIR_K8_DEPLOY}" "${REPORTS_DIR_K8_REPORTS}" "${REPORTS_DIR_K8_PUBLIC}"
 
 	T=$(echo "${TIMESTAMP}" | tr '_' '-')
-	if [[ "${TARGET_GROUP}" != "" ]]; then
-		K8_REPORT_NAME="${T}-${TARGET_GROUP}"
-	else
-		K8_REPORT_NAME="${T}"
-	fi
+	K8_REPORT_NAME="${T}-${APP_GROUP}"
 
 	cp -Rfp "${REPORTS_DIR}/" "${REPORTS_DIR_K8_PUBLIC}/."
 	cp -Rfp "${TEMPLATE_DIR_K8}/deploy" "${REPORTS_DIR_K8}/."
@@ -107,9 +100,23 @@ function generate_k8_deployment() {
 		${MUSTACHE} "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo" >"${REPORTS_DIR_K8_DEPLOY}/Dockerfile"
 
 		# Setting up CSA
-		cp -fp "${TEMPLATE_DIR_K8}/reports/docker-serve-reports.sh" "${REPORTS_DIR_K8_REPORTS}/"
-		cp -fp "${INSTALL_DIR}/cloud-suitability-analyzer/csa-l" "${REPORTS_DIR_K8_REPORTS}/"
+		cp -fp "${TEMPLATE_DIR_K8}/deploy/container-serve-reports.sh" "${REPORTS_DIR_K8_DEPLOY}/"
+
+		# Copy CSA binary
+		${CONTAINER_ENGINE} create --name csa-dummy "${CONTAINER_IMAGE_NAME_CSA}"
+		${CONTAINER_ENGINE} cp "csa-dummy:/tool/csa" "${REPORTS_DIR_K8_DEPLOY}/csa-l_${ARCH}"
+		${CONTAINER_ENGINE} rm -f csa-dummy
+
+		if [[ "${ARCH}" == "arm64" ]]; then
+			${CONTAINER_ENGINE} create --name csa-dummy "${CONTAINER_IMAGE_NAME_CSA}" --platform "linux/amd64"
+			${CONTAINER_ENGINE} cp "csa-dummy:/tool/csa" "${REPORTS_DIR_K8_DEPLOY}/csa-l_x86_64"
+			${CONTAINER_ENGINE} rm -f csa-dummy
+		fi
+
+		# Copy CSA DB
 		cp -fp "${REPORTS_DIR}/02__CSA/db/csa.db" "${REPORTS_DIR_K8_REPORTS}/"
+
+		# Cleanup
 		rm -Rf "${REPORTS_DIR_K8_PUBLIC}/02__CSA"
 		rm -Rf "${REPORTS_DIR_K8_PUBLIC}/launch_csa_ui.sh"
 	else
@@ -120,9 +127,9 @@ function generate_k8_deployment() {
 	rm -f "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo"
 
 	# Generate deployment scripts
-	${MUSTACHE} "${TEMPLATE_DIR_K8}/deploy_docker.sh.mo" >"${REPORTS_DIR_K8}/deploy_docker.sh"
+	${MUSTACHE} "${TEMPLATE_DIR_K8}/deploy_container_local.sh.mo" >"${REPORTS_DIR_K8}/deploy_container_local.sh"
 	${MUSTACHE} "${TEMPLATE_DIR_K8}/deploy_k8.sh.mo" >"${REPORTS_DIR_K8}/deploy_k8.sh"
-	chmod +x "${REPORTS_DIR_K8}/deploy_k8.sh" "${REPORTS_DIR_K8}/deploy_docker.sh"
+	chmod +x "${REPORTS_DIR_K8}/deploy_k8.sh" "${REPORTS_DIR_K8}/deploy_container_local.sh"
 
 	# Zip reports directory
 	pushd "${REPORTS_DIR_K8}" &>/dev/null
@@ -181,7 +188,9 @@ function main() {
 		if [[ "${PACKAGE_CF}" == "true" ]]; then
 			log_console_success "CF deployment succesfully created. Deploy by executing: 'cd ${REPORTS_DIR_CF}; ./cf-push.sh'"
 		elif [[ "${PACKAGE_K8}" == "true" ]]; then
-			log_console_success "K8 deployment succesfully created. Deploy by executing: 'cd ${REPORTS_DIR_CF}; ./deploy-docker.sh; # ... OR...; ./deploy-k8.sh'"
+			log_console_success "K8 deployment succesfully created. Run by executing either of:"
+			log_console_success "  a) Local deployment 'cd ${REPORTS_DIR_K8}; ./deploy_container_local.sh' (http://localhost)"
+			log_console_success "  b) Kubernetes deployment 'cd ${REPORTS_DIR_K8}; ./deploy_k8.sh' (http://localhost:30001)"
 		fi
 	fi
 

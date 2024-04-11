@@ -92,19 +92,13 @@
   <!-- Header -->
   <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
     <div class="container">
-      <a class="navbar-brand mr-0 me-md-2" href="./index.html">Application Portfolio Auditor</a>
+      <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-icon" src="./static/img/company-icon.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index{{GROUP_POSTFIX}}.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security{{GROUP_POSTFIX}}.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="#">Quality</a></li>
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
-        <li class="nav-item dropdown">
-          <a class="nav-item nav-link dropdown-toggle me-md-2" href="#" id="bd-versions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;</a>
-          <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
-            {{DROPDOWN_ITEMS}}
-          </div>
-        </li>
         <li class="nav-item">
           <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
         </li>

@@ -22,6 +22,7 @@ TEMPLATE_DIR="${DIST_DIR}/templating"
 MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 
 export LOG_FILE="${REPORTS_DIR}/${STEP}__generate_timeline.log"
+export AUDIT_DURATION
 
 function add_entry() {
 	local -r CATEGORY="${1}"
@@ -53,9 +54,6 @@ function generate_timeline_json() {
 	# Temporary JSON file
 	local -r TIMELINE_JSON_TMP="${REPORTS_DIR}/timeline.json.tmp"
 
-	# Get the first group
-	local -r APP_GROUP=$(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d -print -quit)
-
 	# Log files
 	local -r RUN_LOG="./run.log"
 	local -r FERNFLOWER_LOG="./01__Fernflower.log"
@@ -63,7 +61,7 @@ function generate_timeline_json() {
 	local -r CSA_LOG="./02__CSA.log"
 	local -r WINDUP_LOG="./03__WINDUP.log"
 	local -r WAMT_LOG="./04__WAMT.log"
-	local -r ODC_LOG="./05__OWASP_DC__${APP_GROUP}.log"
+	local -r ODC_LOG="./05__OWASP_DC.log"
 	local -r SCANCODE_LOG="./06__SCANCODE.log"
 	local -r PMD_LOG="./07__PMD.log"
 	local -r LANGUAGES_LOG="./08__LINGUIST.log"
@@ -126,9 +124,55 @@ function generate_timeline_json() {
 	rm -f "${TIMELINE_JSON_TMP}"
 }
 
+# Compute the duration of the audit
+function compute_audit_duration() {
+
+	# Temporary file
+	local -r TIMELINE_TMP="${REPORTS_DIR}/timeline.tmp"
+
+	grep -v '^[[:space:]]*$' "${TIMELINE_LOG}" | sed -e 1b -e '$!d' >"${TIMELINE_TMP}"
+	line1=$(grep -o '\[[0-9_]*\]' "${TIMELINE_TMP}" | sed -n 1p)
+	line2=$(grep -o '\[[0-9_]*\]' "${TIMELINE_TMP}" | sed -n 2p)
+
+	if [[ -n "${line1}" ]] && [[ -n "${line2}" ]]; then
+		# Extract formatted date strings
+		date_str1=$(echo " ${line1}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4"__"$6"_"$7"_"$8}')
+		date_str2=$(echo " ${line2}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4"__"$6"_"$7"_"$8}')
+
+		if [[ -n "${date_str1}" ]] && [[ -n "${date_str2}" ]]; then
+			# Convert formatted dates to UNIX timestamps
+			timestamp1=$(date -j -f "%Y-%m-%d__%H_%M_%S" "${date_str1}" "+%s")
+			timestamp2=$(date -j -f "%Y-%m-%d__%H_%M_%S" "${date_str2}" "+%s")
+
+			# Calculate the time difference in seconds
+			time_difference=$((timestamp2 - timestamp1))
+
+			# Calculate hours, minutes, and seconds
+			HOURS=$((time_difference / 3600))
+			MINUTES=$(((time_difference % 3600) / 60))
+			SECONDS=$((time_difference % 60))
+			if ((HOURS > 0)); then
+				if ((HOURS == 1)); then
+					AUDIT_DURATION="( 1 hour "
+				else
+					AUDIT_DURATION="( $HOURS hours "
+				fi
+			else
+				AUDIT_DURATION="( "
+			fi
+			AUDIT_DURATION+="${MINUTES} minutes ${SECONDS} seconds ) "
+		else
+			log_error "No time data found"
+		fi
+	else
+		log_error "No time data found"
+	fi
+}
+
 # Generate timeline HTML report
 function generate_timeline_report() {
 	local -r REPORT_VARS="${REPORTS_DIR}/98__report_vars.sh"
+	# shellcheck source=/dev/null
 	source "${REPORT_VARS}"
 	{
 		${MUSTACHE} "${TEMPLATE_DIR}/info_timeline_01.mo"
@@ -146,6 +190,7 @@ function main() {
 
 	if [[ -f "${TIMELINE_LOG}" ]]; then
 		generate_timeline_json
+		compute_audit_duration
 		generate_timeline_report
 	fi
 

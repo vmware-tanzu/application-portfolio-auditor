@@ -13,28 +13,17 @@
 VERSION=${WAMT_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-APP_DIR_OUT=${REPORTS_DIR}/${STEP}__WAMT
-export LOG_FILE=${APP_DIR_OUT}.log
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__WAMT"
+export LOG_FILE="${APP_DIR_OUT}.log"
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+
+JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 function generate_csv() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-
-	if [[ ! -d "${APP_DIR_OUT}" ]]; then
-		LOG_FILE=/dev/null
-		log_console_error "WAMT result directory does not exist: ${APP_DIR_OUT}"
-		exit
-	fi
-
-	log_extract_message "group '${GROUP}'"
-
-	JAVA_BIN_LIST="${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
 	if ! grep -q '.*\.[ew]ar$' "${JAVA_BIN_LIST}"; then
 		log_console_warning "No EAR/WAR Java application found. Skipping WAMT result extraction."
 		return
 	fi
-
-	RESULT_FILE="${APP_DIR_OUT}/${GROUP}___results_extracted.csv"
 
 	echo "Applications${SEPARATOR}WAMT criticals${SEPARATOR}WAMT warns${SEPARATOR}WAMT total" >"${RESULT_FILE}"
 
@@ -42,7 +31,7 @@ function generate_csv() {
 		APP="$(basename "${FILE}")"
 		log_extract_message "app '${APP}'"
 
-		WAMT_FILE="${APP_DIR_OUT}/${GROUP}__${APP}.html"
+		WAMT_FILE="${APP_DIR_OUT}/${APP}.html"
 		if [[ -f "${WAMT_FILE}" ]]; then
 			TEMP_TABLE_FILE="${RESULT_FILE}.tmp"
 			sed -n '/<table summary="This table summarizes how many rules and rule results are included in the report for each rule severity. A description for each rule severity is also provid*/,/<\/table>/p' "${WAMT_FILE}" >"${TEMP_TABLE_FILE}"
@@ -103,13 +92,18 @@ function generate_csv() {
 			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
 
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
 function main() {
-	for_each_group generate_csv
+	if [[ -d "${APP_DIR_OUT}" ]]; then
+		generate_csv
+	else
+		LOG_FILE=/dev/null
+		log_console_error "WAMT result directory does not exist: ${APP_DIR_OUT}"
+	fi
 }
 
 main

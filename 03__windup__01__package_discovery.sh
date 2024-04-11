@@ -10,7 +10,6 @@
 set -eu
 
 # ------ Do not modify
-
 VERSION=${WINDUP_VERSION}
 STEP=$(get_step)
 
@@ -25,29 +24,20 @@ ALL_KNOWN_PACKAGES_SHORT="_all_known.packages"
 ALL_KNOWN_PACKAGES="${PACKAGE_DIR_OUT}/${ALL_KNOWN_PACKAGES_SHORT}"
 TOKEN="XXXXXXXXXXX"
 JAVA_BIN_APP_FOUND="false"
+PACKAGE_FILE="${PACKAGE_DIR_OUT}/${APP_GROUP}.txt"
+JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
-# Analyze all applications present in the ${1} directory.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze_packages() {
-	APP_DIR_INCOMING="${1}"
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	PACKAGE_FILE="${PACKAGE_DIR_OUT}/${GROUP}.txt"
-	log_analysis_message "group '${GROUP}'"
-
-	# Trick to isolate the analyzed apps from the other folders
-	DIR_TEMP="${APP_DIR_INCOMING}/tmp"
-	rm -Rf "${DIR_TEMP}"
-
-	JAVA_BIN_LIST="${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
-
 	if [[ -s "${JAVA_BIN_LIST}" ]]; then
 		JAVA_BIN_APP_FOUND="true"
-		mkdir -p "${DIR_TEMP}"
+		mkdir -p "${APP_GROUP_TMP_DIR}"
 		while read -r FILE; do
-			cp -fp "${FILE}" "${DIR_TEMP}/." || true
-		done <"${REPORTS_DIR}/list__${GROUP}__java-bin.txt"
+			cp -fp "${FILE}" "${APP_GROUP_TMP_DIR}/." || true
+		done <"${JAVA_BIN_LIST}"
 
 		set +e
-		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${DIR_TEMP}:/apps" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" -b --discoverPackages --input "/apps" -d >"${PACKAGE_FILE}") >>"${LOG_FILE}" 2>&1
+		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_GROUP_TMP_DIR}:/apps" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" -b --discoverPackages --input "/apps" -d >"${PACKAGE_FILE}") >>"${LOG_FILE}" 2>&1
 
 		stream_edit '1,/Known Packages:/d' "${PACKAGE_FILE}"
 
@@ -57,9 +47,9 @@ function analyze_packages() {
 		grep -v "org.jboss.weld.environment.se.WeldContainer" /tmp/pack | grep -v "Weld SE container" >"${PACKAGE_FILE}"
 		set -e
 
-		log_console_info "Packages of all apps in the '${GROUP}' group: ${PACKAGE_FILE}"
+		log_console_info "Packages of all apps in the '${APP_GROUP}' group: ${PACKAGE_FILE}"
 
-		rm -Rf "${DIR_TEMP}"
+		rm -Rf "${APP_GROUP_TMP_DIR}"
 	else
 		log_console_warning "No Java binary application found. Skipping package analysis."
 	fi
@@ -83,11 +73,12 @@ function extract_packages() {
 }
 
 function main() {
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_WINDUP}") ]]; then
+		# Trick to isolate the analyzed apps from the other folders
+		rm -Rf "${APP_GROUP_TMP_DIR}" "${PACKAGE_DIR_OUT}"
 		mkdir -p "${PACKAGE_DIR_OUT}"
 
-		for_each_group analyze_packages
+		analyze_packages
 
 		if [[ "${JAVA_BIN_APP_FOUND}" == "true" ]]; then
 			extract_packages "Known Packages:" "${ALL_KNOWN_PACKAGES}"
@@ -118,7 +109,6 @@ function main() {
 	else
 		log_console_error "Windup analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_WINDUP}'"
 	fi
-
 }
 
 main

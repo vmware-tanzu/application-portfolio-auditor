@@ -14,14 +14,12 @@
 VERSION="${LINGUIST_VERSION}"
 STEP=$(get_step)
 
-export LOG_FILE="${REPORTS_DIR}/${STEP}__LINGUIST.log"
-
-INPUT_CLOC_FILE_NAME="${STEP}__LOC__CLOC__results_extracted.csv"
-INPUT_LINGUSIT_FILE_NAME="${STEP}__LOC__LINGUIST__results_extracted.csv"
-INPUT_CLOC_FILE="${REPORTS_DIR}/${INPUT_CLOC_FILE_NAME}"
-INPUT_LINGUSIT_FILE="${REPORTS_DIR}/${INPUT_LINGUSIT_FILE_NAME}"
-OUTPUT_CLOC_FILE="${REPORTS_DIR}/${STEP}__LOC__CLOC__results_generated.txt"
-OUTPUT_LINGUIST_FILE="${REPORTS_DIR}/${STEP}__LOC__LINGUIST__results_generated.txt"
+BASE_DIR="${REPORTS_DIR}/${STEP}__LINGUIST"
+export LOG_FILE="${BASE_DIR}.log"
+INPUT_CLOC_FILE="${BASE_DIR}/_CLOC_results_extracted.csv"
+INPUT_LINGUSIT_FILE="${BASE_DIR}/_LINGUIST_results_extracted.csv"
+OUTPUT_CLOC_FILE="${BASE_DIR}/_CLOC_results_generated.txt"
+OUTPUT_LINGUIST_FILE="${BASE_DIR}/_LINGUIST_results_generated.txt"
 
 function tokenize() {
 	for WORD in $1; do echo "${WORD}"; done

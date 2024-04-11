@@ -7,13 +7,13 @@
 ##############################################################################################################
 
 # Current version of Application Portfolio Auditor
-export TOOL_VERSION='2.1.1'
+export TOOL_VERSION='2.2.0'
 
 # List of the versions for all tools in use.
 
 ## Migration & cloud readiness
 export WINDUP_VERSION='6.1.11'
-export CSA_VERSION='4.1.13'
+export CSA_VERSION='4.1.15'
 export CSA_BAGGER_VERSION='1.0.2'
 export WAMT_VERSION='24.0.0.1'
 
@@ -35,14 +35,14 @@ export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='1.1.0'
-export GRYPE_VERSION='0.74.7'
+export SYFT_VERSION='1.1.1'
+export GRYPE_VERSION='0.75.0'
 export TRIVY_VERSION='0.50.1'
 export OSV_VERSION='1.7.0'
-export BEARER_VERSION='1.43.1'
+export BEARER_VERSION='1.43.2'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='241.14494.158'
+export FERNFLOWER_VERSION='241.14494.240'
 export MUSTACHE_VERSION='3.0.5'
 export NIST_MIRROR_VERSION='1.6.0'
 export D3_VERSION='7.9.0'
@@ -77,7 +77,7 @@ export CONTAINER_IMAGE_NAME_BEARER="bearer/bearer:v${BEARER_VERSION}"
 export CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER="external-assets-downloader:1.0"
 export CONTAINER_IMAGE_NAME_NGINX="nginx:${NGINX_VERSION}-alpine3.18"
 ## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-export DONET_RUNTIME_VERSION='8.0.3-alpine3.19'
+export DONET_RUNTIME_VERSION='8.0.4-alpine3.19'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
 export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"

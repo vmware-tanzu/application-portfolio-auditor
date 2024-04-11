@@ -58,19 +58,13 @@
   <!-- Header -->
   <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
     <div class="container">
-      <a class="navbar-brand mr-0 me-md-2" href="./../index.html">Application Portfolio Auditor</a>
+      <a class="navbar-brand mr-0 me-md-2" href="./../index.html"><img class="mr-3 me-3 filter-white company-icon" src="./../static/img/company-icon.svg" alt="Tanzu"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./../index{{GROUP_POSTFIX}}.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
         {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
-        <li class="nav-item dropdown">
-          <a class="nav-item nav-link dropdown-toggle me-md-2" href="#" id="bd-versions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;</a>
-          <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
-            <a class="dropdown-item active" href="#">{{APP_GROUP}}</a>
-          </div>
-        </li>
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
         </li>
@@ -95,7 +89,7 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../13__GRYPE__{{APP_GROUP}}/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="{{GRYPE_VERSION}}"></a>
+          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="{{GRYPE_VERSION}}"></a>
           <div>
             <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
             Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)

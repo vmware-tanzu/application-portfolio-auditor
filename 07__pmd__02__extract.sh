@@ -17,6 +17,8 @@ PMD_DIR_OUT=${APP_DIR_OUT}/pmd
 CPD_DIR_OUT=${APP_DIR_OUT}/cpd
 export LOG_FILE=${APP_DIR_OUT}.log
 
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+
 declare -A LANGUAGES=(
 	["java-src"]="Java"
 	["js"]="JavaScript"
@@ -25,9 +27,8 @@ declare -A LANGUAGES=(
 )
 
 function extract() {
-
-	GROUP=${1}
-	RESULT_FILE=${2}
+	rm -f "${RESULT_FILE}"
+	touch "${RESULT_FILE}"
 
 	while read -r APP; do
 		APP_NAME=$(basename "${APP}")
@@ -35,7 +36,7 @@ function extract() {
 
 		LANGUAGE="Other"
 		for EXT in "${!LANGUAGES[@]}"; do
-			if grep -q "${APP}" "${REPORTS_DIR}/list__${GROUP}__${EXT}.txt"; then
+			if grep -q "${APP}" "${REPORTS_DIR}/00__Weave/list__${EXT}.txt"; then
 				LANGUAGE="${LANGUAGES[$EXT]}"
 				break
 			fi
@@ -45,7 +46,7 @@ function extract() {
 		COUNT_VIOLATIONS='n/a'
 		COUNT_RULES='n/a'
 		if [[ "${LANGUAGE}" == "Java" ]]; then
-			PMD_FILE=${PMD_DIR_OUT}/${GROUP}__${APP_NAME}_pmd.html
+			PMD_FILE=${PMD_DIR_OUT}/${APP_NAME}_pmd.html
 			if [[ -f "${PMD_FILE}" ]]; then
 				COUNT_VIOLATIONS=$(awk 'BEGIN { count=0 } /<td align="center">[0-9]*<\/td>/{count++} END{print count}' "${PMD_FILE}" || true)
 				COUNT_RULES=$(awk -F'[<>]' 'BEGIN { count=0 } /<tr><td>[^<]*<\/td><td align=center>[0-9]*<\/td><\/tr>/ {count++} END {print count}' "${PMD_FILE}" || true)
@@ -53,7 +54,7 @@ function extract() {
 			#echo "${APP_NAME} - VIOLATIONS: ${COUNT_VIOLATIONS} - RULES: ${COUNT_RULES}"
 		fi
 
-		CPD_FILE=${CPD_DIR_OUT}/${GROUP}__${APP_NAME}__cpd.xml
+		CPD_FILE=${CPD_DIR_OUT}/${APP_NAME}__cpd.xml
 
 		declare COUNT_DUPLICATED_FRAMENTS TOTAL_DUPLICATED_LINES TOTAL_DUPLICATED_TOKENS
 		if [[ -f "${CPD_FILE}" ]]; then
@@ -92,35 +93,23 @@ function extract() {
 		#echo "${APP_NAME} - DUPLICATED FRAGMENTS: ${COUNT_DUPLICATED_FRAMENTS} - LINES: ${TOTAL_DUPLICATED_LINES} - TOKENS: ${TOTAL_DUPLICATED_TOKENS}"
 		echo "${APP_NAME}${SEPARATOR}${COUNT_RULES}${SEPARATOR}${COUNT_VIOLATIONS}${SEPARATOR}${COUNT_DUPLICATED_FRAMENTS}${SEPARATOR}${TOTAL_DUPLICATED_LINES}${SEPARATOR}${TOTAL_DUPLICATED_TOKENS}" >>"${RESULT_FILE}"
 
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
-}
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
-function extract_group() {
-	GROUP=$(basename "${1}")
-	RESULT_FILE="${APP_DIR_OUT}/${GROUP}___results_extracted.csv"
-
-	if [[ -d "${APP_DIR_OUT}" ]]; then
-		rm -f "${RESULT_FILE}"
-		touch "${RESULT_FILE}"
-
-		log_extract_message "group '${GROUP}'"
-		extract "${GROUP}" "${RESULT_FILE}"
-
-		# Adding the header
-		{
-			echo "Applications${SEPARATOR}PMD rules triggered${SEPARATOR}PMD violations${SEPARATOR}Copy-pasted fragments${SEPARATOR}Copy-pasted lines${SEPARATOR}Copy-pasted tokens"
-			cat "${RESULT_FILE}"
-		} >"${RESULT_FILE}.tmp"
-		mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
-	else
-		LOG_FILE=/dev/null
-		log_console_error "PMD result directory does not exist: ${APP_DIR_OUT}"
-		return
-	fi
+	# Adding the header
+	{
+		echo "Applications${SEPARATOR}PMD rules triggered${SEPARATOR}PMD violations${SEPARATOR}Copy-pasted fragments${SEPARATOR}Copy-pasted lines${SEPARATOR}Copy-pasted tokens"
+		cat "${RESULT_FILE}"
+	} >"${RESULT_FILE}.tmp"
+	mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
 }
 
 function main() {
-	for_each_group extract_group
+	if [[ -d "${APP_DIR_OUT}" ]]; then
+		extract
+	else
+		LOG_FILE=/dev/null
+		log_console_error "PMD result directory does not exist: ${APP_DIR_OUT}"
+	fi
 }
 
 main

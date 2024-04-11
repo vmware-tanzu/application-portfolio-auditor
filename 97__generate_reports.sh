@@ -16,7 +16,6 @@ TEMPLATE_DIR=${DIST_DIR}/templating
 MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 export LOG_FILE CSA_URL
 LOG_FILE=/dev/null
-IS_FIRST_GROUP="true"
 SEPARATOR=','
 if [[ "${PACKAGE_CF}" == "true" || "${PACKAGE_K8}" == "true" ]]; then
 	CSA_URL='./csa/'
@@ -68,23 +67,22 @@ function export_vars() {
 	TOOLS_QUALITY_COUNT=0
 	TOOLS_LANGUAGE_COUNT=0
 
-	APP_GROUP=$(basename "${1}")
-	APP_COUNT=$(count_lines "${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt")
+	APP_COUNT=$(count_lines "${REPORTS_DIR}/00__Weave/list__all_apps.txt")
 
 	CSV_URL="./${RESULT_CSV_FILE_NAME}"
 
-	WINDUP_URL="./03__WINDUP__${APP_GROUP}/index.html"
+	WINDUP_URL="./03__WINDUP/index.html"
 	WINDUP_PACKAGES="./03__WINDUP__packages/"
-	WINDUP_CSV_ALL="./03__WINDUP__${APP_GROUP}/AllIssues.csv"
+	WINDUP_CSV_ALL="./03__WINDUP/AllIssues.csv"
 	WINDUP_LOG="./03__WINDUP.log"
 
 	WAMT_URL="./04__WAMT/"
 	WAMT_LOG="./04__WAMT.log"
 
-	ODC_URL="./05__OWASP_DC__${APP_GROUP}/"
+	ODC_URL="./05__OWASP_DC/"
 	ODC_LOG="./05__OWASP_DC.log"
 
-	SCANCODE_URL="./06__SCANCODE__${APP_GROUP}/"
+	SCANCODE_URL="./06__SCANCODE/"
 	SCANCODE_LOG="./06__SCANCODE.log"
 
 	PMD_URL="./07__PMD/"
@@ -99,16 +97,16 @@ function export_vars() {
 	MAI_URL="./10__MAI/"
 	MAI_LOG="./10__MAI.log"
 
-	SLSCAN_URL="./11__SLSCAN__${APP_GROUP}/"
-	SLSCAN_LOG="./11__SLSCAN__${APP_GROUP}.log"
+	SLSCAN_URL="./11__SLSCAN/"
+	SLSCAN_LOG="./11__SLSCAN.log"
 
-	INSIDER_URL="./12__INSIDER__${APP_GROUP}/"
+	INSIDER_URL="./12__INSIDER/"
 	INSIDER_LOG="./12__INSIDER.log"
 
-	GRYPE_URL="./13__GRYPE__${APP_GROUP}/"
+	GRYPE_URL="./13__GRYPE/"
 	GRYPE_LOG="./13__GRYPE.log"
 
-	TRIVY_URL="./14__TRIVY__${APP_GROUP}/"
+	TRIVY_URL="./14__TRIVY/"
 	TRIVY_LOG="./14__TRIVY.log"
 
 	OSV_URL="./15__OSV/"
@@ -152,7 +150,7 @@ function export_vars() {
 		export HAS_WINDUP_PACKAGES_REPORT=''
 	fi
 
-	WAMT_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '*__*.html' | grep -c 'WAMT' || true)
+	WAMT_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'WAMT' || true)
 	if ((WAMT_REPORT > 0)); then
 		export HAS_WAMT_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -163,7 +161,7 @@ function export_vars() {
 
 	export HAS_QUALITY_OR_LANGUAGE_REPORT=''
 	export HAS_QUALITY_REPORT=''
-	SCANCODE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 3 -mindepth 3 -type f -name 'index.html' | grep -c 'SCANCODE' || true)
+	SCANCODE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'SCANCODE' || true)
 	if ((SCANCODE_REPORT > 0)); then
 		export HAS_SCANCODE_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -174,7 +172,7 @@ function export_vars() {
 		export HAS_SCANCODE_REPORT=''
 	fi
 
-	PMD_REPORT=$(find "${REPORTS_DIR}" -maxdepth 3 -mindepth 3 -type f -name '*__*' | grep -c 'PMD' || true)
+	PMD_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'PMD' || true)
 	if ((PMD_REPORT > 0)); then
 		export HAS_PMD_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -185,7 +183,7 @@ function export_vars() {
 		export HAS_PMD_REPORT=''
 	fi
 
-	MAI_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'mai_*.html' | grep -c 'MAI' || true)
+	MAI_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'MAI' || true)
 	if ((MAI_REPORT > 0)); then
 		export HAS_MAI_REPORT=TRUE
 		TOOLS_COUNT=$((TOOLS_COUNT + 1))
@@ -217,7 +215,7 @@ function export_vars() {
 		export HAS_ODC_REPORT=''
 	fi
 
-	FSB_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '*__*.html' | grep -c 'FindSecBugs' || true)
+	FSB_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'FindSecBugs' || true)
 	if ((FSB_REPORT > 0)); then
 		export HAS_FSB_REPORT=TRUE
 		HAS_SECURITY_REPORT=TRUE
@@ -247,7 +245,7 @@ function export_vars() {
 		export HAS_INSIDER_REPORT=''
 	fi
 
-	GRYPE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'results_extracted.csv' | grep -c 'GRYPE' || true)
+	GRYPE_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'GRYPE' || true)
 	if ((GRYPE_REPORT > 0)); then
 		export HAS_GRYPE_REPORT=TRUE
 		HAS_SECURITY_REPORT=TRUE
@@ -257,7 +255,7 @@ function export_vars() {
 		export HAS_GRYPE_REPORT=''
 	fi
 
-	TRIVY_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name 'results_extracted.csv' | grep -c 'TRIVY' || true)
+	TRIVY_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results_extracted.csv' | grep -c 'TRIVY' || true)
 	if ((TRIVY_REPORT > 0)); then
 		export HAS_TRIVY_REPORT=TRUE
 		HAS_SECURITY_REPORT=TRUE
@@ -358,40 +356,18 @@ function export_vars() {
 		for VARIABLE in "${REPORT_VARIABLES[@]}"; do
 			echo "$(declare -p ${VARIABLE})"
 		done
+		echo "export REPORT_TIMESTAMP='${REPORT_TIMESTAMP}'"
 	} >"${REPORT_VARS}"
 	chmod +x "${REPORT_VARS}"
-	source "${REPORT_VARS}"
-}
 
-# Generate the dropdown menu for multiple groups
-function dropdown() {
-	PAGE="${1}"
-	DROPDOWN_ITEMS=""
-	if [[ -n "${TARGET_GROUP}" ]]; then
-		# shellcheck disable=SC2089
-		DROPDOWN_ITEMS+="<a class=\"dropdown-item active\" href=\"#\">${TARGET_GROUP}</a>"
-	else
-		while read -r DIR; do
-			GROUP=$(basename "${DIR}")
-			if [[ "${GROUP}" == "${APP_GROUP}" ]]; then
-				# shellcheck disable=SC2089
-				DROPDOWN_ITEMS+="<a class=\"dropdown-item active\" href=\"#\">${GROUP}</a>"
-			elif [[ "${GROUP}" == "${FIST_GROUP}" ]]; then
-				# shellcheck disable=SC2089
-				DROPDOWN_ITEMS+="<a class=\"dropdown-item\" href=\"${REPORTS_DIR}/${PAGE}.html\">${GROUP}</a>"
-			else
-				# shellcheck disable=SC2089
-				DROPDOWN_ITEMS+="<a class=\"dropdown-item\" href=\"${REPORTS_DIR}/${PAGE}_${GROUP}.html\">${GROUP}</a>"
-			fi
-		done < <(find "${APP_DIR_IN}" -maxdepth 1 -mindepth 1 -type d | sort)
-	fi
+	# shellcheck source=/dev/null
+	source "${REPORT_VARS}"
 }
 
 # Add the language column
 function add_language_column() {
-	APP_GROUP=${1}
-	TMP_CSV=${2}
-	export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
+	TMP_CSV=${1}
+	export LANG_CSV="${REPORTS_DIR}/00__Weave/list__all_apps.csv"
 	# Add the language column
 	{
 		echo "Applications${SEPARATOR}Language"
@@ -428,14 +404,12 @@ function concatenate_csv() {
 # Generate the CSV file for the cloud.html page
 function generate_cloud_csv() {
 	TMP_CSV=${1}
-	APP_GROUP=${2}
-
 	rm -f "${TMP_CSV}"
 
-	#export LANG_CSV="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.csv"
-	export CSA_CSV="${REPORTS_DIR}/02__CSA/results_extracted.csv"
-	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP__${APP_GROUP}__results_extracted.csv"
-	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/${APP_GROUP}___results_extracted.csv"
+	#export LANG_CSV="${REPORTS_DIR}/00__Weave/list__all_apps.csv"
+	export CSA_CSV="${REPORTS_DIR}/02__CSA/_results_extracted.csv"
+	export WINDUP_CSV="${REPORTS_DIR}/03__WINDUP/_results_extracted.csv"
+	export WAMT_CSV="${REPORTS_DIR}/04__WAMT/_results_extracted.csv"
 
 	# Debug info to compare the result counts
 	#echo "LANG_CSV        - $(cat $LANG_CSV | wc -l |  tr -d ' \t') entries - $LANG_CSV"
@@ -469,23 +443,22 @@ function generate_cloud_csv() {
 		fi
 	fi
 	if [[ -f "${TMP_CSV}" ]]; then
-		add_language_column "${APP_GROUP}" "${TMP_CSV}"
+		add_language_column "${TMP_CSV}"
 	fi
 }
 
 # Generate the CSV file for the security.html page
 function generate_security_csv() {
 	TMP_CSV=${1}
-	APP_GROUP=${2}
 	rm -f "${TMP_CSV}"
 
-	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
-	export FSB_CSV_FILE="${REPORTS_DIR}/09__FindSecBugs/${APP_GROUP}___results_extracted.csv"
-	export FSB_CSV="./09__FindSecBugs/${APP_GROUP}___results_extracted.csv"
-	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
-	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER__${APP_GROUP}/${APP_GROUP}___results_extracted.csv"
-	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}/results_extracted.csv"
-	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}/results_extracted.csv"
+	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC/_results_extracted.csv"
+	export FSB_CSV_FILE="${REPORTS_DIR}/09__FindSecBugs/_results_extracted.csv"
+	export FSB_CSV="./09__FindSecBugs/_results_extracted.csv"
+	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN/_results_extracted.csv"
+	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER/_results_extracted.csv"
+	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE/_results_extracted.csv"
+	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY/_results_extracted.csv"
 	export OSV_CSV_FILE="${REPORTS_DIR}/15__OSV/_results__security__osv.csv"
 	export BEARER_CSV_FILE="${REPORTS_DIR}/17__BEARER/_results__security__bearer.csv"
 
@@ -505,20 +478,19 @@ function generate_security_csv() {
 	done
 
 	if [[ -f "${TMP_CSV}" ]]; then
-		add_language_column "${APP_GROUP}" "${TMP_CSV}"
+		add_language_column "${TMP_CSV}"
 	fi
 }
 
 # Generate the CSV file for the quality.html page
 function generate_quality_csv() {
 	TMP_CSV=${1}
-	APP_GROUP=${2}
 	rm -f "${TMP_CSV}"
 
 	export ARCHEO_CSV="${REPORTS_DIR}/16__ARCHEO/_results__quality__archeo.csv"
-	export PMD_CSV="${REPORTS_DIR}/07__PMD/${APP_GROUP}___results_extracted.csv"
-	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE__${APP_GROUP}/results_extracted.csv"
-	export MAI_CSV="${REPORTS_DIR}/10__MAI/${APP_GROUP}__results_extracted.csv"
+	export PMD_CSV="${REPORTS_DIR}/07__PMD/_results_extracted.csv"
+	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE/_results_extracted.csv"
+	export MAI_CSV="${REPORTS_DIR}/10__MAI/_results_extracted.csv"
 
 	CSV_FILES=("${ARCHEO_CSV}" "${PMD_CSV}" "${SCANCODE_CSV}" "${MAI_CSV}")
 
@@ -527,7 +499,7 @@ function generate_quality_csv() {
 	done
 
 	if [[ -f "${TMP_CSV}" ]]; then
-		add_language_column "${APP_GROUP}" "${TMP_CSV}"
+		add_language_column "${TMP_CSV}"
 	fi
 }
 
@@ -536,16 +508,15 @@ function generate_slscan_html() {
 
 	export APP SLSCAN_REPORT_DIR
 
-	APP_GROUP=${1}
-	SLSCAN_REPORT_DIR=./../11__SLSCAN__${APP_GROUP}
+	SLSCAN_REPORT_DIR=./../11__SLSCAN
 
 	APP_LIST="${REPORTS_DIR}/list__tmp.txt"
-	cat "${REPORTS_DIR}/list__${APP_GROUP}__java-src.txt" "${REPORTS_DIR}/list__${APP_GROUP}__python.txt" "${REPORTS_DIR}/list__${APP_GROUP}__js.txt" "${REPORTS_DIR}/list__${APP_GROUP}__cs.txt" >"${APP_LIST}"
+	cat "${REPORTS_DIR}/00__Weave/list__java-src.txt" "${REPORTS_DIR}/00__Weave/list__python.txt" "${REPORTS_DIR}/00__Weave/list__js.txt" "${REPORTS_DIR}/00__Weave/list__cs.txt" >"${APP_LIST}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
-		SLSCAN_REPORT="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP}.html"
-		TXT_IN="${REPORTS_DIR}/11__SLSCAN__${APP_GROUP}/${APP}.txt"
+		SLSCAN_REPORT="${REPORTS_DIR}/11__SLSCAN/${APP}.html"
+		TXT_IN="${REPORTS_DIR}/11__SLSCAN/${APP}.txt"
 		{
 			${MUSTACHE} "${TEMPLATE_DIR}/slscan_01.mo"
 			echo "Tool,Critical,High,Medium,Low,Status"
@@ -560,14 +531,13 @@ function generate_slscan_html() {
 function generate_grype_html() {
 	export APP GRYPE_REPORT_DIR
 
-	APP_GROUP=${1}
-	GRYPE_REPORT_DIR=./../13__GRYPE__${APP_GROUP}
+	GRYPE_REPORT_DIR=./../13__GRYPE
 
-	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
-		GRYPE_DIR="${REPORTS_DIR}/13__GRYPE__${APP_GROUP}"
+		GRYPE_DIR="${REPORTS_DIR}/13__GRYPE"
 		GRYPE_REPORT="${GRYPE_DIR}/${APP}.html"
 		GRYPE_CSV="${GRYPE_DIR}/${APP}_grype.csv"
 		if [ -f "${GRYPE_CSV}" ] && [ $(wc -l <(tail -n +2 "${GRYPE_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
@@ -598,11 +568,10 @@ function build_trivy_regex() {
 function generate_trivy_html() {
 
 	export APP GRYPE_REPORT_DIR
-	APP_GROUP=${1}
-	export TRIVY_REPORT_DIR="./../14__TRIVY__${APP_GROUP}"
-	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY__${APP_GROUP}"
+	export TRIVY_REPORT_DIR="./../14__TRIVY"
+	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY"
 
-	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	# The URL patterns are split in smaller groups because the lenght of the regex sed can handle is limited.
 	# shellcheck disable=SC2034
@@ -763,11 +732,9 @@ function generate_trivy_html() {
 function generate_archeo_html() {
 
 	export APP ARCHEO_REPORT_DIR
-
-	APP_GROUP=${1}
 	ARCHEO_REPORT_DIR=./../16__ARCHEO
 
-	APP_LIST="${REPORTS_DIR}/list__${APP_GROUP}__all_apps.txt"
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -792,40 +759,26 @@ function generate_archeo_html() {
 # Generate all pages
 function generate_reports() {
 
-	# shellcheck disable=SC2090
-	export GROUP_POSTFIX DROPDOWN_ITEMS
-
-	APP_GROUP=$(basename "${1}")
-	GROUP_POSTFIX=''
-	if [[ "${IS_FIRST_GROUP}" == "true" ]]; then
-		IS_FIRST_GROUP="false"
-		FIST_GROUP="${APP_GROUP}"
-	else
-		GROUP_POSTFIX="_${APP_GROUP}"
-	fi
-
-	LINK_REPORT="${REPORTS_DIR}/index${GROUP_POSTFIX}.html"
-	CLOUD_REPORT="${REPORTS_DIR}/cloud${GROUP_POSTFIX}.html"
-	SECURITY_REPORT="${REPORTS_DIR}/security${GROUP_POSTFIX}.html"
-	QUALITY_REPORT="${REPORTS_DIR}/quality${GROUP_POSTFIX}.html"
+	LINK_REPORT="${REPORTS_DIR}/index.html"
+	CLOUD_REPORT="${REPORTS_DIR}/cloud.html"
+	SECURITY_REPORT="${REPORTS_DIR}/security.html"
+	QUALITY_REPORT="${REPORTS_DIR}/quality.html"
 	INFO_RULES_REPORT="${REPORTS_DIR}/info_rules.html"
 
 	# Export all variables for the reports
-	export_vars "${1}"
+	export_vars
 
 	# Generate overview report (index)
-	dropdown index
 	${MUSTACHE} "${TEMPLATE_DIR}/index.mo" >"${LINK_REPORT}"
 	log_console_success "Open this file for reviewing all generated reports: ${LINK_REPORT}"
 
 	# Generate cloud report
 	if [[ "${HAS_CLOUD_REPORT}" == TRUE ]]; then
 
-		dropdown cloud
 		# Generate CSV file with all results
-		generate_cloud_csv "${CLOUD_TMP_CSV}" "${APP_GROUP}"
+		generate_cloud_csv "${CLOUD_TMP_CSV}"
 
-		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP__${APP_GROUP}__report_map.js"
+		RESULT_REPORT_MAP="${REPORTS_DIR}/03__WINDUP/_report_map.js"
 
 		# Generate cloud HTML file
 		{
@@ -844,20 +797,19 @@ function generate_reports() {
 	# Generate security reports
 	if [[ "${HAS_SECURITY_REPORT}" == TRUE ]]; then
 
-		dropdown security
 		# Generate CSV file with all results
-		generate_security_csv "${SECURITY_TMP_CSV}" "${APP_GROUP}"
+		generate_security_csv "${SECURITY_TMP_CSV}"
 
 		if [[ "${HAS_SLSCAN_REPORT}" == TRUE ]]; then
-			generate_slscan_html "${APP_GROUP}"
+			generate_slscan_html
 		fi
 
 		if [[ "${HAS_GRYPE_REPORT}" == TRUE ]]; then
-			generate_grype_html "${APP_GROUP}"
+			generate_grype_html
 		fi
 
 		if [[ "${HAS_TRIVY_REPORT}" == TRUE ]]; then
-			generate_trivy_html "${APP_GROUP}"
+			generate_trivy_html
 		fi
 
 		if [[ -f "${SECURITY_TMP_CSV}" ]]; then
@@ -884,12 +836,11 @@ function generate_reports() {
 	# Generate quality reports
 	if [[ "${HAS_QUALITY_REPORT}" == TRUE ]]; then
 
-		dropdown quality
 		# Generate CSV file with all results
-		generate_quality_csv "${QUALITY_TMP_CSV}" "${APP_GROUP}"
+		generate_quality_csv "${QUALITY_TMP_CSV}"
 
 		if [[ "${HAS_ARCHEO_REPORT}" == TRUE ]]; then
-			generate_archeo_html "${APP_GROUP}"
+			generate_archeo_html
 		fi
 
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then
@@ -907,6 +858,7 @@ function generate_reports() {
 		fi
 	fi
 
+	# shellcheck source=/dev/null
 	source "${DIST_DIR}/rules.counts"
 	export ARCHEO_RULES CSA_RULES CLOC_RULES FSB_RULES GRYPE_RULES INSIDER_RULES LINGUIST_RULES MAI_RULES ODC_RULES OSV_RULES BEARER_RULES PMD_RULES SCANCODE_RULES SLSCAN_RULES TRIVY_RULES WAMT_RULES WINDUP_RULES
 	${MUSTACHE} "${TEMPLATE_DIR}/info_rules.mo" >"${INFO_RULES_REPORT}"
@@ -944,11 +896,12 @@ function generate_reports() {
 
 # Generate HTML file vizualising the CLOC and Linguist results
 function generate_language_report() {
-	export APP_DATE LANGUAGES_REPORT REPORT_TIMESTAMP HEIGHT LINGUIST_CSV CLOC_CSV LANGUAGES_LOG
-	CLOC_CSV="./08__LOC__CLOC__results_extracted.csv"
-	LINGUIST_CSV="./08__LOC__LINGUIST__results_extracted.csv"
-	OUTPUT_CLOC_FILE="${REPORTS_DIR}/08__LOC__CLOC__results_generated.txt"
-	OUTPUT_LINGUIST_FILE="${REPORTS_DIR}/08__LOC__LINGUIST__results_generated.txt"
+
+	export APP_DATE LANGUAGES_REPORT HEIGHT LINGUIST_CSV CLOC_CSV LANGUAGES_LOG
+	CLOC_CSV="./08__LINGUIST/_CLOC_results_extracted.csv"
+	LINGUIST_CSV="./08__LINGUIST/_LINGUIST_results_extracted.csv"
+	OUTPUT_CLOC_FILE="${REPORTS_DIR}/08__LINGUIST/_CLOC_results_generated.txt"
+	OUTPUT_LINGUIST_FILE="${REPORTS_DIR}/08__LINGUIST/_LINGUIST_results_generated.txt"
 	LANGUAGES_LOG="./08__LINGUIST.log"
 
 	if [[ -f "${OUTPUT_LINGUIST_FILE}" && -f "${OUTPUT_CLOC_FILE}" ]]; then
@@ -956,7 +909,6 @@ function generate_language_report() {
 		APP_DATE="$(echo "${TIMESTAMP}" | cut -d'_' -f 1-3 | sed 's/_/./g') at $(echo "${TIMESTAMP}" | cut -d'_' -f 5-7 | sed 's/_/:/g')"
 
 		LANGUAGES_REPORT="${REPORTS_DIR}/languages.html"
-		REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
 		# HEIGHT: LINES x23 + 40
 		APPS=$(uniq <"${OUTPUT_LINGUIST_FILE}" | wc -l)
 		CALCULATED_HEIGHT=$(((APPS - 2) * 23 + 40))
@@ -989,10 +941,9 @@ function main() {
 	export APP_DATE LINK_REPORT CSA_LOG REPORT_TIMESTAMP
 	APP_DATE="$(echo "${TIMESTAMP}" | cut -d'_' -f 1-3 | sed 's/_/./g') at $(echo "${TIMESTAMP}" | cut -d'_' -f 5-7 | sed 's/_/:/g')"
 	CSA_LOG="./02__CSA.log"
-	REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
+	export REPORT_TIMESTAMP=$(date +%Y.%m.%d\ at\ %H:%M:%S)
 
-	for_each_group generate_reports
-
+	generate_reports
 	generate_language_report
 
 	log_console_info "Results: ${SUMMARY_CSV}"

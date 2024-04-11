@@ -21,11 +21,12 @@ VERSION=${SLSCAN_VERSION}
 STEP=$(get_step)
 
 export APP_NAME LOG_FILE APP_DIR_OUT
-APP_BASE=${REPORTS_DIR}/${STEP}__SLSCAN
-LOG_FILE=${APP_BASE}.log
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__SLSCAN"
+LOG_FILE="${APP_DIR_OUT}.log"
+
 ANALYZABLE_APP_FOUND="false"
 
-# Analyse all applications present in provided list.
+# Analyze all applications present in provided list.
 function analyze() {
 
 	LANGUAGE=${1}
@@ -59,35 +60,7 @@ function analyze() {
 	fi
 }
 
-# Analyse all applications present in the ${1} directory.
-function analyze_group() {
-	GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-
-	APP_DIR_OUT="${APP_BASE}__${GROUP}"
-	mkdir -p "${APP_DIR_OUT}"
-
-	analyze java "${REPORTS_DIR}/list__${GROUP}__java-src.txt"
-	analyze python "${REPORTS_DIR}/list__${GROUP}__python.txt"
-	analyze javascript "${REPORTS_DIR}/list__${GROUP}__js.txt"
-	analyze cs "${REPORTS_DIR}/list__${GROUP}__cs.txt"
-
-	if [[ "${ANALYZABLE_APP_FOUND}" == "true" ]]; then
-		log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
-	else
-		log_console_warning "No suitable app found. Skipping SLSCAN analysis."
-	fi
-}
-
 function main() {
-
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-
 	log_tool_info "SLSCAN v${VERSION}"
 
 	if [[ "${ARCH}" == "arm64" ]]; then
@@ -101,11 +74,23 @@ function main() {
 	fi
 
 	if [[ -n "$(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_SLSCAN}")" ]]; then
-		for_each_group analyze_group
+		check_debug_mode
+
+		mkdir -p "${APP_DIR_OUT}"
+
+		analyze java "${REPORTS_DIR}/00__Weave/list__java-src.txt"
+		analyze python "${REPORTS_DIR}/00__Weave/list__python.txt"
+		analyze javascript "${REPORTS_DIR}/00__Weave/list__js.txt"
+		analyze cs "${REPORTS_DIR}/00__Weave/list__cs.txt"
+
+		if [[ "${ANALYZABLE_APP_FOUND}" == "true" ]]; then
+			log_console_success "Open this directory for the results: ${APP_DIR_OUT}"
+		else
+			log_console_warning "No suitable app found. Skipping SLSCAN analysis."
+		fi
 	else
 		log_console_error "SLSCAN analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_SLSCAN}'"
 	fi
-
 }
 
 main

@@ -42,14 +42,9 @@ Here is a brief description of each command:
 ### Examples
 
 * `$ ./audit -h`: Provide **h**elp by showing all available CLI options.
-* `$ ./audit -a`: Decompile and run **a**ll tools (CSA, Windup, WAMT, OWASP DC, FSB, Linguist, CLOC, Scancode, PMD, MAI, Insider, Syft, Grype, Trivy, OSV, Archeologist, Bearer) to analyze all apps in the `apps` subfolders.
-* `$ ./audit -a -g small`: Decompile and run **a**ll tools to analyze only the apps in the `small` **g**roup (subfolder of `apps` -> `apps/small`)
-* `$ ./audit -a -d /my/apps`: Import, decompile, and run **a**ll tools to analyze only the apps in the `/my/apps` **d**irectory.
-* `$ ./audit -w`: Run **W**indup to analyze all apps in the `apps` subfolders.
-* `$ ./audit -c -w -o` or `$ ./audit -cwo` : Decompile and run **C**SA, **W**indup, and **O**WASP DC to analyze all apps in the `apps` subfolders.
-* `$ ./audit -cwxoflspmniey`: Decompile and run **a**ll tools excepted Scancode to analyze all apps in the `apps` subfolders.
-* `$ ./audit -e`: Conduct a pr**e**-configuration analysis to discover libraries and packages that could be excluded from the analysis.
-
+* `$ ./audit run -a -g small`: Decompile and run **a**ll analyzers (CSA, Windup, WAMT, OWASP DC, FSB, Linguist, CLOC, Scancode, PMD, MAI, Insider, Syft, Grype, Trivy, OSV, Archeologist, Bearer) on the apps in the `small` **g**roup (subfolder of `apps` -> `apps/small`)
+* `$ ./audit run -a -d /my/apps`: Import, decompile, and run **a**ll tools to analyze only the apps in the `/my/apps` **d**irectory.
+* `$ ./audit -c -w -o -g small` or `$ ./audit -cwo -g small` : Decompile and run **C**SA, **W**indup, and **O**WASP DC to analyze all apps in the `apps/small` folder.
 
 ## Structure
 
@@ -132,74 +127,51 @@ Example of a plain-default report:
 
 ```
 reports
-└── 2023_03_08__09_54_49__medium
+└── 2024_03_08__09_54_49__medium
+    ├── 00__Weave
     ├── 00__Weave.log
+    ├── 01__Fernflower
     ├── 01__Fernflower.log
-    ├── 01__Fernflower__all_libs.txt
-    ├── 01__Fernflower__unpacked_libs.txt
-    ├── 01__unpack_sources.log
     ├── 02__CSA
     ├── 02__CSA.log
-    ├── 02__CSA__results_extracted.csv
-    ├── 02__CSA__results_extracted_bagger.csv
-    ├── 02__CSA__results_missing.csv
+    ├── 03__WINDUP
     ├── 03__WINDUP.log
-    ├── 03__WINDUP__medium
-    ├── 03__WINDUP__medium__report_map.js
-    ├── 03__WINDUP__medium__results_extracted.csv
     ├── 03__WINDUP__packages
     ├── 03__WINDUP__packages.log
     ├── 04__WAMT
     ├── 04__WAMT.log
+    ├── 05__OWASP_DC
     ├── 05__OWASP_DC.log
-    ├── 05__OWASP_DC__medium
+    ├── 06__SCANCODE
     ├── 06__SCANCODE.log
-    ├── 06__SCANCODE__medium
     ├── 07__PMD
     ├── 07__PMD.log
     ├── 08__LINGUIST
     ├── 08__LINGUIST.log
-    ├── 08__LOC__CLOC__results_extracted.csv
-    ├── 08__LOC__CLOC__results_generated.txt
-    ├── 08__LOC__LINGUIST__results_extracted.csv
-    ├── 08__LOC__LINGUIST__results_generated.txt
     ├── 09__FindSecBugs
     ├── 09__FindSecBugs.log
     ├── 10__MAI
     ├── 10__MAI.log
+    ├── 12__INSIDER
     ├── 12__INSIDER.log
-    ├── 12__INSIDER__medium
+    ├── 13__GRYPE
     ├── 13__GRYPE.log
-    ├── 13__GRYPE__medium
+    ├── 14__TRIVY
     ├── 14__TRIVY.log
-    ├── 14__TRIVY__medium
-    ├── 15__OSV.log
     ├── 15__OSV
-    ├── 16__Archeo.log
+    ├── 15__OSV.log
     ├── 16__ARCHEO
-    ├── 17__BEARER.log
+    ├── 16__ARCHEO.log
     ├── 17__BEARER
-    ├── 98__generate_timeline.log
+    ├── 17__BEARER.log
     ├── 98__timeline.log
-    ├── 99__results__all.csv
-    ├── Audit__2023_03_08__09_54_49__all__results.csv
+    ├── Audit__2024_03_08__09_54_49__all__results.csv
     ├── cloud.html
     ├── index.html                      <== Starting point to explore the results !
-    ├── info.html
     ├── info_rules.html
+    ├── info.html
     ├── languages.html
     ├── launch_csa_ui.sh                <== Script to start the CSA UI
-    ├── list__medium__all_apps.csv
-    ├── list__medium__all_apps.txt
-    ├── list__medium__all_init_apps.txt
-    ├── list__medium__cs.txt
-    ├── list__medium__java-bin.txt
-    ├── list__medium__java-src-init.txt
-    ├── list__medium__java-src.txt
-    ├── list__medium__js.txt
-    ├── list__medium__other.txt
-    ├── list__medium__owasp_dc.txt
-    ├── list__medium__python.txt
     ├── quality.html
     ├── run.log
     ├── security.html

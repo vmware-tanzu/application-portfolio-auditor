@@ -17,8 +17,8 @@ TIMEOUT=90
 # ------ Do not modify
 VERSION=${SCANCODE_VERSION}
 STEP=$(get_step)
-APP_BASE=${REPORTS_DIR}/${STEP}__SCANCODE
-export LOG_FILE=${APP_BASE}.log
+APP_DIR_OUT=${REPORTS_DIR}/${STEP}__SCANCODE
+export LOG_FILE=${APP_DIR_OUT}.log
 
 # Unpack and delete an archive
 function unpack() {
@@ -60,37 +60,29 @@ function cleanup_html() {
 	fi
 }
 
-# Analyse all applications present in the ${1} directory.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-	log_analysis_message "group '${GROUP}'"
-
-	APP_DIR_SRC="${APP_DIR_INCOMING}/src"
-	APP_DIR_TMP="${APP_DIR_INCOMING}/tmp"
-	APP_DIR_OUT=${APP_BASE}__${GROUP}
-
-	rm -Rf "${APP_DIR_TMP}"
-	mkdir -p "${APP_DIR_OUT}" "${APP_DIR_TMP}"
-	cp -Rfp "${APP_DIR_SRC}" "${APP_DIR_TMP}"
+	rm -Rf "${APP_GROUP_TMP_DIR}" "${APP_DIR_OUT}"
+	mkdir -p "${APP_DIR_OUT}" "${APP_GROUP_TMP_DIR}"
+	cp -Rfp "${APP_GROUP_SRC_DIR}" "${APP_GROUP_TMP_DIR}"
 
 	while read -r IGNORED_ARCHIVE; do
 		NEW_ARCHIVE="${IGNORED_ARCHIVE%.*}"
 		mv "${IGNORED_ARCHIVE}" "${NEW_ARCHIVE}"
 		unpack "${NEW_ARCHIVE}"
-	done < <(find "${APP_DIR_TMP}" -type f -iname '*.ignored_*')
+	done < <(find "${APP_GROUP_TMP_DIR}" -type f -iname '*.ignored_*')
 
 	# Make non-readable files readable.
-	find "${APP_DIR_TMP}" ! -perm -o=r -exec chmod +r {} +
+	find "${APP_GROUP_TMP_DIR}" ! -perm -o=r -exec chmod +r {} +
 
 	# Remove remaining compiled classes to accelerate the analysis
-	find "${APP_DIR_TMP}" -type f -iname '*.class' -delete
-	find "${APP_DIR_TMP}" -type f -iname '*.so' -delete
+	find "${APP_GROUP_TMP_DIR}" -type f -iname '*.class' -delete
+	find "${APP_GROUP_TMP_DIR}" -type f -iname '*.so' -delete
 
 	# Remove cache files to accelerate the analysis
-	find "${APP_DIR_TMP}" -type f -regex '^.*/[A-Za-z0-9.]\{32\}\.cache.html$' -delete
-	find "${APP_DIR_TMP}" -type f -regex '^.*/gwt-unitCache-[A-Za-z0-9.]\{40\}-[A-Za-z0-9.]\{16\}$' -delete
-	find "${APP_DIR_TMP}" -type f -regex '^.*/[A-Za-z0-9.]\{32\}\.symbolMap$' -delete
+	find "${APP_GROUP_TMP_DIR}" -type f -regex '^.*/[A-Za-z0-9.]\{32\}\.cache.html$' -delete
+	find "${APP_GROUP_TMP_DIR}" -type f -regex '^.*/gwt-unitCache-[A-Za-z0-9.]\{40\}-[A-Za-z0-9.]\{16\}$' -delete
+	find "${APP_GROUP_TMP_DIR}" -type f -regex '^.*/[A-Za-z0-9.]\{32\}\.symbolMap$' -delete
 
 	while read -r APP_DIR_TMP; do
 		APP_NAME=$(basename "${APP_DIR_TMP}")
@@ -127,29 +119,20 @@ function analyze() {
 			log_console_error "No report generated. See '${LOG_FILE}' for more details."
 		fi
 
-	done < <(find "${APP_DIR_TMP}/src" -maxdepth 1 -mindepth 1 -type d | sort)
+	done < <(find "${APP_GROUP_TMP_DIR}/src" -maxdepth 1 -mindepth 1 -type d | sort)
 
 	# Cleanup
-	rm -Rf "${APP_DIR_TMP}"
+	rm -Rf "${APP_GROUP_TMP_DIR}"
 }
 
 function main() {
-
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-
 	log_tool_info "ScanCode v${VERSION}"
-
 	if [[ -n "$(${CONTAINER_ENGINE} images -q ${CONTAINER_IMAGE_NAME_SCANCODE})" ]]; then
-		for_each_group analyze
+		check_debug_mode
+		analyze
 	else
 		log_console_error "ScanCode analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_SCANCODE}'"
 	fi
-
 }
 
 main

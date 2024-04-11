@@ -14,12 +14,12 @@
 VERSION=${TOOL_VERSION}
 STEP=$(get_step)
 
-export LOG_FILE=${REPORTS_DIR}/${STEP}__ARCHEO.log
+export OUT_DIR_ARCHEO="${REPORTS_DIR}/${STEP}__ARCHEO"
+export LOG_FILE="${OUT_DIR_ARCHEO}.log"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
 
-# Analyse all applications present in provided list.
+# Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
-
-	APP_LIST=${1}
 	if [[ -s "${APP_LIST}" ]]; then
 		while read -r APP; do
 			APP_NAME=$(basename "${APP}")
@@ -62,40 +62,19 @@ function analyze() {
 			set -e
 		done <"${APP_LIST}"
 	fi
-}
-
-# Analyse all applications present in the ${1} directory.
-function analyze_group() {
-	GROUP=$(basename "${1}")
-	log_analysis_message "group '${GROUP}'"
-
-	export OUT_DIR_ARCHEO="${REPORTS_DIR}/${STEP}__ARCHEO"
-
-	mkdir -p "${OUT_DIR_ARCHEO}"
-
-	analyze "${REPORTS_DIR}/list__${GROUP}__all_init_apps.txt"
-
 	log_console_success "Open this directory for the results: ${OUT_DIR_ARCHEO}"
 }
 
 function main() {
-
-	if [[ "${DEBUG}" == "true" ]]; then
-		set -x
-		exec 6>&1
-	else
-		exec 6>/dev/null
-	fi
-
 	log_tool_info "Syft v${SYFT_VERSION}"
 	log_tool_info "Archeo v${VERSION}"
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_SYFT}") ]]; then
-		for_each_group analyze_group
+		check_debug_mode
+		mkdir -p "${OUT_DIR_ARCHEO}"
+		analyze
 	else
 		log_console_error "Archeo analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_SYFT}'"
 	fi
-
 }
 
 main

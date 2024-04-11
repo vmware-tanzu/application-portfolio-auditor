@@ -22,6 +22,11 @@ CLOC_TIMEOUT=30
 VERSION=${LINGUIST_VERSION}
 STEP=$(get_step)
 
+export APP_DIR_OUT="${REPORTS_DIR}/${STEP}__LINGUIST"
+export LOG_FILE="${APP_DIR_OUT}.log"
+export OUT_CSV_FILE="${APP_DIR_OUT}/_LINGUIST_results_extracted.csv"
+export OUT_CLOC_CSV_FILE="${APP_DIR_OUT}/_CLOC_results_extracted.csv"
+
 function linguist() {
 	LANG_FILE="${1}"
 	REPO="${2}"
@@ -55,16 +60,10 @@ function linguist() {
 function analyze_dir() {
 
 	DIR="${1}"
-	APP_DIR_SRC="${2}"
-	APP_DIR_OUT="${3}"
-	GROUP="${4}"
-	LOG_FILE="${5}"
-
 	REPO_NAME=$(basename "${DIR}")
-
-	REPO="${APP_DIR_SRC}/${REPO_NAME}"
-	LINGUIST_FILE="${APP_DIR_OUT}/${GROUP}__${REPO_NAME}.linguist"
-	CLOC_RESULTS="${APP_DIR_OUT}/${GROUP}__${REPO_NAME}.cloc"
+	REPO="${APP_GROUP_SRC_DIR}/${REPO_NAME}"
+	LINGUIST_FILE="${APP_DIR_OUT}/${REPO_NAME}.linguist"
+	CLOC_RESULTS="${APP_DIR_OUT}/${REPO_NAME}.cloc"
 
 	# Run Linguist
 	linguist "${LINGUIST_FILE}" "${REPO}" "${REPO_NAME}" "${LOG_FILE}"
@@ -77,11 +76,11 @@ function analyze_dir() {
 	set -e
 
 	# Parsing CLOC results
-	PART1=$(grep 'SUM' <"${CLOC_RESULTS}" | awk -F "," -v repo="${REPO_NAME}" -v group="${GROUP}" '{printf("%s;%s;%s;%s;%s;%s", group, repo, $1, $3, $4, $5)}' 2>&1 | tee -a "${LOG_FILE}")
+	PART1=$(grep 'SUM' <"${CLOC_RESULTS}" | awk -F "," -v repo="${REPO_NAME}" -v group="${APP_GROUP}" '{printf("%s;%s;%s;%s;%s;%s", group, repo, $1, $3, $4, $5)}' 2>&1 | tee -a "${LOG_FILE}")
 	# Parsing Linguist results
 	PART2=$(awk '{printf("%s\t%s\n", $3, $1)}' "${LINGUIST_FILE}" | tr "\r\n\t " ';' | sed -e "s/;;*/;/g" 2>&1 | tee -a "${LOG_FILE}")
 	# Parsing CLOC results (bis)
-	PART3=$(tail -n +3 <"${CLOC_RESULTS}" | grep -v ",SUM," | awk -F "," '{printf("%s;%s;", $2, $5)}' | awk -F "," -v repo="${REPO_NAME}" -v group="${GROUP}" '{printf("%s;%s;%s", group, repo, $1)}' | tr ' ' '_')
+	PART3=$(tail -n +3 <"${CLOC_RESULTS}" | grep -v ",SUM," | awk -F "," '{printf("%s;%s;", $2, $5)}' | awk -F "," -v repo="${REPO_NAME}" -v group="${APP_GROUP}" '{printf("%s;%s;%s", group, repo, $1)}' | tr ' ' '_')
 
 	if [[ ${PART1} == *"${REPO_NAME}"* ]]; then
 		echo "${PART1};${PART2}" >>"${OUT_CSV_FILE}"
@@ -90,45 +89,26 @@ function analyze_dir() {
 
 }
 
-# Analyse all applications present in the ${1} directory.
-function analyze() {
-
-	GROUP=$(basename "${1}")
-	APP_DIR_SRC="${1}/src"
-
-	log_analysis_message "group '${GROUP}'"
-
-	while read -r DIR; do
-		analyze_dir "${DIR}" "${APP_DIR_SRC}" "${APP_DIR_OUT}" "${GROUP}" "${LOG_FILE}"
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
-
-	log_console_success "Results: ${OUT_CSV_FILE}"
-}
-
 function main() {
-
-	export APP_DIR_OUT=${REPORTS_DIR}/${STEP}__LINGUIST
-	export LOG_FILE=${APP_DIR_OUT}.log
-
 	log_tool_info "Linguist v${VERSION} & CLOC v${CLOC_VERSION}"
-
 	if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_LINGUIST}") ]]; then
 		if [[ -n $(${CONTAINER_ENGINE} images -q "${CONTAINER_IMAGE_NAME_CLOC}") ]]; then
-			export OUT_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__LINGUIST__results_extracted.csv
-			export OUT_CLOC_CSV_FILE=${APP_DIR_OUT}/../${STEP}__LOC__CLOC__results_extracted.csv
-
 			rm -Rf "${APP_DIR_OUT}"
 			mkdir -p "${APP_DIR_OUT}"
 			rm -f "${OUT_CSV_FILE}" "${OUT_CLOC_CSV_FILE}"
 
-			for_each_group analyze
+			# Analyze all applications present in the ${APP_GROUP_DIR} directory.
+			while read -r DIR; do
+				analyze_dir "${DIR}"
+			done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+
+			log_console_success "Results: ${OUT_CSV_FILE}"
 		else
 			log_console_error "Linguist analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_CLOC}'"
 		fi
 	else
 		log_console_error "Linguist analysis canceled. Container image unavailable: '${CONTAINER_IMAGE_NAME_LINGUIST}'"
 	fi
-
 }
 
 main

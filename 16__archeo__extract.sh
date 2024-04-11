@@ -13,8 +13,11 @@ export VERSION=${TOOL_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
 
-TODAY="$(date +%Y-%m-%d)"
+APP_DIR_OUT="${REPORTS_DIR}/${STEP}__ARCHEO"
+RESULT_FILE="${APP_DIR_OUT}/_results__quality__archeo.csv"
 CONF_DIR="${CURRENT_DIR}/conf/archeo"
+export LOG_FILE="${APP_DIR_OUT}.log"
+TODAY="$(date +%Y-%m-%d)"
 
 declare -A PROJECT_ID_MAP=(
 	["micrometer-io"]="Micrometer"
@@ -165,23 +168,7 @@ function check_support() {
 }
 
 function generate_csv() {
-	APP_DIR_INCOMING=${1}
-	GROUP=$(basename "${APP_DIR_INCOMING}")
-
-	APP_DIR_OUT="${REPORTS_DIR}/${STEP}__ARCHEO"
-	RESULT_FILE="${APP_DIR_OUT}/_results__quality__archeo.csv"
-
-	if [[ ! -d "${APP_DIR_OUT}" ]]; then
-		LOG_FILE=/dev/null
-		log_console_error "OSV result directory does not exist: ${APP_DIR_OUT}"
-		exit
-	fi
-
-	export LOG_FILE="${REPORTS_DIR}/${STEP}__ARCHEO.log"
-	log_extract_message "group '${GROUP}'"
-
-	rm -f "${RESULT_FILE}"
-	echo "Applications${SEPARATOR}Archeo Findings" >>"${RESULT_FILE}"
+	echo "Applications${SEPARATOR}Archeo Findings" >"${RESULT_FILE}"
 
 	while read -r APP; do
 		APP_NAME="$(basename "${APP}")"
@@ -442,13 +429,13 @@ function generate_csv() {
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_FINDINGS}" >>"${RESULT_FILE}"
 
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
 # Download all latest JSON files containing Spring Support information
-download_spring_project_support_files() {
+function download_spring_project_support_files() {
 	mkdir -p "${CONF_DIR}"
 	for KEY in "${!PROJECT_ID_MAP[@]}"; do
 		if [ "${KEY}" != "micrometer-io" ]; then
@@ -461,9 +448,14 @@ download_spring_project_support_files() {
 }
 
 function main() {
-	# Uncomment to update the Spring Support information files
-	#download_spring_project_support_files
-	for_each_group generate_csv
+	if [[ -d "${APP_DIR_OUT}" ]]; then
+		# Uncomment to update the Spring Support information files
+		#download_spring_project_support_files
+		generate_csv
+	else
+		LOG_FILE=/dev/null
+		log_console_error "OSV result directory does not exist: ${APP_DIR_OUT}"
+	fi
 }
 
 main

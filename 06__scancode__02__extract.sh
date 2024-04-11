@@ -13,13 +13,13 @@
 SEPARATOR=","
 VERSION=${SCANCODE_VERSION}
 STEP=$(get_step)
-APP_BASE=${REPORTS_DIR}/${STEP}__SCANCODE
-export LOG_FILE=${APP_BASE}.log
+export APP_DIR_OUT="${REPORTS_DIR}/${STEP}__SCANCODE"
+export LOG_FILE=${APP_DIR_OUT}.log
+RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 function extract() {
-
-	GROUP=${1}
-	RESULT_FILE=${2}
+	rm -f "${RESULT_FILE}"
+	touch "${RESULT_FILE}"
 
 	while read -r APP; do
 		APP_NAME=$(basename "${APP}")
@@ -38,36 +38,23 @@ function extract() {
 
 		echo "${APP_NAME}${SEPARATOR}${COUNT_LICENSES}${SEPARATOR}${COUNT_COPYRIGHTS}" >>"${RESULT_FILE}"
 
-	done <"${REPORTS_DIR}/list__${GROUP}__all_apps.txt"
-}
+	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
-function extract_group() {
-	GROUP=$(basename "${1}")
-	export APP_DIR_OUT=${APP_BASE}__${GROUP}
-	RESULT_FILE="${APP_DIR_OUT}/results_extracted.csv"
-
-	if [[ -d "${APP_DIR_OUT}" ]]; then
-		rm -f "${RESULT_FILE}"
-		touch "${RESULT_FILE}"
-
-		log_extract_message "group '${GROUP}'"
-		extract "${GROUP}" "${RESULT_FILE}"
-
-		# Adding the header
-		{
-			echo "Applications${SEPARATOR}ScanCode Licenses${SEPARATOR}ScanCode Copyrights"
-			cat "${RESULT_FILE}"
-		} >"${RESULT_FILE}.tmp"
-		mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
-	else
-		LOG_FILE=/dev/null
-		log_console_error "Scancode result directory does not exist: ${APP_DIR_OUT}"
-		return
-	fi
+	# Adding the header
+	{
+		echo "Applications${SEPARATOR}ScanCode Licenses${SEPARATOR}ScanCode Copyrights"
+		cat "${RESULT_FILE}"
+	} >"${RESULT_FILE}.tmp"
+	mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
 }
 
 function main() {
-	for_each_group extract_group
+	if [[ -d "${APP_DIR_OUT}" ]]; then
+		extract
+	else
+		LOG_FILE=/dev/null
+		log_console_error "Scancode result directory does not exist: ${APP_DIR_OUT}"
+	fi
 }
 
 main
