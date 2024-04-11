@@ -39,7 +39,7 @@
   <!-- Header -->
   <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
     <div class="container">
-      <a class="navbar-brand mr-0 me-md-2" href="./index.html">Application Portfolio Auditor</a>
+      <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-logo" src="./static/img/company.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
