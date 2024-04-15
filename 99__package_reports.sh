@@ -124,7 +124,7 @@ function generate_k8_deployment() {
 		${MUSTACHE} "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" >"${REPORTS_DIR_K8_DEPLOY}/Dockerfile"
 	fi
 
-	rm -f "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.rootless.mo"
+	rm -f "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo"
 
 	# Generate deployment scripts
 	${MUSTACHE} "${TEMPLATE_DIR_K8}/deploy_container_local.sh.mo" >"${REPORTS_DIR_K8}/deploy_container_local.sh"
