@@ -10,7 +10,7 @@ Key features:
 
 - **Wide variety of applications supported**: Covers most modern programming languages (Java, Python, .NET, NodeJS) and analyzes as well source code as compiled binaries.
 
-- **Combined intelligence:** Harnesses and combines insights of up to 15 free and open-source application analysis tools.
+- **Combined intelligence:** Harnesses and combines insights of up to 18 free and open-source application analysis tools.
 
 - **Aggregated summaries**: Generates static HTML pages connecting all results to help you understand your portfolio from different perspectives such as cloud-readiness, security, languages used, licensing, and quality.
 
