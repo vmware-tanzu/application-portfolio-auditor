@@ -51,7 +51,7 @@ REPORT_VARIABLES=(
 
 # Replace the sort function to sort the lines after the header
 function sort_wo_header() {
-	awk 'NR<3{print $0;next}{print $0| "sort"}' "${1}"
+	awk 'NR<3{print $0;next}{print $0| "sort -f"}' "${1}"
 }
 
 # Export all relevant variables to generate the reports
