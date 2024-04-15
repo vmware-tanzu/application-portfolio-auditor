@@ -16,6 +16,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 RUN rm -Rf /etc/nginx/public
 COPY --from=build /reports /reports
 COPY --from=build /public /etc/nginx/public
-COPY deploy/container-nginx.conf /etc/nginx/conf.d/default.conf
+COPY deploy/container-nginx-rootless.conf /etc/nginx/conf.d/default.conf
+RUN sed "s%^pid\s\+[a-z/.]\+;%pid        /tmp/nginx.pid;%" /etc/nginx/nginx.conf > /etc/nginx/nginx-rootless.conf
 
 ENTRYPOINT [ "/reports/container-serve-reports.sh" ]

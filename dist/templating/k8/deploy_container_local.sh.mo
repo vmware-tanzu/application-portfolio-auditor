@@ -19,4 +19,4 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 DOCKER_BUILDKIT=1 {{CONTAINER_ENGINE}} buildx build --build-arg ARCH="$(uname -m)" -f "${SCRIPT_DIR}/deploy/Dockerfile" -t "${IMG_NAME}" .
 
 # Run container image
-{{CONTAINER_ENGINE}} run --rm -it --name "audit-report-${REPORT_NAME}" -p 80:80 "${IMG_NAME}"
+{{CONTAINER_ENGINE}} run --rm -it --name "audit-report-${REPORT_NAME}" -p 80:8080 "${IMG_NAME}"

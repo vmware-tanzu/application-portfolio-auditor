@@ -199,7 +199,7 @@ else
 	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg ARCH="${ARCH}" \
 		--build-arg CSA_VERSION="${CSA_VERSION}" \
-		--build-arg IMG_BUILD="ubuntu:24.04" \
+		--build-arg IMG_BUILD="alpine:latest" \
 		--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}" .
 	popd &>/dev/null
@@ -221,7 +221,7 @@ if [[ "${ARCH}" == "arm64" ]]; then
 		${CONTAINER_ENGINE} buildx build --platform "linux/amd64" \
 			--build-arg ARCH="x86_64" \
 			--build-arg CSA_VERSION="${CSA_VERSION}" \
-			--build-arg IMG_BUILD="ubuntu:24.04" \
+			--build-arg IMG_BUILD="alpine:latest" \
 			--build-arg IMG_BASE="gcr.io/distroless/static-debian12" \
 			-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_CSA}_x86" .
 		popd &>/dev/null

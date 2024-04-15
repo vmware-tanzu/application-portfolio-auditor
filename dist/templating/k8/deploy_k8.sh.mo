@@ -51,14 +51,14 @@ fi
 if [ -z "${TARGET_HOST}" ]; then
 	TEMPLATE="k8-deployment-template.yaml"
 else
-	TEMPLATE="k8-deployment-decc-template.yaml"
+	TEMPLATE="k8-deployment-with-host-template.yaml"
 fi
 echo "Using template: ${TEMPLATE}"
 
 export REPORT_TAG TARGET_HOST IMG_NAME
-# Apply deployment templace and deploy to K8s
+# Apply deployment template and deploy to K8s
 echo "TEMPLATE:${TEMPLATE} - REPORT_TAG:${REPORT_TAG} - TARGET_HOST:${TARGET_HOST}"
-envsubst "\$REPORT_TAG \$TARGET_HOST \$IMG_NAME" <"${SCRIPT_DIR}/deploy/${TEMPLATE}" | kubectl apply -f -
+envsubst "\$REPORT_TAG \$TARGET_HOST \$TARGET_HOST_NAMESPACE \$TARGET_HOST_INGRESS_CLASS \$TARGET_HOST_SECRET_NAME \$IMG_NAME" <"${SCRIPT_DIR}/deploy/${TEMPLATE}" | kubectl apply -f -
 
 echo "To check on the deployment just execute:"
 echo "   kubectl get pods"

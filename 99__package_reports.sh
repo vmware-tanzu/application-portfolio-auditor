@@ -108,7 +108,7 @@ function generate_k8_deployment() {
 		${CONTAINER_ENGINE} rm -f csa-dummy
 
 		if [[ "${ARCH}" == "arm64" ]]; then
-			${CONTAINER_ENGINE} create --name csa-dummy "${CONTAINER_IMAGE_NAME_CSA}" --platform "linux/amd64"
+			${CONTAINER_ENGINE} create --name csa-dummy "${CONTAINER_IMAGE_NAME_CSA}_x86" --platform "linux/amd64"
 			${CONTAINER_ENGINE} cp "csa-dummy:/tool/csa" "${REPORTS_DIR_K8_DEPLOY}/csa-l_x86_64"
 			${CONTAINER_ENGINE} rm -f csa-dummy
 		fi
@@ -124,7 +124,7 @@ function generate_k8_deployment() {
 		${MUSTACHE} "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" >"${REPORTS_DIR_K8_DEPLOY}/Dockerfile"
 	fi
 
-	rm -f "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo"
+	rm -f "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.simple.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.mo" "${REPORTS_DIR_K8_DEPLOY}/Dockerfile.csa.rootless.mo"
 
 	# Generate deployment scripts
 	${MUSTACHE} "${TEMPLATE_DIR_K8}/deploy_container_local.sh.mo" >"${REPORTS_DIR_K8}/deploy_container_local.sh"
