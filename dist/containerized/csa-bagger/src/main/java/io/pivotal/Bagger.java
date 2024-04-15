@@ -20,7 +20,8 @@ public class Bagger {
     private static final String DEFAULT_SEPARATOR = ",";
 
     public static final String SELECT_APPS =
-            "select r.alias, a.name, a.score, a.findings, a.info_findings, a.id, r.id" +
+            "select r.alias, a.name, a.score, a.findings, a.info_findings, a.id, r.id," +
+                    " (select count(*) from findings f where f.application = a.name and f.pattern not in ('Lines of Code', 'Analyzed File')) as num_findings" +
                     " from applications a inner join runs r on r.id = a.run_id" +
                     " order by r.alias, a.name;";
 
@@ -39,6 +40,7 @@ public class Bagger {
             final int infoFindings = rsApps.getInt(5);
             final long appId = rsApps.getLong(6);
             final long runId = rsApps.getLong(7);
+            final long nonInfoFindings = rsApps.getLong(8);
             final int appEarNamesSeparatorIndex = name.indexOf("__");
 			final String appName;
 			final String earName;
@@ -52,7 +54,9 @@ public class Bagger {
 			}
 
             // Fixing scores at 0.0 on applications without finding
-            final String cleanedUpScore = findings == 0 ? "10.0" : score;
+            final String cleanedUpScore = (nonInfoFindings == 0L) ? "10.0" : score;
+
+            System.out.println("    [INFO] Application: "+name+" - Findings: "+findings+" - Non-Info Findings: "+nonInfoFindings+" - Score: "+score);
 
             final Statement stmtTags = conn.createStatement();
             final ResultSet rsTags = stmtTags.executeQuery("select value from application_tags where application_id = " + appId);
