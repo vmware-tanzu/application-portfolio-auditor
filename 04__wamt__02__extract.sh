@@ -41,7 +41,7 @@ function generate_csv() {
 					sed -n '1d;p;n' |
 					sed 's:^<td class="center">\([0-9]*\)</td>:\1:g' |
 					tr '\n' ',' |
-					awk -F "," '{printf("%s,%s,%s", $1, $2, $3)}')
+					awk -F "," '{printf("%s,%s,%s", $1, $3, $5)}')
 
 				KEYS=$(grep "<td class=\"severity-label\">" "${TEMP_TABLE_FILE}" |
 					sed 's:^<td class="severity-label"><a[^>]*>\([^<]*\)<.*:\1:g' |
