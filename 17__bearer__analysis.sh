@@ -19,6 +19,7 @@ STEP=$(get_step)
 export OUT_DIR_BEARER="${REPORTS_DIR}/${STEP}__BEARER"
 export LOG_FILE="${OUT_DIR_BEARER}.log"
 APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
+JAVA_APP_LIST="${REPORTS_DIR}/00__Weave/list__java-src.txt"
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
@@ -46,11 +47,23 @@ function analyze() {
 				log_console_error "Invalid application: '${APP}'"
 			else
 				## Run -Bearer- to generate HTML security report
+
+				JAVA_MARKER_FILE="${APP_FOLDER}/src/${APP_NAME_SHORT}/DummyBearerJavaMarker.java"
+				if (grep -q "/src/${APP_NAME_SHORT}\$" "${JAVA_APP_LIST}"); then
+					# Add a Java marker file if it is a Java application to force the Bearer analysis
+					touch "${JAVA_MARKER_FILE}"
+				fi
+
 				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
 					-v "${APP_FOLDER}/src/${APP_NAME_SHORT}:/src/${APP_NAME_SHORT}" \
 					-e SYFT_CHECK_FOR_APP_UPDATE=false \
 					"${CONTAINER_IMAGE_NAME_BEARER}" \
 					scan -f html --scanner=secrets,sast --hide-progress-bar --parallel=${THREADS} --report security "/src" 2>>"${LOG_FILE}" >"${RESULT_FILE_SECURITY_BEARER}"
+
+				if [[ -f "${JAVA_MARKER_FILE}" ]]; then
+					# Remove marker file
+					rm -f "${JAVA_MARKER_FILE}"
+				fi
 
 				## Run -Bearer- to generate HTML privacy report
 				#${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
