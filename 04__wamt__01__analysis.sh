@@ -81,10 +81,21 @@ function analyze() {
 	APP_FOUND="false"
 
 	while read -r APP; do
-		APP_FOUND="true"
-		APP_NAME=$(basename "${APP}")
-		APP_DIR=$(dirname "${APP}")
+
+		local APP_FOUND="true"
+		local IS_JAR="false"
+		local APP_NAME_INIT=$(basename "${APP}")
+		local APP_NAME="${APP_NAME_INIT}"
+		local APP_DIR=$(dirname "${APP}")
 		log_analysis_message "app '${APP_NAME}'"
+
+		# Trick to force WAMT analysing JAR applications: JAR is renamed as WAR
+		if [[ "${APP_NAME_INIT}" == *\.jar ]]; then
+			IS_JAR="true"
+			APP_NAME="${APP_NAME_INIT}.war"
+			cp "${APP}" "${APP}.war"
+		fi
+
 		ARGS=(
 			"/apps/${APP_NAME}"
 			--all
@@ -94,12 +105,19 @@ function analyze() {
 			--targetCloud="${TARGET_CLOUD}"
 			--sourceJava="${SOURCE_JAVA}"
 			--targetJava="${TARGET_JAVA}"
-			--output="/out/${APP_NAME}.html"
+			--output="/out/${APP_NAME_INIT}.html"
 		)
 		set +e
 		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_DIR}:/apps:ro" -v "${APP_DIR_OUT}:/out:delegated" --name WAMT "${CONTAINER_IMAGE_NAME_WAMT}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 		set -e
-	done < <(grep '.*\.[ew]ar$' "${JAVA_BIN_LIST}")
+
+		# Removing temporary created WAR
+		if [[ "${IS_JAR}" == "true" ]]; then
+			stream_edit "s|${APP_NAME}|${APP_NAME_INIT}|g" "${REPORTS_DIR}/${STEP}__WAMT/${APP_NAME_INIT}.html"
+			rm -f "${APP}.war"
+		fi
+
+	done < <(grep '.*\.[ewj]ar$' "${JAVA_BIN_LIST}")
 
 	if [[ "${APP_FOUND}" == "true" ]]; then
 		log_console_success "Open this directory for the results: ${APP_DIR_OUT}"

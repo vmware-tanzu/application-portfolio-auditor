@@ -20,7 +20,7 @@ RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 JAVA_BIN_LIST="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 
 function generate_csv() {
-	if ! grep -q '.*\.[ew]ar$' "${JAVA_BIN_LIST}"; then
+	if ! grep -q '.*\.[ejw]ar$' "${JAVA_BIN_LIST}"; then
 		log_console_warning "No EAR/WAR Java application found. Skipping WAMT result extraction."
 		return
 	fi
