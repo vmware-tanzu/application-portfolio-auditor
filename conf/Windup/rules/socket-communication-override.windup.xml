@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<ruleset id="socket-communication"
+    xmlns="http://windup.jboss.org/schema/jboss-ruleset"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://windup.jboss.org/schema/jboss-ruleset http://windup.jboss.org/schema/jboss-ruleset/windup-jboss-ruleset.xsd">
+    <metadata>
+        <description>
+            This ruleset detects the use of socket communication by the client or server, which may be problematic when migrating an application to a cloud environment.
+        </description>
+        <dependencies>
+            <addon id="org.jboss.windup.rules,windup-rules-javaee,3.0.0.Final"/>
+            <addon id="org.jboss.windup.rules,windup-rules-java,3.0.0.Final"/>
+        </dependencies>
+        <sourceTechnology id="java"/>
+        <sourceTechnology id="java-ee"/>
+        <targetTechnology id="cloud-readiness"/>
+        <tag>socket</tag>
+        <overrideRules>true</overrideRules>
+    </metadata>
+    <rules>
+        <rule id="socket-communication-00000">
+            <when>
+                <or>
+                  <javaclass references="java.net.{socketclass}{*}" />
+                  <javaclass references="java.net.ServerSocket{*}"/>
+                  <javaclass references="java.nio.channels.AsynchronousServerSocketChannel{*}"/>
+                  <javaclass references="java.nio.channels.ServerSocketChannel{*}"/>
+                </or>
+            </when>
+            <perform>
+              <iteration>
+                <hint title="Socket communication" effort="1" category-id="cloud-optional">
+                    <message>
+                    Java sockets are internal endpoints of two-way communications. They are defined by an IP address, port, and protocol (TCP/UDP).
+
+                    Socket communication is not suitable for a cloud environment because it requires fixed communication with a target host.
+
+                    Recommendation: Use Java EE standard or loosely coupled protocols such as JMS, JAX-RS, or JAX-WS for backing service interactions.
+                    </message>
+                    <link href="https://12factor.net/backing-services" title="Twelve-factor app - Backing services"/>
+                    <tag>socket</tag>
+                </hint>
+              </iteration>
+            </perform>
+            <where param="socketclass">
+                <matches pattern="(Socket|MulticastSocket|DatagramSocket|InetSocketAddress)"/>
+            </where>
+        </rule>
+        <rule id="socket-communication-00001">
+            <when>
+                <javaclass references="java.nio.channels.{niochannelclass}{*}" />
+            </when>
+            <perform>
+              <iteration>
+                <hint title="Java NIO channel" effort="1" category-id="cloud-optional">
+                    <message>
+                    Java NIO channels provide bulk data transfer to and from NIO buffers. They can be synchronously and asynchronously read and written.
+
+                    Channels are not suitable for a cloud environment because they are not a reliable or scalable way to interact with other systems.
+
+                    Recommendation: Use Java EE standard or loosely coupled protocols such as JMS, JAX-RS, or JAX-WS for backing service interactions.
+                    </message>
+                    <link href="https://12factor.net/backing-services" title="Twelve-factor app - Backing services"/>
+                  <tag>socket</tag>
+                </hint>
+              </iteration>
+            </perform>
+            <where param="niochannelclass">
+              <matches pattern="(NetworkChannel|MulticastChannel|DatagramChannel|AsynchronousSocketChannel|SocketChannel)"/>
+            </where>
+        </rule>
+    </rules>
+</ruleset>

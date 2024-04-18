@@ -62,6 +62,7 @@ function analyze() {
 			--input "/${APP_GROUP}"
 			--output "/cache"
 			--overwrite
+			--userRulesDirectory "/rules"
 		)
 
 		if [[ "${HAS_INTERNET_CONNECTION}" == "false" ]]; then
@@ -82,7 +83,7 @@ function analyze() {
 		log_console_info "EXCLUDE: ${EXCLUDE_PACKAGES[*]:-none}"
 
 		set +e
-		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_GROUP_TMP_DIR}:/${APP_GROUP}:ro" -v "${APP_DIR_OUT}:/out:delegated" -v "tmpfs:/cache:delegated" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
+		(time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${APP_GROUP_TMP_DIR}:/${APP_GROUP}:ro" -v "${CURRENT_DIR}/conf/Windup/rules:/rules:ro" -v "${APP_DIR_OUT}:/out:delegated" -v "tmpfs:/cache:delegated" --name Windup "${CONTAINER_IMAGE_NAME_WINDUP}" "${ARGS[@]}") >>"${LOG_FILE}" 2>&1
 
 		# Hack to fix the issue with files created with root user
 		if sudo -n ls >/dev/null 2>&1; then
