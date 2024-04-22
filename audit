@@ -64,13 +64,13 @@ function usage() {
 
 	echo -e "${B}Usage:${N}"
 
-	printf "    %s [setup|check|download|package|run] <options>\n\n" "$(basename "$0")"
+	printf "    %s [setup|check|download|package|reports|containers|version|run] <options>\n\n" "$(basename "$0")"
 	printf "    %s setup              Download and install all required pre-requisites\n" "$(basename "$0")"
 	printf "    %s check              Check available updates for all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s download           Download, prepare and update all used components and analysis tools\n" "$(basename "$0")"
 	printf "    %s package            Package all scripts, used components and analysis tools into a portable zip distribution\n" "$(basename "$0")"
 	printf "    %s reports            Validate the generated reports\n"  "$(basename "$0")"
-	printf "    %s validate           Validate the architecture and security of the used container images\n" "$(basename "$0")"
+	printf "    %s containers         Validate the architecture and security of the used container images\n" "$(basename "$0")"
 	printf "    %s version            Display all tool versions in use\n" "$(basename "$0")"
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
@@ -154,7 +154,7 @@ function run_short_scripts() {
 	package| dist| distribution| release)
 		SHORT_SCRIPTS+=('util/01__setup/download_and_update_tools.sh' 'util/00__release/bundle_scripts.sh')
 		;;
-	validate| valid)
+	container| containers| validate| valid)
 		SHORT_SCRIPTS+=('util/03__validate/check_container_image_architecture.sh' 'util/03__validate/check_container_image_security.sh')
 		;;
 	version| versions |v)
