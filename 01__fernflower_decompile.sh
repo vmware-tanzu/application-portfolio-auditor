@@ -124,7 +124,13 @@ function unpack_and_decompile() {
 				else
 					declare COUNT_FOUND
 					if [[ "${USE_MAVEN_SEARCH}" == "true" ]]; then
+						set +e
 						COUNT_FOUND=$(curl -s "${MAVEN_SEARCH_URL}${SHA1}" | jq ".response.numFound")
+						RC=$?
+						set -e
+						if [[ ${RC} -ne 0 ]]; then
+							COUNT_FOUND=0
+						fi
 					fi
 					if [[ -z "${COUNT_FOUND}" || "${COUNT_FOUND}" == "0" ]]; then
 						# Archive not on exclude lists (SHA1/pattern), and not on public maven repo.
