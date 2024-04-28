@@ -740,13 +740,14 @@ function generate_archeo_html() {
 		APP="$(basename "${FILE}")"
 		ARCHEO_DIR="${REPORTS_DIR}/16__ARCHEO"
 		ARCHEO_REPORT="${ARCHEO_DIR}/${APP}.html"
-		ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo.csv"
+		ARCHEO_STATS="${ARCHEO_DIR}/${APP}_archeo_findings.stats"
+		ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo_findings.csv"
 		if [ -f "${ARCHEO_CSV}" ] && [ $(wc -l <(tail -n +2 "${ARCHEO_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				${MUSTACHE} "${TEMPLATE_DIR}/archeo_01.mo"
+				${MUSTACHE} -s="${ARCHEO_STATS}" "${TEMPLATE_DIR}/archeo_01.mo"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; ' "${ARCHEO_CSV}"
-				${MUSTACHE} "${TEMPLATE_DIR}/archeo_02.mo"
+				${MUSTACHE} -s="${ARCHEO_STATS}" "${TEMPLATE_DIR}/archeo_02.mo"
 			} >"${ARCHEO_REPORT}"
 		else
 			# Empty result file

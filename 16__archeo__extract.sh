@@ -19,6 +19,14 @@ CONF_DIR="${CURRENT_DIR}/conf/archeo"
 export LOG_FILE="${APP_DIR_OUT}.log"
 TODAY="$(date +%Y-%m-%d)"
 
+export COUNT_SUPPORTED_LIBS
+# Medium - Libs with OSS support ending within 1 year
+export COUNT_OSS_SUPPORT_ENDING_SOON_LIBS
+# High - No OSS support available anymore. Commercial support available.
+export COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS
+# Critical - neither OSS nor commercial support available
+export COUNT_UNSUPPORTED_LIBS
+
 declare -A PROJECT_ID_MAP=(
 	["micrometer-io"]="Micrometer"
 	["spring-amqp"]="Spring AMQP"
@@ -139,10 +147,12 @@ function check_support() {
 				# OSS and Commercial supports expired
 				DESCRIPTION="${LINKED_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
 				SEVERITY='Critical'
+				((COUNT_UNSUPPORTED_LIBS += 1))
 			else
 				# OSS support expired, Commercial available.
 				DESCRIPTION="${LINKED_PROJECT} ended on ${SUPPORT_END_OSS} (OSS) and available till ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH}"
 				SEVERITY='High'
+				((COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS += 1))
 			fi
 		else
 			# Add a warning if the support ends in less than one year
@@ -150,8 +160,10 @@ function check_support() {
 			DESCRIPTION="${LINKED_PROJECT} will end on ${SUPPORT_END_OSS} (OSS) or ${SUPPORT_END_COMMERCIAL} (Commercial) for ${BRANCH} "
 			if [[ "${ONE_YEAR_FROM_TODAY}" > "${SUPPORT_END_OSS}" ]]; then
 				SEVERITY='Medium'
+				((COUNT_OSS_SUPPORT_ENDING_SOON_LIBS += 1))
 			else
 				SEVERITY='Info'
+				((COUNT_SUPPORTED_LIBS += 1))
 			fi
 		fi
 	else
@@ -160,6 +172,7 @@ function check_support() {
 		read -r BRANCH COMMERCIAL_POLICY_END COMMERCIAL_ENFORCED_END OSS_POLICY_END OSS_ENFORCED_END <<<"$(jq -r "${EXTENDED_QUERY}${QUERY_FILTER}" "${SUPPORT_INFO_FILE}")"
 		DESCRIPTION="${LINKED_PROJECT} OSS expired (< ${BRANCH})"
 		SEVERITY='Critical'
+		((COUNT_UNSUPPORTED_LIBS += 1))
 	fi
 
 	if [[ -n "${SEVERITY:-}" ]]; then
@@ -174,14 +187,31 @@ function generate_csv() {
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
 		ARCHEO_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_archeo.txt"
-		ARCHEO_APP_CSV="${APP_DIR_OUT}/${APP_NAME}_archeo.csv"
+		ARCHEO_APP_CSV="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.csv"
+		ARCHEO_STATS="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.stats"
 
 		if [[ -f "${ARCHEO_OUTPUT}" ]]; then
 			log_finding "${ARCHEO_APP_CSV}" "Library" "Version" "Category" "Severity" "Description"
 
+			local COUNT_ALL_LIBS=0
+			local COUNT_ALL_SUPPORTABLE_LIBS=0
+
+			# Info - OSS support still available
+			COUNT_SUPPORTED_LIBS=0
+			# Medium - Libs with OSS support ending within 1 year
+			COUNT_OSS_SUPPORT_ENDING_SOON_LIBS=0
+			# High - No OSS support available anymore. Commercial support available.
+			COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS=0
+			# Critical - neither OSS nor commercial support available
+			COUNT_UNSUPPORTED_LIBS=0
+
+			local COUNT_UNDESIRABLE_LIBS=0
+			local COUNT_DUPLICATED_LIBS=0
+
 			###### 1. Generate findings for one application
 			while read -r ENTRY; do
 
+				((COUNT_ALL_LIBS += 1))
 				local E_GROUP E_PACKAGE E_VERSION_FULL E_VERSION E_VERSION_SHORT LIB
 				# e.g. 'maven'
 				#E_TYPE=$(echo "${ENTRY}" | cut -d '/' -f1 | cut -d ':' -f2)
@@ -370,6 +400,7 @@ function generate_csv() {
 				fi
 
 				if [[ -n "${DETECTED_PROJECT:-}" ]]; then
+					((COUNT_ALL_SUPPORTABLE_LIBS += 1))
 					check_support "${DETECTED_PROJECT}" "${ARCHEO_APP_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
 				fi
 
@@ -402,6 +433,7 @@ function generate_csv() {
 					ENTRY_CLEAN="${ENTRY_TRIM#*/}"
 					# Replace all '/' by ':'
 					ENTRY_FINAL="${ENTRY_CLEAN//\//:}"
+					((COUNT_UNDESIRABLE_LIBS += 1))
 					log_finding "${ARCHEO_APP_CSV}" "${ENTRY_FINAL}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
 				fi
 			done <"${ARCHEO_OUTPUT}"
@@ -419,6 +451,7 @@ function generate_csv() {
 				LIB_COUNT=$(echo "$VERSIONS" | wc -l)
 				if [[ ${LIB_COUNT} -gt 1 ]]; then
 					LIB="${LIBRARY//\//:}"
+					((COUNT_DUPLICATED_LIBS += 1))
 					log_finding "${ARCHEO_APP_CSV}" "${LIB}" "Multiple" "Duplicates" "Medium" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
 				fi
 			done <<<"$LIBRARIES"
@@ -431,6 +464,17 @@ function generate_csv() {
 			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${ARCHEO_APP_CSV}" | grep -v ',Info,') | tr -d ' ' | cut -d'/' -f 1)
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_FINDINGS}" >>"${RESULT_FILE}"
+
+		echo "ARCHEO__ALL_LIBS=${COUNT_ALL_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__SUPPORTABLE_LIBS=${COUNT_ALL_SUPPORTABLE_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__SUPPORTED_LIBS=${COUNT_SUPPORTED_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__OSS_SUPPORT_ENDING_SOON_LIBS=${COUNT_OSS_SUPPORT_ENDING_SOON_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__ONLY_COMMERCIAL_SUPPORTED_LIBS=${COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__UNSUPPORTED_LIBS=${COUNT_UNSUPPORTED_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__UNDESIRABLE_LIBS=${COUNT_UNDESIRABLE_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__DUPLICATED_LIBS=${COUNT_DUPLICATED_LIBS}" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__LIBS_WITH_NO_OSS_SUPPORT=$((COUNT_UNSUPPORTED_LIBS + COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS))" >>"${ARCHEO_STATS}"
+		echo "ARCHEO__COUNT_FINDINGS=${COUNT_FINDINGS}" >>"${ARCHEO_STATS}"
 
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 

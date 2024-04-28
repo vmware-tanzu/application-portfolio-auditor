@@ -22,6 +22,15 @@
       border-collapse: collapse;
       margin: 0px auto;
     } 
+  
+    :root {
+      --findingPurple: #a61c00;
+      --findingRed: #cc0000;
+      --findingOrange: #e69138;
+      --findingYellow: #f1c232; 
+      --findingGreen: #6aa84f;
+    }
+
     /* Zebra striping */
     tr:nth-of-type(odd) {
       background: #f2f2f2;
@@ -110,6 +119,109 @@
   </div>
 
   <div class="container">
+
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div id="support_data_viz"></div>
+      </div>
+      <div class="col-4">
+        <div class="card mt-5 border-0">
+          <div class="card-body">
+          <div class="row gy-2">
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Total libraries</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__ALL_LIBS}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Total findings</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__COUNT_FINDINGS}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #ccc">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">No OSS support</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__LIBS_WITH_NO_OSS_SUPPORT}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #ccc">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Duplicates</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__DUPLICATED_LIBS}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #ccc">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Undesirable</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__UNDESIRABLE_LIBS}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <p>The following table summarizes the findings of <span class="text-bold">Archeo</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
