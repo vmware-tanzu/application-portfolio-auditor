@@ -704,6 +704,7 @@ function generate_trivy_html() {
 		APP="$(basename "${FILE}")"
 		TRIVY_REPORT="${TRIVY_DIR}/${APP}.html"
 		TRIVY_CSV="${TRIVY_DIR}/${APP}_trivy.csv"
+		TRIVY_STATS="${TRIVY_DIR}/${APP}_trivy.stats"
 		TRIVY_TMP="${TRIVY_DIR}/${APP}_trivy.tmp"
 
 		if [ $(wc -l <(tail -n +2 "${TRIVY_CSV}") | tr -d ' ' | cut -d'/' -f 1) -eq 0 ]; then
@@ -719,9 +720,9 @@ function generate_trivy_html() {
 			stream_edit "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
 			stream_edit "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
 			{
-				${MUSTACHE} "${TEMPLATE_DIR}/trivy_01.mo"
+				${MUSTACHE} -s="${TRIVY_STATS}" "${TEMPLATE_DIR}/trivy_01.mo"
 				cat "${TRIVY_TMP}"
-				${MUSTACHE} "${TEMPLATE_DIR}/trivy_02.mo"
+				${MUSTACHE} -s="${TRIVY_STATS}" "${TEMPLATE_DIR}/trivy_02.mo"
 			} >"${TRIVY_REPORT}"
 		fi
 		rm -f "${TRIVY_TMP}" "${TRIVY_TMP}-e"

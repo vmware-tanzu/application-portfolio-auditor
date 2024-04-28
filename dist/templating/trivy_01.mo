@@ -22,6 +22,15 @@
       border-collapse: collapse;
       margin: 0px auto;
     } 
+  
+    :root {
+      --findingPurple: #a61c00;
+      --findingRed: #cc0000;
+      --findingOrange: #e69138;
+      --findingYellow: #f1c232; 
+      --findingGreen: #6aa84f;
+    }
+
     /* Zebra striping */
     tr:nth-of-type(odd) {
       background: #f2f2f2;
@@ -112,6 +121,54 @@
   </div>
 
   <div class="container">
+
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div id="vuln_viz"></div>
+      </div>
+      <div class="col-4">
+        <div class="card mt-5 border-0">
+          <div class="row gy-2">
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Vulnerable libraries</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="text-end"><span class="h3 m-0">{{TRIVY__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{TRIVY__ALL_LIBS}}</span></h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Total vulnerabilities</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{TRIVY__VULNS_ALL}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <p>The following table summarizes the findings of <span class="text-bold">Trivy</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
