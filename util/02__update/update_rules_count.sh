@@ -130,7 +130,6 @@ popd &>/dev/null
 ###### 17 - Bearer
 # Todo - Retrieve from https://docs.bearer.com/reference/rules/
 
-
 cat >"${DIST_DIR}/rules.counts" <<EOF
 ODC_RULES=${RULES_OWASP}
 SCANCODE_RULES=${RULES_SCANCODE}
