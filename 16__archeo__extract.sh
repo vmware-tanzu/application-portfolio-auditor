@@ -360,6 +360,9 @@ function generate_csv() {
 						elif [[ "${E_GROUP}" == "org.springframework.amqp"* ]]; then
 							DETECTED_PROJECT='spring-amqp'
 
+						elif [[ "${E_GROUP}" == "org.springframework.vault"* ]]; then
+							DETECTED_PROJECT='spring-vault'
+
 						else
 							log_console_info "Unknown Spring library: ${LIB}:${E_VERSION_FULL}"
 						fi
