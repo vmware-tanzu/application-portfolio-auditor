@@ -102,12 +102,33 @@ function analyze_logs() {
 	done < <(find "${REPORT_FOLDER}" -mindepth 1 -maxdepth 1 -type d -name '20*' | sort -f)
 }
 
+function analyze_html() {
+
+	while read -r REPORT_DIR; do
+
+		APP_GROUP=$(basename "${REPORT_DIR}" | rev | cut -d '_' -f 1 | rev)
+		TIMESTAMP=$(basename "${REPORT_DIR}" | rev | cut -d '_' -f 3- | rev)
+		echo -e "[${TIMESTAMP}] ${APP_GROUP}"
+
+		while read -r FILE; do
+			echo -e "  >>>  Analyzing '${FILE}'"
+			vnu --errors-only "${FILE}"
+		done < <(find "${REPORT_DIR}" "${REPORT_DIR}/13__GRYPE" "${REPORT_DIR}/14__TRIVY" "${REPORT_DIR}/15__OSV" "${REPORT_DIR}/16__ARCHEO" -mindepth 1 -maxdepth 1 -type f -name '*.html')
+
+	done < <(find "${REPORT_FOLDER}" -mindepth 1 -maxdepth 1 -type d -name '20*' | sort -f)
+}
+
 function main() {
 	echo -e "${BOLD}Duration${NORMAL}\n"
 	display_duration
 
 	echo -e "\n${BOLD}Logs${NORMAL}\n"
 	analyze_logs
+
+	if [[ -n "$(command -v vnu)" ]]; then
+		echo -e "\n${BOLD}HTML reports${NORMAL}\n"
+		analyze_html
+	fi
 }
 
 main
