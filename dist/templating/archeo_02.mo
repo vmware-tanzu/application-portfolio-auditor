@@ -118,10 +118,15 @@
       { id: 5, label: 'Other', count: libs_unsupportable, color: '#ccc' },
     ];
 
+    // Define the log scale
+    const logScale = d3.scaleLog()
+    .domain([1, d3.max(support_data, d => d.count)+1]) // Set the domain to start from 1 to avoid log(0)
+    .range([1, 20]); // Map the log scale to values between 1 and 20
+
     // Compute the position of each group on the pie:
     const pie = d3.pie()
       .sort(null) // Do not sort group by size
-      .value(d => d.count)
+      .value(d => logScale(d.count))
     const support_data_ready = pie(support_data)
 
     // The arc generator
