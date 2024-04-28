@@ -22,6 +22,15 @@
       border-collapse: collapse;
       margin: 0px auto;
     } 
+  
+    :root {
+      --findingPurple: #a61c00;
+      --findingRed: #cc0000;
+      --findingOrange: #e69138;
+      --findingYellow: #f1c232; 
+      --findingGreen: #6aa84f;
+    }
+
     /* Zebra striping */
     tr:nth-of-type(odd) {
       background: #f2f2f2;
@@ -112,6 +121,54 @@
   </div>
 
   <div class="container">
+
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div id="vuln_viz"></div>
+      </div>
+      <div class="col-4">
+        <div class="card mt-5 border-0">
+          <div class="row gy-2">
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Vulnerable libraries</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="text-end"><span class="h3 m-0">{{TRIVY__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{TRIVY__ALL_LIBS}}</span></h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Total vulnerabilities</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{TRIVY__VULNS_ALL}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <p>The following table summarizes the findings of <span class="text-bold">Trivy</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
@@ -141,13 +198,13 @@
           </div>
           <div class="footer-links mt-3">
               <span class="mb-3">&#169; 2024 Broadcom</span>
-              <a href="https://www.vmware.com/help/legal.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Terms of Use" title="Terms of Use" name="nav_footer_bottom : Terms of Use" rel="noreferrer" target="_blank">Terms of Use</a> 
-              <a href="https://www.vmware.com/help/privacy/california-privacy-rights.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Your California Privacy Rights" title="Your California Privacy Rights" name="nav_footer_bottom : Your California Privacy Rights" rel="noreferrer" target="_blank">Your California Privacy Rights</a> 
-              <a href="https://www.vmware.com/help/privacy.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Privacy" title="Privacy" name="nav_footer_bottom : Privacy" rel="noreferrer" target="_blank">Privacy</a> 
-              <a href="https://www.vmware.com/help/accessibility.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Accessibility" title="Accessibility" name="nav_footer_bottom : Accessibility" rel="noreferrer" target="_blank">Accessibility</a> 
-              <a href="https://www.vmware.com/help/trademarks.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Trademarks" title="Trademarks" name="nav_footer_bottom : Trademarks" rel="noreferrer" target="_blank">Trademarks</a> 
-              <a href="https://www.vmware.com/topics/glossary.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Glossary" title="Glossary" name="nav_footer_bottom : Glossary" rel="noreferrer" target="_blank">Glossary</a> 
-              <a href="https://www.vmware.com/help.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Help" title="Help" name="nav_footer_bottom : Help" rel="noreferrer" target="_blank">Help</a> 
+              <a href="https://www.vmware.com/help/legal.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Terms of Use" title="Terms of Use" name="nav_footer_bottom:Terms_of_Use" rel="noreferrer" target="_blank">Terms of Use</a> 
+              <a href="https://www.vmware.com/help/privacy/california-privacy-rights.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Your California Privacy Rights" title="Your California Privacy Rights" name="nav_footer_bottom:Your_California_Privacy_Rights" rel="noreferrer" target="_blank">Your California Privacy Rights</a> 
+              <a href="https://www.vmware.com/help/privacy.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Privacy" title="Privacy" name="nav_footer_bottom:Privacy" rel="noreferrer" target="_blank">Privacy</a> 
+              <a href="https://www.vmware.com/help/accessibility.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Accessibility" title="Accessibility" name="nav_footer_bottom:Accessibility" rel="noreferrer" target="_blank">Accessibility</a> 
+              <a href="https://www.vmware.com/help/trademarks.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Trademarks" title="Trademarks" name="nav_footer_bottom:Trademarks" rel="noreferrer" target="_blank">Trademarks</a> 
+              <a href="https://www.vmware.com/topics/glossary.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Glossary" title="Glossary" name="nav_footer_bottom:Glossary" rel="noreferrer" target="_blank">Glossary</a> 
+              <a href="https://www.vmware.com/help.html" class="text-xxss text-black mb-3 ml-lg-3" aria-label="Help" title="Help" name="nav_footer_bottom:Help" rel="noreferrer" target="_blank">Help</a> 
           </div>
           <div class="footer-disclaimer mt-3">
             <span class="mb-3">This website does not use cookies or other tracking technology.</span>

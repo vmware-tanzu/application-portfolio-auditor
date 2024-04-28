@@ -24,7 +24,7 @@ if [[ -z "${PYTHON_CMD}" ]] || [[ -z "${PIP_CMD}" ]]; then
 fi
 
 # Import all required python libraries
-${PIP_CMD} install bs4 requests aiohttp --break-system-packages >>/dev/null 
+${PIP_CMD} install bs4 requests aiohttp --break-system-packages >>/dev/null
 
 # Load the current version numbers
 # shellcheck source=/dev/null

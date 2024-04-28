@@ -23,11 +23,26 @@ function generate_csv() {
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
 		TRIVY_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_trivy.csv"
-		COUNT_VULNS="n/a"
+		TRIVY_OUTPUT_STATS="${APP_DIR_OUT}/${APP_NAME}_trivy.stats"
+		COUNT_VULNS_ALL="n/a"
 		if [ -f "${TRIVY_OUTPUT}" ]; then
-			COUNT_VULNS=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}") | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_ALL_LIBS="$(wc -l <(grep "${APP_NAME}" "${LOG_FILE}" | grep "Parsing " | grep -v '"'"${APP_NAME}"'"') | tr -d ' ' | cut -d'/' -f 1)"
+			COUNT_VULN_LIBS="$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | cut -d',' -f 1 -f 4 | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
+			COUNT_VULNS_ALL=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}") | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_LOW=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"LOW"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_MEDIUM=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"MEDIUM"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"HIGH"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_CRITICAL=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"CRITICAL"') | tr -d ' ' | cut -d'/' -f 1)
+
+			echo "TRIVY__ALL_LIBS=${COUNT_ALL_LIBS}" >"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__VULNS_LOW=${COUNT_VULNS_LOW}" >>"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__VULNS_MEDIUM=${COUNT_VULNS_MEDIUM}" >>"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${TRIVY_OUTPUT_STATS}"
 		fi
-		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS}" >>"${RESULT_FILE}"
+		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 	log_console_success "Results: ${RESULT_FILE}"
 }
