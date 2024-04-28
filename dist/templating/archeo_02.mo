@@ -94,6 +94,7 @@
     const libs_expiring_oss = {{ARCHEO__OSS_SUPPORT_ENDING_SOON_LIBS}}
     const libs_commercial_only = {{ARCHEO__ONLY_COMMERCIAL_SUPPORTED_LIBS}}
     const libs_unsupported = {{ARCHEO__UNSUPPORTED_LIBS}}
+    const libs_unsupportable = {{ARCHEO__NON_SUPPORTABLE_LIBS}}
 
     // Dimensions and margins of the support data graph
     const support_data_viz_width = 680,
@@ -114,6 +115,7 @@
       { id: 2, label: 'Expiring OSS', count: libs_expiring_oss, color: colorFindingOrange },
       { id: 3, label: 'Commercial only', count: libs_commercial_only, color: colorFindingRed },
       { id: 4, label: 'Unsupported', count: libs_unsupported, color: colorFindingPurple },
+      { id: 5, label: 'Other', count: libs_unsupportable, color: '#ccc' },
     ];
 
     // Compute the position of each group on the pie:
