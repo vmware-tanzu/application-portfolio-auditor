@@ -238,6 +238,10 @@
             <li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/HAS_FSB_REPORT}}
             {{#HAS_SLSCAN_REPORT}}<li>total number of vulnerabilities found by ShiftLeft SAST Scan (SLScan).</li>{{/HAS_SLSCAN_REPORT}}
             {{#HAS_INSIDER_REPORT}}<li>total number of vulnerabilities found by Insider SAST.</li>{{/HAS_INSIDER_REPORT}}
+            {{#HAS_GRYPE_REPORT}}<li>total number of vulnerabilities found by Grype.</li>{{/HAS_GRYPE_REPORT}}
+            {{#HAS_TRIVY_REPORT}}<li>total number of vulnerabilities found by Trivy.</li>{{/HAS_TRIVY_REPORT}}
+            {{#HAS_OSV_REPORT}}<li>total number of vulnerabilities found by OSV.</li>{{/HAS_OSV_REPORT}}
+            {{#HAS_BEARER_REPORT}}<li>total number of vulnerabilities found by Bearer.</li>{{/HAS_BEARER_REPORT}}
             </ul>
           </div>
         </div>
