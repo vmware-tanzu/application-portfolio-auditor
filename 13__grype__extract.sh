@@ -37,9 +37,21 @@ function generate_csv() {
 			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"High"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_CRITICAL=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Critical"') | tr -d ' ' | cut -d'/' -f 1)
 			if [[ ${COUNT_ALL_LIBS} =~ ${NUMBER_RE} && ${COUNT_ALL_LIBS} -gt 0 ]]; then
-				PERCENT_VULN_LIBS=$(( 100 * COUNT_VULN_LIBS / COUNT_ALL_LIBS ))
+				PERCENT_VULN_LIBS=$((100 * COUNT_VULN_LIBS / COUNT_ALL_LIBS))
 			else
 				PERCENT_VULN_LIBS=0
+			fi
+			if [[ "${OWASP_ACTIVE}" == "true" ||
+				"${SCANCODE_ACTIVE}" == "true" ||
+				"${FSB_ACTIVE}" == "true" ||
+				"${SLSCAN_ACTIVE}" == "true" ||
+				"${INSIDER_ACTIVE}" == "true" ||
+				"${TRIVY_ACTIVE}" == "true" ||
+				"${OSV_ACTIVE}" == "true" ||
+				"${BEARER_ACTIVE}" == "true" ]]; then
+				HAS_ANOTHER_SECURITY_REPORT="true"
+			else
+				HAS_ANOTHER_SECURITY_REPORT="false"
 			fi
 			echo "GRYPE__ALL_LIBS=${COUNT_ALL_LIBS}" >"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${GRYPE_OUTPUT_STATS}"
@@ -49,6 +61,7 @@ function generate_csv() {
 			echo "GRYPE__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__PERCENT_VULN_LIBS=${PERCENT_VULN_LIBS}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "HAS_ANOTHER_SECURITY_REPORT=${HAS_ANOTHER_SECURITY_REPORT}" >>"${GRYPE_OUTPUT_STATS}"
 			set -e
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"

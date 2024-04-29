@@ -43,6 +43,18 @@ function generate_csv() {
 			else
 				PERCENT_VULN_LIBS=0
 			fi
+			if [[ "${OWASP_ACTIVE}" == "true" ||
+				"${SCANCODE_ACTIVE}" == "true" ||
+				"${FSB_ACTIVE}" == "true" ||
+				"${SLSCAN_ACTIVE}" == "true" ||
+				"${INSIDER_ACTIVE}" == "true" ||
+				"${GRYPE_ACTIVE}" == "true" ||
+				"${TRIVY_ACTIVE}" == "true" ||
+				"${BEARER_ACTIVE}" == "true" ]]; then
+				HAS_ANOTHER_SECURITY_REPORT="true"
+			else
+				HAS_ANOTHER_SECURITY_REPORT="false"
+			fi
 			echo "OSV__ALL_LIBS=${COUNT_ALL_LIBS}" >"${OSV_OUTPUT_STATS}"
 			echo "OSV__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${OSV_OUTPUT_STATS}"
 			echo "OSV__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${OSV_OUTPUT_STATS}"
@@ -51,6 +63,7 @@ function generate_csv() {
 			echo "OSV__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${OSV_OUTPUT_STATS}"
 			echo "OSV__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${OSV_OUTPUT_STATS}"
 			echo "OSV__PERCENT_VULN_LIBS=${PERCENT_VULN_LIBS}" >>"${OSV_OUTPUT_STATS}"
+			echo "HAS_ANOTHER_SECURITY_REPORT=${HAS_ANOTHER_SECURITY_REPORT}" >>"${OSV_OUTPUT_STATS}"
 			set -e
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"

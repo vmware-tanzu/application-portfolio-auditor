@@ -29,8 +29,8 @@ function generate_csv() {
 		if [ -f "${TRIVY_OUTPUT}" ]; then
 			set +e
 			COUNT_ALL_LIBS="$(wc -l <(grep "${APP_NAME}" "${LOG_FILE}" | grep "Parsing " | grep -v '"'"${APP_NAME}"'"') | tr -d ' ' | cut -d'/' -f 1)"
-			COUNT_VULN_LIBS="$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | cut -d',' -f 1 -f 4 | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
 			COUNT_VULNS_ALL=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}") | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULN_LIBS="$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | cut -d',' -f 1 -f 4 | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
 			COUNT_VULNS_LOW=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"LOW"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_MEDIUM=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"MEDIUM"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"HIGH"') | tr -d ' ' | cut -d'/' -f 1)
@@ -40,6 +40,18 @@ function generate_csv() {
 			else
 				PERCENT_VULN_LIBS=0
 			fi
+			if [[ "${OWASP_ACTIVE}" == "true" ||
+				"${SCANCODE_ACTIVE}" == "true" ||
+				"${FSB_ACTIVE}" == "true" ||
+				"${SLSCAN_ACTIVE}" == "true" ||
+				"${INSIDER_ACTIVE}" == "true" ||
+				"${GRYPE_ACTIVE}" == "true" ||
+				"${OSV_ACTIVE}" == "true" ||
+				"${BEARER_ACTIVE}" == "true" ]]; then
+				HAS_ANOTHER_SECURITY_REPORT="true"
+			else
+				HAS_ANOTHER_SECURITY_REPORT="false"
+			fi
 			echo "TRIVY__ALL_LIBS=${COUNT_ALL_LIBS}" >"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${TRIVY_OUTPUT_STATS}"
@@ -48,6 +60,7 @@ function generate_csv() {
 			echo "TRIVY__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__PERCENT_VULN_LIBS=${PERCENT_VULN_LIBS}" >>"${TRIVY_OUTPUT_STATS}"
+			echo "HAS_ANOTHER_SECURITY_REPORT=${HAS_ANOTHER_SECURITY_REPORT}" >>"${TRIVY_OUTPUT_STATS}"
 			set -e
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"
