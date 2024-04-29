@@ -97,9 +97,9 @@
       <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-icon" src="./static/img/company-icon.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link active" href="#">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security{{GROUP_POSTFIX}}.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality{{GROUP_POSTFIX}}.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
           <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
@@ -142,7 +142,7 @@
   <div class="container">
 {{#HAS_INDEX_CLOUD_REPORT}}
     <div class="wrapper cloud">
-      <h3><a style="display:inline-block" href="./cloud{{GROUP_POSTFIX}}.html">Cloud-Readiness</a></h3>
+      <h3><a style="display:inline-block" href="./cloud.html">Cloud-Readiness</a></h3>
       <ul class="list-unstyled">
 {{#HAS_CSA_REPORT}}
         <li class="d-flex">
@@ -179,7 +179,7 @@
 {{/HAS_INDEX_CLOUD_REPORT}}
 {{#HAS_SECURITY_REPORT}}
     <div class="wrapper security">
-      <h3><a href="./security{{GROUP_POSTFIX}}.html">Security</a></h3>
+      <h3><a href="./security.html">Security</a></h3>
       <ul class="list-unstyled">
 {{#HAS_ODC_REPORT}}
         <li class="d-flex">
@@ -267,7 +267,7 @@
 
 {{#HAS_QUALITY_OR_LANGUAGE_REPORT}}
 <div class="wrapper quality">
-    <h3><a href="{{#HAS_QUALITY_REPORT}}./quality{{GROUP_POSTFIX}}.html{{/HAS_QUALITY_REPORT}}">Quality</a></h3>
+    <h3><a href="{{#HAS_QUALITY_REPORT}}./quality.html{{/HAS_QUALITY_REPORT}}">Quality</a></h3>
       <ul class="list-unstyled">
 {{#HAS_ARCHEO_REPORT}}
         <li class="d-flex">

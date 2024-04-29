@@ -26,13 +26,13 @@
     <div class="container">
       <a class="navbar-brand mr-0 me-md-2" href="./../index.html"><img class="mr-3 me-3 filter-white company-icon" src="./../static/img/company-icon.svg" alt="Tanzu"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
-        <li class="nav-item"><a class="nav-link" href="./../index{{GROUP_POSTFIX}}.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
+        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link active" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link active" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
-          <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
+          <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{NAV_LINK}}" rel="noreferrer" target="_blank"><i class="{{NAV_ICON}}"></i></a>
@@ -55,10 +55,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="{{TOOL_VERSION}}"></a>
+          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
           <div>
             <h5 class="mt-0 mb-1">Archeologist <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
-            Find unsupported and unnecessary ancient libraries in your applications. (<a href="{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            Find unsupported and unnecessary ancient libraries in your applications. (<a href="../{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="../{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>

@@ -94,9 +94,9 @@
     <div class="container">
       <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-icon" src="./static/img/company-icon.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
-        <li class="nav-item"><a class="nav-link" href="./index{{GROUP_POSTFIX}}.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security{{GROUP_POSTFIX}}.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
+        <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
+        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="#">Quality</a></li>
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">

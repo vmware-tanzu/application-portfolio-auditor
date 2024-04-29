@@ -59,10 +59,10 @@
     <div class="container">
       <a class="navbar-brand mr-0 me-md-2" href="./../index.html"><img class="mr-3 me-3 filter-white company-icon" src="./../static/img/company-icon.svg" alt="Tanzu"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
-        <li class="nav-item"><a class="nav-link" href="./../index{{GROUP_POSTFIX}}.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
+        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
@@ -88,7 +88,7 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../11__SLSCAN/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/scan-light.png" height="50" width="50" alt="{{SLSCAN_VERSION}}"></a>
+          <a href="./../11__SLSCAN/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/scan-light.png" height="50" width="50" alt="SAST-Scan"></a>
           <div>
             <h5 class="mt-0 mb-1">ShiftLeft SAST Scan <a href="https://github.com/ShiftLeftSecurity/sast-scan" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SLSCAN_VERSION}}</a></h5>
             Identifies security vulnerabilities focussing on the <a href="https://owasp.org/www-project-top-ten/" rel="noreferrer" target="_blank" class="link">OWASP Top 10</a>. (<a href="./.{{SLSCAN_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{SLSCAN_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
