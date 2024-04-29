@@ -170,24 +170,6 @@
                     <div class="col-7">
                       <div class="d-flex align-items-center">
                         <div>
-                          <h6 class="m-0">Libs with no OSS support</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-5">
-                      <h6 class="h3 text-end m-0">{{ARCHEO__LIBS_WITH_NO_OSS_SUPPORT}}</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #ccc">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-7">
-                      <div class="d-flex align-items-center">
-                        <div>
                           <h6 class="m-0">Duplicated libraries</h6>
                         </div>
                       </div>
