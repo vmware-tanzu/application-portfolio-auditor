@@ -191,7 +191,7 @@
           <div class="card card-body">
             <p>As columns, you will find respectively the ...</p>
             <ul>
-              {{#HAS_ARCHEO_REPORT}}<li>numbers of Archoe findings.</li>{{/HAS_ARCHEO_REPORT}}
+              {{#HAS_ARCHEO_REPORT}}<li>numbers of Archeo findings.</li>{{/HAS_ARCHEO_REPORT}}
               {{#HAS_PMD_REPORT}}<li>numbers of triggered PMD rules and violations.</li>{{/HAS_PMD_REPORT}}
               {{#HAS_PMD_REPORT}}<li>numbers of copy-pasted source code fragments (several lines), lines (several tokens), and tokens (chars and operators).</li>{{/HAS_PMD_REPORT}}
               {{#HAS_SCANCODE_REPORT}}<li>numbers of embedded licenses and copyrights detected by ScanCode.</li>{{/HAS_SCANCODE_REPORT}}
