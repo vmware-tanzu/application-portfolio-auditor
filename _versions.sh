@@ -42,7 +42,7 @@ export OSV_VERSION='1.7.2'
 export BEARER_VERSION='1.43.2'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='241.15989.21'
+export FERNFLOWER_VERSION='241.15989.69'
 export MUSTACHE_VERSION='3.0.5'
 export NIST_MIRROR_VERSION='1.6.0'
 export D3_VERSION='7.9.0'
