@@ -35,10 +35,10 @@ export OWASP_DC_VERSION='8.4.3'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export OSV_VERSION='1.7.0'
 export SYFT_VERSION='1.3.0'
 export GRYPE_VERSION='0.77.1'
 export TRIVY_VERSION='0.50.4'
+export OSV_VERSION='1.7.2'
 export BEARER_VERSION='1.43.2'
 
 # Supporting frameworks
