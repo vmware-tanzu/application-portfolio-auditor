@@ -144,6 +144,11 @@
                       <h6 class="text-end"><span class="h3 m-0">{{TRIVY__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{TRIVY__ALL_LIBS}}</span></h6>
                     </div>
                   </div>
+                  <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
+                    <div class="progress" style="padding-left: 0px; padding-right: 0px;">
+                      <div class="progress-bar" role="progressbar" style="width: {{TRIVY__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{TRIVY__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{TRIVY__PERCENT_VULN_LIBS}}%</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

@@ -22,11 +22,29 @@ function generate_csv() {
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
 		GRYPE_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_grype.csv"
-		COUNT_VULNS="n/a"
+		SYFT_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_syft.json"
+		GRYPE_OUTPUT_STATS="${APP_DIR_OUT}/${APP_NAME}_grype.stats"
+		COUNT_VULNS_ALL="n/a"
 		if [ -f "${GRYPE_OUTPUT}" ]; then
-			COUNT_VULNS=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}") | tr -d ' ' | cut -d'/' -f 1)
+			set +e
+			COUNT_VULNS_ALL=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}") | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_ALL_LIBS="$(wc -l <( jq -r ' .artifacts[] | .purl' "${SYFT_OUTPUT}"| sort| uniq) | tr -d ' ' | cut -d'/' -f 1)"
+			COUNT_VULN_LIBS="$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | cut -d',' -f 1 -f 4 | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
+			COUNT_VULNS_LOW=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Low"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_MEDIUM=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Medium"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"High"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_CRITICAL=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Critical"') | tr -d ' ' | cut -d'/' -f 1)
+			echo "GRYPE__ALL_LIBS=${COUNT_ALL_LIBS}" >"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__VULNS_LOW=${COUNT_VULNS_LOW}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__VULNS_MEDIUM=${COUNT_VULNS_MEDIUM}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__PERCENT_VULN_LIBS=$((100*COUNT_VULN_LIBS/COUNT_ALL_LIBS))" >>"${GRYPE_OUTPUT_STATS}"
+			set -e
 		fi
-		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS}" >>"${RESULT_FILE}"
+		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 	log_console_success "Results: ${RESULT_FILE}"
 }

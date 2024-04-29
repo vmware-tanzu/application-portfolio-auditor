@@ -540,12 +540,13 @@ function generate_grype_html() {
 		GRYPE_DIR="${REPORTS_DIR}/13__GRYPE"
 		GRYPE_REPORT="${GRYPE_DIR}/${APP}.html"
 		GRYPE_CSV="${GRYPE_DIR}/${APP}_grype.csv"
+		GRYPE_STATS="${GRYPE_DIR}/${APP}_grype.stats"
 		if [ -f "${GRYPE_CSV}" ] && [ $(wc -l <(tail -n +2 "${GRYPE_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				${MUSTACHE} "${TEMPLATE_DIR}/grype_01.mo"
+				${MUSTACHE} -s="${GRYPE_STATS}" "${TEMPLATE_DIR}/grype_01.mo"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${GRYPE_CSV}"
-				${MUSTACHE} "${TEMPLATE_DIR}/grype_02.mo"
+				${MUSTACHE} -s="${GRYPE_STATS}" "${TEMPLATE_DIR}/grype_02.mo"
 			} >"${GRYPE_REPORT}"
 		else
 			# Empty result file
