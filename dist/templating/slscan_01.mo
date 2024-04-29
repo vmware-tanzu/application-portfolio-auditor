@@ -22,6 +22,15 @@
       border-collapse: collapse;
       margin: 0px auto;
     } 
+  
+    :root {
+      --findingPurple: #a61c00;
+      --findingRed: #cc0000;
+      --findingOrange: #e69138;
+      --findingYellow: #f1c232; 
+      --findingGreen: #6aa84f;
+    }
+
     /* Zebra striping */
     tr:nth-of-type(odd) {
       background: #f2f2f2;
@@ -108,6 +117,95 @@
   </div>
 
   <div class="container">
+
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div id="vuln_viz"></div>
+      </div>
+      {{#HAS_ANOTHER_SECURITY_REPORT}}
+      <div class="col-4">
+        <div class="card {{#HAS_FINDINGS}}mt-5{{/HAS_FINDINGS}}border-0">
+          <div class="row gy-2">
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body" style="padding-bottom: 0px;">
+                  <div class="row align-items-center">
+                    <div class="col-3 mb-3">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Linked reports</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-9">
+                      <div class="row justify-content-end" style="margin-right: 0px; margin-left: 0px; ">
+                        {{#HAS_ODC_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../05__OWASP_DC/{{APP}}_dc_report.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_ODC_REPORT}}
+                        {{#HAS_FSB_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50px" width="50px" alt="Find Security Bugs"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_FSB_REPORT}}
+                        {{#HAS_SLSCAN_REPORT}}
+                        <!--<div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
+                          </div>  
+                        </div>-->
+                        {{/HAS_SLSCAN_REPORT}}
+                        {{#HAS_INSIDER_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../12__INSIDER/{{APP}}_report.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_INSIDER_REPORT}}
+                        {{#HAS_GRYPE_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50px" width="50px" alt="Grype"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_GRYPE_REPORT}}
+                        {{#HAS_TRIVY_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_TRIVY_REPORT}}
+                        {{#HAS_OSV_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_OSV_REPORT}}
+                        {{#HAS_BEARER_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
+                            <a href="./../17__BEARER/{{APP}}_security_bearer.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_BEARER_REPORT}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{/HAS_ANOTHER_SECURITY_REPORT}}
+    </div>
     <div class="row">
       <p>The following table summarizes the findings of <span class="text-bold">ShiftLeft SAST Scan</span> while analyzing <span class="text-bold">{{APP}}</span> (<a href="{{SLSCAN_REPORT_DIR}}/{{APP}}/" rel="noreferrer" target="_blank" class="report-link">all reports</a> - <a href="{{SLSCAN_REPORT_DIR}}/{{APP}}.log" rel="noreferrer" target="_blank" class="report-link">log</a>):</p>
     </div>
@@ -166,3 +264,4 @@
   <script>
     var app_name="{{APP}}"
     const longText = `\
+s

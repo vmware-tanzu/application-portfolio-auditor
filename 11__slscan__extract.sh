@@ -24,12 +24,59 @@ function generate_csv() {
 		APP="$(basename "${FILE}")"
 		log_extract_message "app '${APP}'"
 		TXT_IN="${APP_DIR_OUT}/${APP}.txt"
-
+		SLSCAN_OUTPUT_STATS="${APP_DIR_OUT}/${APP}.stats"
 		VULNS="n/a"
 		if [ -f "${TXT_IN}" ]; then
-			VULNS="0"
+			COUNT_VULNS_LOW=0
+			COUNT_VULNS_MEDIUM=0
+			COUNT_VULNS_HIGH=0
+			COUNT_VULNS_CRITICAL=0
+
+			EXTRACTED_VALUES_TMP="${TXT_IN}.tmp"
+			sed -n '/.*Tool.*Critical.*$/,$p' "${TXT_IN}" | tail -n +3 | sed 's/[^0-9 ]*//g' | sed 's/ \+/ /g' | sed 's/^ *//;s/ *$//' | tr -s ' ' ',' >"${EXTRACTED_VALUES_TMP}"
+
 			COUNT_VULNS=$(sed -n '/.*Tool.*Critical.*$/,$p' "${TXT_IN}" | tail -n +3 | sed 's/[^0-9 ]*//g' | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
 			[ -n "${COUNT_VULNS}" ] && VULNS=${COUNT_VULNS}
+
+			LOW=$(cut -d',' -f 4 "${EXTRACTED_VALUES_TMP}" | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
+			MEDIUM=$(cut -d',' -f 3 "${EXTRACTED_VALUES_TMP}" | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
+			HIGH=$(cut -d',' -f 2 "${EXTRACTED_VALUES_TMP}" | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
+			CRITICAL=$(cut -d',' -f 1 "${EXTRACTED_VALUES_TMP}" | xargs | tr ' ' '\n' | awk '{n += $1}; END{print n}')
+
+			[ -n "${LOW}" ] && COUNT_VULNS_LOW=${LOW}
+			[ -n "${MEDIUM}" ] && COUNT_VULNS_MEDIUM=${MEDIUM}
+			[ -n "${HIGH}" ] && COUNT_VULNS_HIGH=${HIGH}
+			[ -n "${CRITICAL}" ] && COUNT_VULNS_CRITICAL=${CRITICAL}
+
+			COUNT_VULNS_ALL=$((COUNT_VULNS_LOW + COUNT_VULNS_MEDIUM + COUNT_VULNS_HIGH + COUNT_VULNS_CRITICAL))
+
+			rm -f "${EXTRACTED_VALUES_TMP}"
+
+			HAS_FINDINGS=FALSE
+			[[ ${COUNT_VULNS_ALL} -gt 0 ]] && {
+				HAS_FINDINGS=TRUE
+			}
+
+			if [[ "${OWASP_ACTIVE}" == "true" ||
+				"${SCANCODE_ACTIVE}" == "true" ||
+				"${FSB_ACTIVE}" == "true" ||
+				"${TRIVY_ACTIVE}" == "true" ||
+				"${INSIDER_ACTIVE}" == "true" ||
+				"${GRYPE_ACTIVE}" == "true" ||
+				"${OSV_ACTIVE}" == "true" ||
+				"${BEARER_ACTIVE}" == "true" ]]; then
+				HAS_ANOTHER_SECURITY_REPORT="true"
+			else
+				HAS_ANOTHER_SECURITY_REPORT="false"
+			fi
+
+			echo "SLSCAN__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${SLSCAN_OUTPUT_STATS}"
+			echo "SLSCAN__VULNS_LOW=${COUNT_VULNS_LOW}" >>"${SLSCAN_OUTPUT_STATS}"
+			echo "SLSCAN__VULNS_MEDIUM=${COUNT_VULNS_MEDIUM}" >>"${SLSCAN_OUTPUT_STATS}"
+			echo "SLSCAN__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${SLSCAN_OUTPUT_STATS}"
+			echo "SLSCAN__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${SLSCAN_OUTPUT_STATS}"
+			echo "HAS_ANOTHER_SECURITY_REPORT=${HAS_ANOTHER_SECURITY_REPORT}" >>"${SLSCAN_OUTPUT_STATS}"
+			echo "HAS_FINDINGS=${HAS_FINDINGS}"
 		fi
 		echo "${APP}${SEPARATOR}${VULNS}" >>"${RESULT_FILE}"
 

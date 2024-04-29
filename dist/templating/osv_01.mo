@@ -151,24 +151,6 @@
                 </div>
               </div>
             </div>
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Total vulnerabilities</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <h6 class="h3 text-end m-0">{{OSV__VULNS_ALL}}</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             {{#HAS_ANOTHER_SECURITY_REPORT}}
             <div class="col-12">
               <div class="card border-0" style="background-color: #333333; color: #ffffff;">
@@ -182,7 +164,7 @@
                       </div>
                     </div>
                     <div class="col-9">
-                      <div class="row justify-content-end">
+                      <div class="row justify-content-end" style="margin-right: 0px; margin-left: 0px; ">
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">

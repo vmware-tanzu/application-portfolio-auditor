@@ -517,11 +517,12 @@ function generate_slscan_html() {
 		APP="$(basename "${FILE}")"
 		SLSCAN_REPORT="${REPORTS_DIR}/11__SLSCAN/${APP}.html"
 		TXT_IN="${REPORTS_DIR}/11__SLSCAN/${APP}.txt"
+		SLSCAN_STATS="${REPORTS_DIR}/11__SLSCAN/${APP}.stats"
 		{
-			${MUSTACHE} "${TEMPLATE_DIR}/slscan_01.mo"
+			${MUSTACHE} -s="${SLSCAN_STATS}" "${TEMPLATE_DIR}/slscan_01.mo"
 			echo "Tool,Critical,High,Medium,Low,Status"
 			tail -n +3 "${TXT_IN}" | sed 's/║//g' | sed 's/│/,/g' | awk '{$1=$1};1' | sed 's/ , /,/g' | sed '$s/$/\`;/'
-			${MUSTACHE} "${TEMPLATE_DIR}/slscan_02.mo"
+			${MUSTACHE} -s="${SLSCAN_STATS}" "${TEMPLATE_DIR}/slscan_02.mo"
 		} >"${SLSCAN_REPORT}"
 	done <"${APP_LIST}"
 	rm -f "${APP_LIST}"
