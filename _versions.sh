@@ -26,7 +26,7 @@ export SCANCODE_VERSION='32.1.0'
 
 ## Code quality / bugs
 export MAI_VERSION='1.9.22'
-export PMD_VERSION='7.0.0'
+export PMD_VERSION='7.1.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
 
