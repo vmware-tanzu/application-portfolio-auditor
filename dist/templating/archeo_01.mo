@@ -59,7 +59,7 @@
     tr:nth-child(2), td:nth-child(2) { width: 7%; }
     tr:nth-child(3), td:nth-child(3) { width: 7%; }
     tr:nth-child(4), td:nth-child(4) { width: 7%; }
-    tr:nth-child(5), td:nth-child(6) { width: 40%; word-break:break-word;}    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
+    tr:nth-child(5), td:nth-child(5) { width: 40%; word-break:break-word;}    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
 </head>
