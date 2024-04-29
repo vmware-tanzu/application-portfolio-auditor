@@ -10,8 +10,10 @@
 # ----- Please adjust
 
 # ------ Do not modify
+VERSION=${GRYPE_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
+NUMBER_RE='^[0-9]+$'
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__GRYPE"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 export LOG_FILE="${APP_DIR_OUT}.log"
@@ -28,12 +30,17 @@ function generate_csv() {
 		if [ -f "${GRYPE_OUTPUT}" ]; then
 			set +e
 			COUNT_VULNS_ALL=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}") | tr -d ' ' | cut -d'/' -f 1)
-			COUNT_ALL_LIBS="$(wc -l <( jq -r ' .artifacts[] | .purl' "${SYFT_OUTPUT}"| sort| uniq) | tr -d ' ' | cut -d'/' -f 1)"
+			COUNT_ALL_LIBS="$(wc -l <(jq -r ' .artifacts[] | .purl' "${SYFT_OUTPUT}" | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
 			COUNT_VULN_LIBS="$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | cut -d',' -f 1 -f 4 | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
 			COUNT_VULNS_LOW=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Low"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_MEDIUM=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Medium"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"High"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_CRITICAL=$(wc -l <(tail -n +2 "${GRYPE_OUTPUT}" | grep '"Critical"') | tr -d ' ' | cut -d'/' -f 1)
+			if [[ ${COUNT_ALL_LIBS} =~ ${NUMBER_RE} && ${COUNT_ALL_LIBS} -gt 0 ]]; then
+				PERCENT_VULN_LIBS=$(( 100 * COUNT_VULN_LIBS / COUNT_ALL_LIBS ))
+			else
+				PERCENT_VULN_LIBS=0
+			fi
 			echo "GRYPE__ALL_LIBS=${COUNT_ALL_LIBS}" >"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${GRYPE_OUTPUT_STATS}"
@@ -41,7 +48,7 @@ function generate_csv() {
 			echo "GRYPE__VULNS_MEDIUM=${COUNT_VULNS_MEDIUM}" >>"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${GRYPE_OUTPUT_STATS}"
 			echo "GRYPE__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${GRYPE_OUTPUT_STATS}"
-			echo "GRYPE__PERCENT_VULN_LIBS=$((100*COUNT_VULN_LIBS/COUNT_ALL_LIBS))" >>"${GRYPE_OUTPUT_STATS}"
+			echo "GRYPE__PERCENT_VULN_LIBS=${PERCENT_VULN_LIBS}" >>"${GRYPE_OUTPUT_STATS}"
 			set -e
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"

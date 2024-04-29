@@ -13,22 +13,47 @@
 VERSION=${OSV_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-
+NUMBER_RE='^[0-9]+$'
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__OSV"
 RESULT_FILE="${REPORTS_DIR}/${STEP}__OSV/_results__security__osv.csv"
-LOG_FILE="${REPORTS_DIR}/${STEP}__OSV.log"
+export LOG_FILE="${REPORTS_DIR}/${STEP}__OSV.log"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}OSV vulns" >"${RESULT_FILE}"
 	while read -r APP; do
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
-		OSV_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_osv.json"
-		COUNT_VULNS="n/a"
-		if [ -f "${OSV_OUTPUT}" ]; then
-			COUNT_VULNS=$(jq -r '[ .results[].packages[] .vulnerabilities[] ] | length' "${OSV_OUTPUT}")
+		OSV_OUTPUT_CSV="${APP_DIR_OUT}/${APP_NAME}_osv.csv"
+		OSV_OUTPUT_TXT="${APP_DIR_OUT}/${APP_NAME}_osv.txt"
+		OSV_OUTPUT_JSON="${APP_DIR_OUT}/${APP_NAME}_osv.json"
+		OSV_OUTPUT_STATS="${APP_DIR_OUT}/${APP_NAME}_osv.stats"
+
+		COUNT_VULNS_ALL="n/a"
+		if [ -f "${OSV_OUTPUT_JSON}" ] && [ -f "${OSV_OUTPUT_CSV}" ] && [ -f "${OSV_OUTPUT_TXT}" ]; then
+			set +e
+			COUNT_VULNS_ALL=$(jq -r '[ .results[].packages[] .vulnerabilities[] ] | length' "${OSV_OUTPUT_JSON}")
+			COUNT_ALL_LIBS=$(head -n 1 "${OSV_OUTPUT_TXT}" | grep -o 'found \d* packages' | grep -o '\d*')
+			COUNT_VULN_LIBS="$(wc -l <(tail -n +2 "${OSV_OUTPUT_CSV}" | cut -d',' -f 1 -f 2 | sort | uniq) | tr -d ' ' | cut -d'/' -f 1)"
+			COUNT_VULNS_LOW=$(wc -l <(tail -n +2 "${OSV_OUTPUT_CSV}" | grep '"Low"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_MEDIUM=$(wc -l <(tail -n +2 "${OSV_OUTPUT_CSV}" | grep '"Medium"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${OSV_OUTPUT_CSV}" | grep '"High"') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_VULNS_CRITICAL=$(wc -l <(tail -n +2 "${OSV_OUTPUT_CSV}" | grep '"Critical"') | tr -d ' ' | cut -d'/' -f 1)
+			if [[ ${COUNT_ALL_LIBS} =~ ${NUMBER_RE} && ${COUNT_ALL_LIBS} -gt 0 ]]; then
+				PERCENT_VULN_LIBS=$((100 * COUNT_VULN_LIBS / COUNT_ALL_LIBS))
+			else
+				PERCENT_VULN_LIBS=0
+			fi
+			echo "OSV__ALL_LIBS=${COUNT_ALL_LIBS}" >"${OSV_OUTPUT_STATS}"
+			echo "OSV__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${OSV_OUTPUT_STATS}"
+			echo "OSV__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${OSV_OUTPUT_STATS}"
+			echo "OSV__VULNS_LOW=${COUNT_VULNS_LOW}" >>"${OSV_OUTPUT_STATS}"
+			echo "OSV__VULNS_MEDIUM=${COUNT_VULNS_MEDIUM}" >>"${OSV_OUTPUT_STATS}"
+			echo "OSV__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${OSV_OUTPUT_STATS}"
+			echo "OSV__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${OSV_OUTPUT_STATS}"
+			echo "OSV__PERCENT_VULN_LIBS=${PERCENT_VULN_LIBS}" >>"${OSV_OUTPUT_STATS}"
+			set -e
 		fi
-		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS}" >>"${RESULT_FILE}"
+		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 	log_console_success "Results: ${RESULT_FILE}"
 }

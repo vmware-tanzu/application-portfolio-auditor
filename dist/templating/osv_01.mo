@@ -69,10 +69,10 @@
     <div class="container">
       <a class="navbar-brand mr-0 me-md-2" href="./../index.html"><img class="mr-3 me-3 filter-white company-icon" src="./../static/img/company-icon.svg" alt="Tanzu"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
-        <li class="nav-item"><a class="nav-link" href="./../index{{GROUP_POSTFIX}}.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
+        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
@@ -98,10 +98,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
+          <a href="./../15__OSV/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
           <div>
-            <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-            Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">OSV <a href="https://github.com/google/osv.dev" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OSV_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
+            Find vulnerable dependencies according to the OSV database. (<a href="{{OSV_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{OSV_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Grype</li>
+        <li class="breadcrumb-item active">OSV</li>
         <li class="breadcrumb-item">{{APP}}</li>
       </ol>
     </nav>
@@ -138,12 +138,12 @@
                       </div>
                     </div>
                     <div class="col-6">
-                      <h6 class="text-end"><span class="h3 m-0">{{GRYPE__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{GRYPE__ALL_LIBS}}</span></h6>
+                      <h6 class="text-end"><span class="h3 m-0">{{OSV__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{OSV__ALL_LIBS}}</span></h6>
                     </div>
                   </div>
                   <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
                     <div class="progress" style="padding-left: 0px; padding-right: 0px;">
-                      <div class="progress-bar" role="progressbar" style="width: {{GRYPE__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{GRYPE__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{GRYPE__PERCENT_VULN_LIBS}}%</div>
+                      <div class="progress-bar" role="progressbar" style="width: {{OSV__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{OSV__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{OSV__PERCENT_VULN_LIBS}}%</div>
                     </div>
                   </div>
                 </div>
@@ -161,7 +161,7 @@
                       </div>
                     </div>
                     <div class="col-6">
-                      <h6 class="h3 text-end m-0">{{GRYPE__VULNS_ALL}}</h6>
+                      <h6 class="h3 text-end m-0">{{OSV__VULNS_ALL}}</h6>
                     </div>
                   </div>
                 </div>
@@ -172,7 +172,7 @@
       </div>
     </div>
     <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">Grype</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+      <p>The following table summarizes the findings of <span class="text-bold">OSV</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
     <div class="flex-column">
       <div id="page-wrap">

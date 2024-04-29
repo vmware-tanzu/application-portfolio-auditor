@@ -15,49 +15,6 @@
   <link href="./../static/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
   <link href="./../static/css/core.css" rel="stylesheet"/>
   <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0px auto;
-    } 
-  
-    :root {
-      --findingPurple: #a61c00;
-      --findingRed: #cc0000;
-      --findingOrange: #e69138;
-      --findingYellow: #f1c232; 
-      --findingGreen: #6aa84f;
-    }
-
-    /* Zebra striping */
-    tr:nth-of-type(odd) {
-      background: #f2f2f2;
-    }
-    th {
-      background: #333;
-      color: white;
-      font-weight: bold;
-      cursor: s-resize;
-      background-repeat: no-repeat;
-      background-position: 3% center;
-    }
-    td, th {
-      padding: 6px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th.des:after {
-      content: "\21E3";
-    }
-    th.aes:after {
-      content: "\21E1";
-    }
-    tr:nth-child(1), td:nth-child(1) { width: 15%; }
-    tr:nth-child(2), td:nth-child(2) { width: 15%; }
-    tr:nth-child(3), td:nth-child(3) { width: 5%; }
-    tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(5) { width: 5%; }
-    tr:nth-child(6), td:nth-child(6) { width: 40%; word-break:break-word;}
     span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
@@ -69,10 +26,10 @@
     <div class="container">
       <a class="navbar-brand mr-0 me-md-2" href="./../index.html"><img class="mr-3 me-3 filter-white company-icon" src="./../static/img/company-icon.svg" alt="Tanzu"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
-        <li class="nav-item"><a class="nav-link" href="./../index{{GROUP_POSTFIX}}.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud{{GROUP_POSTFIX}}.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
+        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
         <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality{{GROUP_POSTFIX}}.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
@@ -98,10 +55,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
+          <a href="./../15__OSV/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
           <div>
-            <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-            Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">OSV <a href="https://github.com/google/osv.dev" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OSV_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
+            Find vulnerable dependencies according to the OSV database. (<a href="{{OSV_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{OSV_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -111,75 +68,18 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Grype</li>
+        <li class="breadcrumb-item active">OSV</li>
         <li class="breadcrumb-item">{{APP}}</li>
       </ol>
     </nav>
   </div>
 
   <div class="container">
-
-    <div class="row justify-content-center">
-      <div class="col-8">
-        <div id="vuln_viz"></div>
-      </div>
-      <div class="col-4">
-        <div class="card mt-5 border-0">
-          <div class="row gy-2">
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Vulnerable libraries</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <h6 class="text-end"><span class="h3 m-0">{{GRYPE__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{GRYPE__ALL_LIBS}}</span></h6>
-                    </div>
-                  </div>
-                  <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
-                    <div class="progress" style="padding-left: 0px; padding-right: 0px;">
-                      <div class="progress-bar" role="progressbar" style="width: {{GRYPE__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{GRYPE__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{GRYPE__PERCENT_VULN_LIBS}}%</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Total vulnerabilities</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <h6 class="h3 text-end m-0">{{GRYPE__VULNS_ALL}}</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">Grype</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
-    </div>
-    <div class="flex-column">
-      <div id="page-wrap">
-      </div>
-    </div>
     <div class="row">
       <p></p>
+    </div>
+    <div class="row">
+      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">OSV</span>.</p>
     </div>
   </div>
   <!-- /.container -->
@@ -216,10 +116,5 @@
     </footer>
   </section>
 
-  <!-- Bootstrap core JavaScript -->
-  <script src="./../static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
-  <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
-  <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
-  <script>
-    var app_name="{{APP}}"
-    const longText = `\
+</body>
+</html>

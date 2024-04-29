@@ -219,7 +219,7 @@ function drawTable(data) {
       } else if (d.name.includes("Trivy")) {
         return "./14__TRIVY/"+d.app+".html";
       } else if (d.name.includes("OSV")) {
-        return "./15__OSV/"+d.app+"_osv.txt";
+        return "./15__OSV/"+d.app+".html";
       } else if (d.name.includes("Bearer")) {
         return "./17__BEARER/"+d.app+"_security_bearer.html";
       } else {

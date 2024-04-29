@@ -78,6 +78,10 @@ function analyze() {
 				echo 'Library,Version,Vulnerability,Severity, Summary, Details' >"${RESULT_FILE_OSV_CSV}"
 				#jq -r '.results[].packages[] | .package as $pkg | .vulnerabilities[] | [$pkg.name, $pkg.version, $pkg.ecosystem, .id, (.summary | gsub("\n"; "")), (.details | gsub("\n"; "")), .severity[0].score] | @csv' "${OUT_DIR_OSV}/${APP_NAME_SHORT}.json" >> "${OUT_DIR_OSV}/${APP_NAME_SHORT}.csv"
 				jq -r '.results[].packages[] | .package as $pkg | .vulnerabilities[] | [ ($pkg.name | split(":") | .[0]), $pkg.version, .id, .database_specific.severity, (.summary | gsub("\n"; "")), (.details | gsub("\n"; ""))] | @csv' "${RESULT_FILE_OSV_JSON}" >>"${RESULT_FILE_OSV_CSV}"
+				stream_edit 's/"MODERATE"/"Medium"/g' "${RESULT_FILE_OSV_CSV}"
+				stream_edit 's/"LOW"/"Low"/g' "${RESULT_FILE_OSV_CSV}"
+				stream_edit 's/"HIGH"/"High"/g' "${RESULT_FILE_OSV_CSV}"
+				stream_edit 's/"CRITICAL"/"Critical"/g' "${RESULT_FILE_OSV_CSV}"
 			fi
 			set -e
 		done <"${APP_LIST}"

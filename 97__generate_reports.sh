@@ -527,10 +527,36 @@ function generate_slscan_html() {
 	rm -f "${APP_LIST}"
 }
 
+# Generate the OSV pages
+function generate_osv_html() {
+	export APP OSV_REPORT_DIR
+	OSV_REPORT_DIR=./../15__OSV
+
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+
+	while read -r FILE; do
+		APP="$(basename "${FILE}")"
+		OSV_DIR="${REPORTS_DIR}/15__OSV"
+		OSV_REPORT="${OSV_DIR}/${APP}.html"
+		OSV_CSV="${OSV_DIR}/${APP}_osv.csv"
+		OSV_STATS="${OSV_DIR}/${APP}_osv.stats"
+		if [ -f "${OSV_CSV}" ] && [ $(wc -l <(tail -n +2 "${OSV_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
+			{
+				${MUSTACHE} -s="${OSV_STATS}" "${TEMPLATE_DIR}/osv_01.mo"
+				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
+				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${OSV_CSV}"
+				${MUSTACHE} -s="${OSV_STATS}" "${TEMPLATE_DIR}/osv_02.mo"
+			} >"${OSV_REPORT}"
+		else
+			# Empty result file
+			${MUSTACHE} "${TEMPLATE_DIR}/osv_empty.mo" >"${OSV_REPORT}"
+		fi
+	done <"${APP_LIST}"
+}
+
 # Generate the Grype pages
 function generate_grype_html() {
 	export APP GRYPE_REPORT_DIR
-
 	GRYPE_REPORT_DIR=./../13__GRYPE
 
 	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
@@ -568,8 +594,8 @@ function build_trivy_regex() {
 # Generate the Trivy pages
 function generate_trivy_html() {
 
-	export APP GRYPE_REPORT_DIR
-	export TRIVY_REPORT_DIR="./../14__TRIVY"
+	export APP TRIVY_REPORT_DIR
+	TRIVY_REPORT_DIR="./../14__TRIVY"
 	TRIVY_DIR="${REPORTS_DIR}/14__TRIVY"
 
 	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
@@ -813,6 +839,10 @@ function generate_reports() {
 
 		if [[ "${HAS_TRIVY_REPORT}" == TRUE ]]; then
 			generate_trivy_html
+		fi
+
+		if [[ "${HAS_OSV_REPORT}" == TRUE ]]; then
+			generate_osv_html
 		fi
 
 		if [[ -f "${SECURITY_TMP_CSV}" ]]; then

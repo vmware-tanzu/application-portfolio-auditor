@@ -13,6 +13,7 @@
 VERSION=${TRIVY_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
+NUMBER_RE='^[0-9]+$'
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__TRIVY"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 export LOG_FILE="${APP_DIR_OUT}.log"
@@ -34,6 +35,11 @@ function generate_csv() {
 			COUNT_VULNS_MEDIUM=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"MEDIUM"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_HIGH=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"HIGH"') | tr -d ' ' | cut -d'/' -f 1)
 			COUNT_VULNS_CRITICAL=$(wc -l <(tail -n +2 "${TRIVY_OUTPUT}" | grep '"CRITICAL"') | tr -d ' ' | cut -d'/' -f 1)
+			if [[ ${COUNT_ALL_LIBS} =~ ${NUMBER_RE} && ${COUNT_ALL_LIBS} -gt 0 ]]; then
+				PERCENT_VULN_LIBS=$((100 * COUNT_VULN_LIBS / COUNT_ALL_LIBS))
+			else
+				PERCENT_VULN_LIBS=0
+			fi
 			echo "TRIVY__ALL_LIBS=${COUNT_ALL_LIBS}" >"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULNS_ALL=${COUNT_VULNS_ALL}" >>"${TRIVY_OUTPUT_STATS}"
@@ -41,7 +47,7 @@ function generate_csv() {
 			echo "TRIVY__VULNS_MEDIUM=${COUNT_VULNS_MEDIUM}" >>"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULNS_HIGH=${COUNT_VULNS_HIGH}" >>"${TRIVY_OUTPUT_STATS}"
 			echo "TRIVY__VULNS_CRITICAL=${COUNT_VULNS_CRITICAL}" >>"${TRIVY_OUTPUT_STATS}"
-			echo "TRIVY__PERCENT_VULN_LIBS=$((100*COUNT_VULN_LIBS/COUNT_ALL_LIBS))" >>"${TRIVY_OUTPUT_STATS}"
+			echo "TRIVY__PERCENT_VULN_LIBS=${PERCENT_VULN_LIBS}" >>"${TRIVY_OUTPUT_STATS}"
 			set -e
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"
