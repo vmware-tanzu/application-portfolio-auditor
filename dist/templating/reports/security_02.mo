@@ -190,7 +190,7 @@ function drawTable(data) {
       } else if (d.name.includes("SLScan")) {
         return "./11__SLSCAN/"+d.app+".html";
       } else if (d.name.includes("Insider")) {
-        return "./12__INSIDER/"+d.app+"_report.html";
+        return "./12__INSIDER/"+d.app+".html";
       } else if (d.name.includes("Grype")) {
         return "./13__GRYPE/"+d.app+".html";
       } else if (d.name.includes("Trivy")) {

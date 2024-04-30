@@ -16,6 +16,7 @@ SEPARATOR=","
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__INSIDER"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 export LOG_FILE="${APP_DIR_OUT}.log"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}Insider SAST vulns" >"${RESULT_FILE}"
@@ -23,14 +24,37 @@ function generate_csv() {
 		APP="$(basename "${FILE}")"
 		log_extract_message "app '${APP}'"
 		JSON_IN="${APP_DIR_OUT}/${APP}_report.json"
+		INSIDER_OUTPUT_STATS="${APP_DIR_OUT}/${APP}_insider.stats"
 		VULNS="n/a"
 		if [ -f "${JSON_IN}" ]; then
 			VULNS="0"
-			COUNT_VULNS=$(jq ".total" "${JSON_IN}")
+			set +e
+			local COUNT_VULNS=$(jq ".total" "${JSON_IN}")
 			[ -n "${COUNT_VULNS}" ] && VULNS=${COUNT_VULNS}
+			if [[ "${OWASP_ACTIVE}" == "true" ||
+				"${SCANCODE_ACTIVE}" == "true" ||
+				"${FSB_ACTIVE}" == "true" ||
+				"${SLSCAN_ACTIVE}" == "true" ||
+				"${TRIVY_ACTIVE}" == "true" ||
+				"${GRYPE_ACTIVE}" == "true" ||
+				"${OSV_ACTIVE}" == "true" ||
+				"${BEARER_ACTIVE}" == "true" ]]; then
+				HAS_ANOTHER_SECURITY_REPORT='TRUE'
+			else
+				HAS_ANOTHER_SECURITY_REPORT=''
+			fi
+			{
+				echo "INSIDER__VULNS_ALL=${VULNS}"
+				echo "INSIDER__VULNS_LOW=$(jq '.low' ${JSON_IN})"
+				echo "INSIDER__VULNS_MEDIUM=$(jq '.medium' ${JSON_IN})"
+				echo "INSIDER__VULNS_HIGH=$(jq '.high' ${JSON_IN})"
+				echo "INSIDER__VULNS_CRITICAL=$(jq '.critical' ${JSON_IN})"
+				echo "HAS_ANOTHER_SECURITY_REPORT=${HAS_ANOTHER_SECURITY_REPORT}"
+			} >"${INSIDER_OUTPUT_STATS}"
+			set -e
 		fi
 		echo "${APP}${SEPARATOR}${VULNS}" >>"${RESULT_FILE}"
-	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	done <"${APP_LIST}"
 	log_console_success "Results: ${RESULT_FILE}"
 }
 

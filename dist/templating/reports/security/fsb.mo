@@ -84,7 +84,7 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">OWASP Dependency-Check</li>
+        <li class="breadcrumb-item active">Find Security Bugs</li>
         <li class="breadcrumb-item">{{APP}}</li>
       </ol>
     </nav>
@@ -136,7 +136,7 @@
                         {{#HAS_INSIDER_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../12__INSIDER/{{APP}}_report.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
+                            <a href="./../12__INSIDER/{{APP}}.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
                           </div>  
                         </div>
                         {{/HAS_INSIDER_REPORT}}

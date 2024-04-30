@@ -585,6 +585,21 @@ function generate_osv_html() {
 	done <"${APP_LIST}"
 }
 
+# Generate the Insider pages
+function generate_insider_html() {
+	export APP
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	INSIDER_DIR="${REPORTS_DIR}/12__INSIDER"
+	while read -r FILE; do
+		APP="$(basename "${FILE}")"
+		INSIDER_REPORT="${INSIDER_DIR}/${APP}.html"
+		INSIDER_STATS="${INSIDER_DIR}/${APP}_insider.stats"
+		if [ -f "${INSIDER_STATS}" ]; then
+			${MUSTACHE} -s="${INSIDER_STATS}" "${TEMPLATE_DIR}/reports/security/insider.mo" >"${INSIDER_REPORT}"
+		fi
+	done <"${APP_LIST}"
+}
+
 # Generate the Grype pages
 function generate_grype_html() {
 	export APP GRYPE_REPORT_DIR
@@ -885,6 +900,10 @@ function generate_reports() {
 
 		if [[ "${HAS_SLSCAN_REPORT}" == TRUE ]]; then
 			generate_slscan_html
+		fi
+
+		if [[ "${HAS_INSIDER_REPORT}" == TRUE ]]; then
+			generate_insider_html
 		fi
 
 		if [[ "${HAS_GRYPE_REPORT}" == TRUE ]]; then
