@@ -142,7 +142,7 @@
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../05__OWASP_DC/{{APP}}_dc_report.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
                           </div>  
                         </div>
                         {{/HAS_ODC_REPORT}}
@@ -154,11 +154,11 @@
                         </div>
                         {{/HAS_FSB_REPORT}}
                         {{#HAS_SLSCAN_REPORT}}
-                        <!--<div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px; opacity: 0.3;">
+                            <img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan">
                           </div>  
-                        </div>-->
+                        </div>
                         {{/HAS_SLSCAN_REPORT}}
                         {{#HAS_INSIDER_REPORT}}
                         <div class="col-3 mb-3">

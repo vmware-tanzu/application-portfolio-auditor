@@ -168,7 +168,7 @@
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../05__OWASP_DC/{{APP}}_dc_report.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
                           </div>  
                         </div>
                         {{/HAS_ODC_REPORT}}
@@ -208,11 +208,11 @@
                         </div>
                         {{/HAS_TRIVY_REPORT}}
                         {{#HAS_OSV_REPORT}}
-                        <!--<div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV"></a>
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px; opacity: 0.3;">
+                            <img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV">
                           </div>  
-                        </div>-->
+                        </div>
                         {{/HAS_OSV_REPORT}}
                         {{#HAS_BEARER_REPORT}}
                         <div class="col-3 mb-3">
