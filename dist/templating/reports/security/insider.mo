@@ -84,8 +84,8 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Insider SAST</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item">Insider SAST</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
