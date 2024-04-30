@@ -233,8 +233,7 @@
             <p>As columns, you will find respectively the ...</p>
             <ul>
             {{#HAS_ODC_REPORT}}<li>total number of vulnerabilities found by OWASP Dependency-Check in embedded libraries.</li>{{/HAS_ODC_REPORT}}
-            {{#HAS_FSB_REPORT}}<li>count of 'Low', 'Medium', 'High' severity security warnings found by Find Security Bugs (FSB).</li>
-            <li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/HAS_FSB_REPORT}}
+            {{#HAS_FSB_REPORT}}<li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/HAS_FSB_REPORT}}
             {{#HAS_SLSCAN_REPORT}}<li>total number of vulnerabilities found by ShiftLeft SAST Scan (SLScan).</li>{{/HAS_SLSCAN_REPORT}}
             {{#HAS_INSIDER_REPORT}}<li>total number of vulnerabilities found by Insider SAST.</li>{{/HAS_INSIDER_REPORT}}
             {{#HAS_GRYPE_REPORT}}<li>total number of vulnerabilities found by Grype.</li>{{/HAS_GRYPE_REPORT}}

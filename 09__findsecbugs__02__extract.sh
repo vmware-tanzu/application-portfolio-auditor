@@ -20,7 +20,9 @@ SEPARATOR=","
 function generate_csv() {
 	if [[ -s "${LIST_JAVA_BIN}" ]]; then
 		RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
-		echo "Applications${SEPARATOR}FSB Low Bugs${SEPARATOR}FSB Medium Bugs${SEPARATOR}FSB High Bugs${SEPARATOR}FSB Total Bugs" >"${RESULT_FILE}"
+		RESULT_FILE_FULL="${APP_DIR_OUT}/_results_extracted_full.csv"
+		echo "Applications${SEPARATOR}FSB Bugs" >"${RESULT_FILE}"
+		echo "Applications${SEPARATOR}FSB Low Bugs${SEPARATOR}FSB Medium Bugs${SEPARATOR}FSB High Bugs${SEPARATOR}FSB Total Bugs" >"${RESULT_FILE_FULL}"
 		while read -r APP_FILE; do
 			APP="$(basename "${APP_FILE}")"
 			FILE="${APP_DIR_OUT}/${APP}.html"
@@ -43,9 +45,11 @@ function generate_csv() {
 				[[ -z "${COUNT_MED}" || -e "${COUNT_MED}" ]] && COUNT_MED=0
 				[[ -z "${COUNT_LOW}" || -e "${COUNT_LOW}" ]] && COUNT_LOW=0
 				COUNT_TOTAL=$((COUNT_HIGH + COUNT_MED + COUNT_LOW))
-				echo "${APP}${SEPARATOR}${COUNT_LOW}${SEPARATOR}${COUNT_MED}${SEPARATOR}${COUNT_HIGH}${SEPARATOR}${COUNT_TOTAL##*( )}" >>"${RESULT_FILE}"
+				echo "${APP}${SEPARATOR}${COUNT_TOTAL##*( )}" >>"${RESULT_FILE}"
+				echo "${APP}${SEPARATOR}${COUNT_LOW}${SEPARATOR}${COUNT_MED}${SEPARATOR}${COUNT_HIGH}${SEPARATOR}${COUNT_TOTAL##*( )}" >>"${RESULT_FILE_FULL}"
 			else
-				echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
+				echo "${APP}${SEPARATOR}n/a" >>"${RESULT_FILE}"
+				echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE_FULL}"
 			fi
 		done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 		log_console_success "Results: ${RESULT_FILE}"
