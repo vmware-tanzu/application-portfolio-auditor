@@ -264,4 +264,3 @@
   <script>
     var app_name="{{APP}}"
     const longText = `\
-s
