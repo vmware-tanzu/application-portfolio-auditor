@@ -253,5 +253,5 @@
   <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
   <script>
-    var app_name="{{APP}}"
+    const app_name="{{APP}}"
     const longText = `\

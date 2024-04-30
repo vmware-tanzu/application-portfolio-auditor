@@ -1,12 +1,12 @@
     const dataUri = "data:text/plain;base64," + btoa(unescape(encodeURIComponent(longText)));
 
-    var colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
-    var colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
-    var colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
-    var colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
-    var colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
-    var colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
-    var colorTextWhite = '#ffffff';
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
 
     // Draw table
     function drawTable(data) {    

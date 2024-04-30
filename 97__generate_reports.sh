@@ -612,6 +612,21 @@ function generate_grype_html() {
 	done <"${APP_LIST}"
 }
 
+# Generate the Bearer pages
+function generate_bearer_html() {
+	export APP
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	BEARER_DIR="${REPORTS_DIR}/17__BEARER"
+	while read -r FILE; do
+		APP="$(basename "${FILE}")"
+		BEARER_REPORT="${BEARER_DIR}/${APP}.html"
+		BEARER_STATS="${BEARER_DIR}/${APP}_bearer.stats"
+		if [ -f "${BEARER_STATS}" ]; then
+			${MUSTACHE} -s="${BEARER_STATS}" "${TEMPLATE_DIR}/reports/security/bearer.mo" >"${BEARER_REPORT}"
+		fi
+	done <"${APP_LIST}"
+}
+
 # Build regex to transform the trivy output
 function build_trivy_regex() {
 	local -n URL_PATTERN_MAP=$1
@@ -882,6 +897,10 @@ function generate_reports() {
 
 		if [[ "${HAS_OSV_REPORT}" == TRUE ]]; then
 			generate_osv_html
+		fi
+
+		if [[ "${HAS_BEARER_REPORT}" == TRUE ]]; then
+			generate_bearer_html
 		fi
 
 		if [[ -f "${SECURITY_TMP_CSV}" ]]; then

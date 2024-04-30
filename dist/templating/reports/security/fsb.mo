@@ -164,7 +164,7 @@
                         {{#HAS_BEARER_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../17__BEARER/{{APP}}_security_bearer.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
+                            <a href="./../17__BEARER/{{APP}}.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
                           </div>  
                         </div>
                         {{/HAS_BEARER_REPORT}}
@@ -237,15 +237,15 @@
   <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
   <script>
-    var app_name="{{APP}}"
+    const app_name="{{APP}}"
 
-    var colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
-    var colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
-    var colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
-    var colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
-    var colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
-    var colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
-    var colorTextWhite = '#ffffff';
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
 
     // Values of the support data graph
     const vulns_total = {{FSB__ISSUES_ALL}}

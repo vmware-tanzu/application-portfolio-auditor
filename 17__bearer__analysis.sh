@@ -42,7 +42,7 @@ function analyze() {
 				APP_NAME_SHORT="${APP_NAME%.*}"
 			fi
 
-			local RESULT_FILE_SECURITY_BEARER="${OUT_DIR_BEARER}/${APP_NAME_SHORT}_security_bearer.html"
+			local RESULT_FILE_SECURITY_BEARER="${OUT_DIR_BEARER}/${APP_NAME_SHORT}_bearer.html"
 			if [[ -z "${PREFIX}" ]]; then
 				log_console_error "Invalid application: '${APP}'"
 			else

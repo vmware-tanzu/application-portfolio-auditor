@@ -10,34 +10,57 @@
 # ------ Do not modify
 VERSION=${BEARER_VERSION}
 STEP=$(get_step)
+SEPARATOR=","
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__BEARER"
 export LOG_FILE="${APP_DIR_OUT}.log"
 RESULT_FILE="${APP_DIR_OUT}/_results__security__bearer.csv"
 APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
-
-SEPARATOR=","
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}Bearer vulns" >"${RESULT_FILE}"
 	while read -r APP; do
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
-		BEARER_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_security_bearer.html"
-
+		BEARER_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_bearer.html"
+		BEARER_OUTPUT_STATS="${APP_DIR_OUT}/${APP_NAME}_bearer.stats"
 		if [[ -f "${BEARER_OUTPUT}" ]]; then
 			if grep -q "The security report is not yet available for your application." "${BEARER_OUTPUT}"; then
 				echo "${APP_NAME}${SEPARATOR}n/a" >>"${RESULT_FILE}"
 			else
-				COUNT_CRITICAL=$(grep -m 1 '<span class="critical">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-				COUNT_HIGH=$(grep -m 1 '<span class="high">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-				COUNT_MEDIUM=$(grep -m 1 '<span class="medium">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-				COUNT_LOW=$(grep -m 1 '<span class="low">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
-				[[ -z "${COUNT_CRITICAL}" || -e "${COUNT_CRITICAL}" ]] && COUNT_CRITICAL=0
-				[[ -z "${COUNT_HIGH}" || -e "${COUNT_HIGH}" ]] && COUNT_HIGH=0
-				[[ -z "${COUNT_MEDIUM}" || -e "${COUNT_MEDIUM}" ]] && COUNT_MEDIUM=0
-				[[ -z "${COUNT_LOW}" || -e "${COUNT_LOW}" ]] && COUNT_LOW=0
-				COUNT_TOTAL=$((COUNT_CRITICAL + COUNT_HIGH + COUNT_MEDIUM + COUNT_LOW))
-				echo "${APP_NAME}${SEPARATOR}${COUNT_TOTAL}" >>"${RESULT_FILE}"
+				set +e
+				COUNT_ISSUES_CRITICAL=$(grep -m 1 '<span class="critical">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_ISSUES_HIGH=$(grep -m 1 '<span class="high">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_ISSUES_MEDIUM=$(grep -m 1 '<span class="medium">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_ISSUES_LOW=$(grep -m 1 '<span class="low">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+				COUNT_ISSUES_WARNING=$(grep -m 1 '<span class="warning">' "${BEARER_OUTPUT}" | awk '{ gsub(/[^0-9]/,"",$0); print $0 }')
+
+				[[ -z "${COUNT_ISSUES_CRITICAL}" || -e "${COUNT_ISSUES_CRITICAL}" ]] && COUNT_ISSUES_CRITICAL=0
+				[[ -z "${COUNT_ISSUES_HIGH}" || -e "${COUNT_ISSUES_HIGH}" ]] && COUNT_ISSUES_HIGH=0
+				[[ -z "${COUNT_ISSUES_MEDIUM}" || -e "${COUNT_ISSUES_MEDIUM}" ]] && COUNT_ISSUES_MEDIUM=0
+				[[ -z "${COUNT_ISSUES_LOW}" || -e "${COUNT_ISSUES_LOW}" ]] && COUNT_ISSUES_LOW=0
+				COUNT_ISSUES_ALL=$((COUNT_ISSUES_CRITICAL + COUNT_ISSUES_HIGH + COUNT_ISSUES_MEDIUM + COUNT_ISSUES_LOW))
+				echo "${APP_NAME}${SEPARATOR}${COUNT_ISSUES_ALL}" >>"${RESULT_FILE}"
+
+				if [[ "${OWASP_ACTIVE}" == "true" ||
+					"${SCANCODE_ACTIVE}" == "true" ||
+					"${FSB_ACTIVE}" == "true" ||
+					"${SLSCAN_ACTIVE}" == "true" ||
+					"${INSIDER_ACTIVE}" == "true" ||
+					"${GRYPE_ACTIVE}" == "true" ||
+					"${OSV_ACTIVE}" == "true" ||
+					"${TRIVY_ACTIVE}" == "true" ]]; then
+					HAS_ANOTHER_SECURITY_REPORT='TRUE'
+				else
+					HAS_ANOTHER_SECURITY_REPORT=''
+				fi
+				echo "BEARER__ISSUES_ALL=${COUNT_ISSUES_ALL}" >"${BEARER_OUTPUT_STATS}"
+				echo "BEARER__ISSUES_WARNING=${COUNT_ISSUES_WARNING}" >>"${BEARER_OUTPUT_STATS}"
+				echo "BEARER__ISSUES_LOW=${COUNT_ISSUES_LOW}" >>"${BEARER_OUTPUT_STATS}"
+				echo "BEARER__ISSUES_MEDIUM=${COUNT_ISSUES_MEDIUM}" >>"${BEARER_OUTPUT_STATS}"
+				echo "BEARER__ISSUES_HIGH=${COUNT_ISSUES_HIGH}" >>"${BEARER_OUTPUT_STATS}"
+				echo "BEARER__ISSUES_CRITICAL=${COUNT_ISSUES_CRITICAL}" >>"${BEARER_OUTPUT_STATS}"
+				echo "HAS_ANOTHER_SECURITY_REPORT=${HAS_ANOTHER_SECURITY_REPORT}" >>"${BEARER_OUTPUT_STATS}"
+				set -e
 			fi
 		else
 			echo "${APP_NAME}${SEPARATOR}n/a" >>"${RESULT_FILE}"

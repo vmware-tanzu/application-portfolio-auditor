@@ -11,7 +11,6 @@
 VERSION=${FSB_VERSION}
 STEP=$(get_step)
 SEPARATOR=","
-NUMBER_RE='^[0-9]+$'
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__FindSecBugs"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 export LOG_FILE="${APP_DIR_OUT}".log
