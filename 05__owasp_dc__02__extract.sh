@@ -15,11 +15,13 @@ STEP=$(get_step)
 SEPARATOR=","
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__OWASP_DC"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
+RESULT_FILE_FULL="${APP_DIR_OUT}/_results_extracted_full.csv"
 export LOG_FILE="${APP_DIR_OUT}.log"
 
 function generate_csv() {
 
-	echo "Applications${SEPARATOR}OWASP Low vulns${SEPARATOR}OWASP Medium vulns${SEPARATOR}OWASP High vulns${SEPARATOR}OWASP Critical vulns${SEPARATOR}OWASP Total vuln libs" >"${RESULT_FILE}"
+	echo "Applications${SEPARATOR}OWASP vulns" >"${RESULT_FILE}"
+	echo "Applications${SEPARATOR}OWASP Low vulns${SEPARATOR}OWASP Medium vulns${SEPARATOR}OWASP High vulns${SEPARATOR}OWASP Critical vulns${SEPARATOR}OWASP Total vuln libs" >"${RESULT_FILE_FULL}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -41,7 +43,6 @@ function generate_csv() {
 			while read -r SCORES; do
 				# Max of CVSS2 and CVSS3
 				CVSS=$(echo "${SCORES}" | awk -F ' ' '{ print ($1 >= $2) ? $1 : $2 }')
-
 				if [[ $(awk -v cvss="${CVSS}" 'BEGIN { print (cvss >= 9.0) ? "T" : "F" }') == "T" ]]; then
 					COUNT_CRITICAL=$((COUNT_CRITICAL + 1))
 				elif [[ $(awk -v cvss="${CVSS}" 'BEGIN { print (cvss >= 7.0) ? "T" : "F" }') == "T" ]]; then
@@ -53,11 +54,14 @@ function generate_csv() {
 				fi
 			done < <(jq '.dependencies[]?.vulnerabilities[]? | "\(.cvssv3.baseScore) \(.cvssv2.score)"' "${DCR_JSON_IN}" | tr -d '"' | sed s/null/0/g)
 
-			echo "${APP}${SEPARATOR}${COUNT_LOW}${SEPARATOR}${COUNT_MEDIUM}${SEPARATOR}${COUNT_HIGH}${SEPARATOR}${COUNT_CRITICAL}${SEPARATOR}${COUNT_VULN_DEPENDENCIES}" >>"${RESULT_FILE}"
-		else
-			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
-		fi
+			COUT_TOTAL=$((COUNT_LOW + COUNT_MEDIUM + COUNT_HIGH + COUNT_CRITICAL))
 
+			echo "${APP}${SEPARATOR}${COUT_TOTAL}" >>"${RESULT_FILE}"
+			echo "${APP}${SEPARATOR}${COUNT_LOW}${SEPARATOR}${COUNT_MEDIUM}${SEPARATOR}${COUNT_HIGH}${SEPARATOR}${COUNT_CRITICAL}${SEPARATOR}${COUNT_VULN_DEPENDENCIES}" >>"${RESULT_FILE_FULL}"
+		else
+			echo "${APP}${SEPARATOR}n/a" >>"${RESULT_FILE}"
+			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE_FULL}"
+		fi
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 	log_console_success "Results: ${RESULT_FILE}"

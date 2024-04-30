@@ -1,7 +1,7 @@
 const dataUri = "data:text/plain;base64," + btoa(longText);
 
 // Potentially displayed columns
-const toolColumns = ['OWASPVulns', 'OWASPVulnLibs', 'FSBBugs', 'FSBTotalBugs', 'SLScanVulns', 'InsiderVulns', 'GrypeVulns', 'TrivyVulns', 'OSVVulns', 'BearerVulns']
+const toolColumns = ['OWASPVulns', 'FSBBugs', 'FSBTotalBugs', 'SLScanVulns', 'InsiderVulns', 'GrypeVulns', 'TrivyVulns', 'OSVVulns', 'BearerVulns']
 
 const maxValues = {}
 const logScales = {}
@@ -32,7 +32,7 @@ function computeMaxValues(data) {
     hasColumn[toolColumn] = false
   }
   for (i = 1; i < columns.length; ++i) {
-    if(columns[i].startsWith('OWASP')) { hasColumn['OWASPVulns'] = true; hasColumn['OWASPVulnLibs'] = true; }
+    if(columns[i].startsWith('OWASP')) { hasColumn['OWASPVulns'] = true; }
     if(columns[i].startsWith('FSB')) { hasColumn['FSBBugs'] = true; hasColumn['FSBTotalBugs'] = true; }
     if(columns[i].startsWith('SLScan')) { hasColumn['SLScanVulns'] = true; }
     if(columns[i].startsWith('Insider')) { hasColumn['InsiderVulns'] = true; }
@@ -42,14 +42,6 @@ function computeMaxValues(data) {
     if(columns[i].startsWith('Bearer')) { hasColumn['BearerVulns'] = true; }
   }
 
-  if(hasColumn['OWASPVulns']) {
-    low = maxValueSimpleColumn(data,'OWASP Low vulns');
-    medium = maxValueSimpleColumn(data,'OWASP Medium vulns');
-    high = maxValueSimpleColumn(data,'OWASP High vulns');
-    critical = maxValueSimpleColumn(data,'OWASP Critical vulns');
-    maxValues['OWASPVulns'] = Math.max(low,medium,high,critical,1);
-  }
-
   if(hasColumn['FSBBugs']) {
     low = maxValueSimpleColumn(data,'FSB Low Bugs');
     medium = maxValueSimpleColumn(data,'FSB Medium Bugs');
@@ -57,7 +49,7 @@ function computeMaxValues(data) {
     maxValues['FSBBugs'] = Math.max(low,medium,high,1);
   }
 
-  computeMaxValueSimpleColumn(data, 'OWASPVulnLibs', 'OWASP Total vuln libs')
+  computeMaxValueSimpleColumn(data, 'OWASPVulns', 'OWASP vulns')
   computeMaxValueSimpleColumn(data, 'FSBTotalBugs', 'FSB Total Bugs')
   computeMaxValueSimpleColumn(data, 'SLScanVulns', 'SLScan SAST vulns')
   computeMaxValueSimpleColumn(data, 'InsiderVulns', 'Insider SAST vulns')
@@ -81,7 +73,6 @@ function drawTable(data) {
 
   // This assignement does not work over a loop. Otherwise the obtained RGB values are different.
   colorScales['OWASPVulns'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['OWASPVulns'](c)) )
-  colorScales['OWASPVulnLibs'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['OWASPVulnLibs'](c)) )
   colorScales['FSBBugs'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['FSBBugs'](c)) )
   colorScales['FSBTotalBugs'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['FSBTotalBugs'](c)) )
   colorScales['SLScanVulns'] = d3.scaleSequential( (c) => d3.interpolateYlOrRd(logScales['SLScanVulns'](c)) )
@@ -158,7 +149,6 @@ function drawTable(data) {
       if (!d || !d.name) { return "white"; }
       if (d.name.startsWith("Applications")) { return ""; }
       if (isNaN(d.value)) { return "white";}
-      if (d.name.startsWith("OWASP Total vuln libs")) { return colorScales['OWASPVulnLibs'](d.value); }
       if (d.name.startsWith("OWASP")) { return colorScales['OWASPVulns'](d.value); }
       if (d.name.startsWith("FSB Total Bugs")) { return colorScales['FSBTotalBugs'](d.value); }
       if (d.name.startsWith("FSB")) { return colorScales['FSBBugs'](d.value); }
@@ -173,8 +163,6 @@ function drawTable(data) {
     .style("color", function(d) {
       if (isNaN(d.value)) {
         return "#212529"; 
-      } else if (d.name.startsWith("OWASP Total vuln libs")) {
-        return getColor(d,'OWASPVulnLibs');
       } else if (d.name.startsWith("OWASP")) {
         return getColor(d,'OWASPVulns');
       } else if (d.name.startsWith("FSB Total Bugs")) {
