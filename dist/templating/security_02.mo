@@ -184,7 +184,7 @@ function drawTable(data) {
       } else if (d.name.includes("Applications")) {
         return '';
       } else if (d.name.includes("OWASP")) {
-        return "./05__OWASP_DC/"+d.app+"_dc_report.html";
+        return "./05__OWASP_DC/"+d.app+".html";
       } else if (d.name.includes("FSB")) {
         return "./09__FindSecBugs/"+d.app+".html";
       } else if (d.name.includes("SLScan")) {
