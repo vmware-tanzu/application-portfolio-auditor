@@ -52,9 +52,9 @@ function generate_csv() {
 
 			rm -f "${EXTRACTED_VALUES_TMP}"
 
-			HAS_FINDINGS=FALSE
+			HAS_FINDINGS=false
 			[[ ${COUNT_VULNS_ALL} -gt 0 ]] && {
-				HAS_FINDINGS=TRUE
+				HAS_FINDINGS=true
 			}
 
 			if [[ "${OWASP_ACTIVE}" == "true" ||
