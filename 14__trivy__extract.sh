@@ -17,6 +17,7 @@ NUMBER_RE='^[0-9]+$'
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__TRIVY"
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 export LOG_FILE="${APP_DIR_OUT}.log"
+APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
 function generate_csv() {
 	echo "Applications${SEPARATOR}Trivy vulns" >"${RESULT_FILE}"
@@ -64,7 +65,7 @@ function generate_csv() {
 			set -e
 		fi
 		echo "${APP_NAME}${SEPARATOR}${COUNT_VULNS_ALL}" >>"${RESULT_FILE}"
-	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	done <"${APP_LIST}"
 	log_console_success "Results: ${RESULT_FILE}"
 }
 
