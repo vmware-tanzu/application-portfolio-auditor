@@ -44,8 +44,8 @@
       content: "\21E1";
     }
     th { text-align:center }
-    tr:nth-child(1), td:nth-child(1) { width: 35%; }
-    tr:nth-child(2), td:nth-child(2) { width: 5%; }
+    tr:nth-child(1), td:nth-child(1) { width: 30%; }
+    tr:nth-child(2), td:nth-child(2) { width: 1%; }
     tr:nth-child(3), td:nth-child(3) { width: 5%; }
     tr:nth-child(4), td:nth-child(4) { width: 5%; }
     tr:nth-child(5), td:nth-child(5) { width: 5%; }
