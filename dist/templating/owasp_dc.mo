@@ -114,7 +114,7 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Trivy</li>
+        <li class="breadcrumb-item active">OWASP Dependency-Check</li>
         <li class="breadcrumb-item">{{APP}}</li>
       </ol>
     </nav>
