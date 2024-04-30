@@ -51,9 +51,9 @@ function generate_csv() {
 				"${GRYPE_ACTIVE}" == "true" ||
 				"${TRIVY_ACTIVE}" == "true" ||
 				"${BEARER_ACTIVE}" == "true" ]]; then
-				HAS_ANOTHER_SECURITY_REPORT="true"
+				HAS_ANOTHER_SECURITY_REPORT='TRUE'
 			else
-				HAS_ANOTHER_SECURITY_REPORT="false"
+				HAS_ANOTHER_SECURITY_REPORT=''
 			fi
 			echo "OSV__ALL_LIBS=${COUNT_ALL_LIBS}" >"${OSV_OUTPUT_STATS}"
 			echo "OSV__VULN_LIBS=${COUNT_VULN_LIBS}" >>"${OSV_OUTPUT_STATS}"

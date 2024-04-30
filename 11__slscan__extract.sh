@@ -65,9 +65,9 @@ function generate_csv() {
 				"${GRYPE_ACTIVE}" == "true" ||
 				"${OSV_ACTIVE}" == "true" ||
 				"${BEARER_ACTIVE}" == "true" ]]; then
-				HAS_ANOTHER_SECURITY_REPORT="true"
+				HAS_ANOTHER_SECURITY_REPORT='TRUE'
 			else
-				HAS_ANOTHER_SECURITY_REPORT="false"
+				HAS_ANOTHER_SECURITY_REPORT=''
 			fi
 
 			echo "SLSCAN__VULNS_ALL=${COUNT_VULNS_ALL}" >"${SLSCAN_OUTPUT_STATS}"
