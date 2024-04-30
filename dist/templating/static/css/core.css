@@ -99,6 +99,10 @@ div#content.bd-masthead {
   background-color: #f2f2f2 !important;
 }
 
+.breadcrumb {
+  --bs-breadcrumb-divider: '>';
+}
+
 /* Fonts - Metropolis */
 @font-face {
   font-family: 'metropolislight';
