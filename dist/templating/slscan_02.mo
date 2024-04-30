@@ -299,7 +299,7 @@
         .attr('height', vuln_data_viz_height / 2 ); // Adjust size as needed
 
     foreignObject.append('xhtml:div')
-        .html('<div style="text-align:center;color:black;font-size:16px;"><span style="font-size:30px;font-weight:bold;">'+vulns_total+'</span><br/>Findings</div>');
+        .html('<div style="text-align:center;color:black;font-size:16px;"><span style="font-size:30px;font-weight:bold;">'+vulns_total+'</span><br/>Issues</div>');
   }
   </script>
 </body>
