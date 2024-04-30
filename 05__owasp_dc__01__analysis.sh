@@ -81,6 +81,9 @@ function analyze() {
 
 	done <"${REPORTS_DIR}/00__Weave/list__owasp_dc.txt"
 
+	# Removes useless generated artifacts
+	rm -f "${APP_DIR_OUT}/dependency-check-jenkins*"
+
 	log_console_success "Open this directory for all results: ${APP_DIR_OUT}"
 }
 
