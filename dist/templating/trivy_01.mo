@@ -124,7 +124,7 @@
 
     <div class="row justify-content-center">
       <div class="col-8">
-        <div id="vuln_viz"></div>
+        <div id="stats_viz"></div>
       </div>
       <div class="col-4">
         <div class="card mt-5 border-0">
@@ -184,27 +184,27 @@
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
                             <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
-                          </div>  
+                          </div>
                         </div>
                         {{/HAS_SLSCAN_REPORT}}
                         {{#HAS_INSIDER_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
                             <a href="./../12__INSIDER/{{APP}}_report.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
-                          </div>  
+                          </div>
                         </div>
                         {{/HAS_INSIDER_REPORT}}
                         {{#HAS_GRYPE_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
                             <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50px" width="50px" alt="Grype"></a>
-                          </div>  
+                          </div>
                         </div>
                         {{/HAS_GRYPE_REPORT}}
                         {{#HAS_TRIVY_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px; opacity: 0.3;">
-                            <img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy">
+                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy"></a>
                           </div>  
                         </div>
                         {{/HAS_TRIVY_REPORT}}

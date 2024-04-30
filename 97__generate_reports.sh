@@ -507,13 +507,28 @@ function generate_quality_csv() {
 function generate_owasp_dc_html() {
 	export APP
 	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	ODC_DIR="${REPORTS_DIR}/05__OWASP_DC"
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
-		ODC_DIR="${REPORTS_DIR}/05__OWASP_DC"
 		ODC_REPORT="${ODC_DIR}/${APP}.html"
 		ODC_STATS="${ODC_DIR}/${APP}_dc_report.stats"
 		if [ -f "${ODC_STATS}" ]; then
-			${MUSTACHE} -s="${ODC_STATS}" "${TEMPLATE_DIR}/owasp_dc.mo" > "${ODC_REPORT}"
+			${MUSTACHE} -s="${ODC_STATS}" "${TEMPLATE_DIR}/owasp_dc.mo" >"${ODC_REPORT}"
+		fi
+	done <"${APP_LIST}"
+}
+
+# Generate the FindSecBugs pages
+function generate_fsb_html() {
+	export APP
+	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	FSB_DIR="${REPORTS_DIR}/09__FindSecBugs"
+	while read -r FILE; do
+		APP="$(basename "${FILE}")"
+		FSB_REPORT="${FSB_DIR}/${APP}.html"
+		FSB_STATS="${FSB_DIR}/${APP}.stats"
+		if [ -f "${FSB_STATS}" ]; then
+			${MUSTACHE} -s="${FSB_STATS}" "${TEMPLATE_DIR}/fsb.mo" >"${FSB_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -847,6 +862,10 @@ function generate_reports() {
 
 		if [[ "${HAS_ODC_REPORT}" == TRUE ]]; then
 			generate_owasp_dc_html
+		fi
+
+		if [[ "${HAS_FSB_REPORT}" == TRUE ]]; then
+			generate_fsb_html
 		fi
 
 		if [[ "${HAS_SLSCAN_REPORT}" == TRUE ]]; then

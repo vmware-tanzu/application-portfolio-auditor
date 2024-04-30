@@ -120,7 +120,7 @@
 
     <div class="row justify-content-center">
       <div class="col-8">
-        <div id="vuln_viz"></div>
+        <div id="stats_viz"></div>
       </div>
       {{#HAS_ANOTHER_SECURITY_REPORT}}
       <div class="col-4">
@@ -156,7 +156,7 @@
                         {{#HAS_SLSCAN_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px; opacity: 0.3;">
-                            <img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan">
+                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
                           </div>  
                         </div>
                         {{/HAS_SLSCAN_REPORT}}

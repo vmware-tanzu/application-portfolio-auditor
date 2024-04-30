@@ -31,36 +31,6 @@
       --findingGreen: #6aa84f;
     }
 
-    /* Zebra striping */
-    tr:nth-of-type(odd) {
-      background: #f2f2f2;
-    }
-    th {
-      background: #333;
-      color: white;
-      font-weight: bold;
-      cursor: s-resize;
-      background-repeat: no-repeat;
-      background-position: 3% center;
-    }
-    td, th {
-      padding: 6px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    th.des:after {
-      content: "\21E3";
-    }
-    th.aes:after {
-      content: "\21E1";
-    }
-    th { text-align:center }
-    tr:nth-child(1), td:nth-child(1) { width: 15%; }
-    tr:nth-child(2), td:nth-child(2) { width: 12%; }
-    tr:nth-child(3), td:nth-child(3) { width: 5%; }
-    tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(5) { width: 5%; }
-    tr:nth-child(6), td:nth-child(6) { width: 43%; word-break:break-word;}
     span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
@@ -123,7 +93,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-8">
-        <div id="vuln_viz"></div>
+        <div id="stats_viz"></div>
       </div>
       <div class="col-4">
         <div class="card mt-5 border-0">
@@ -168,7 +138,7 @@
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 55px; height: 55px; opacity: 0.3;">
-                            <img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check">
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
                           </div>
                         </div>
                         {{/HAS_ODC_REPORT}}
@@ -308,18 +278,18 @@
     const vulns_critical = {{ODC__VULNS_CRITICAL}}
 
     // Dimensions and margins of the support data graph
-    const vuln_viz = 680,
+    const stats_viz = 680,
     vuln_data_viz_height = 450,
     vuln_data_viz_margin = 50;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(vuln_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
-    const svg = d3.select("#vuln_viz")
+    const radius = Math.min(stats_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
+    const svg = d3.select("#stats_viz")
       .append("svg")
-        .attr("width", vuln_viz)
+        .attr("width", stats_viz)
         .attr("height", vuln_data_viz_height)
       .append("g")
-        .attr("transform", `translate(${vuln_viz/2},${vuln_data_viz_height/2})`);
+        .attr("transform", `translate(${stats_viz/2},${vuln_data_viz_height/2})`);
 
     const support_data = [
       { id: 1, label: 'Low', count: vulns_low, color: colorFindingYellow },
@@ -396,9 +366,9 @@
 
     // Add HTML content using foreignObject
     const foreignObject = svg.append('foreignObject')
-        .attr('x', -vuln_viz / 4) // Adjust position as needed
+        .attr('x', -stats_viz / 4) // Adjust position as needed
         .attr('y', -vuln_data_viz_height / 12) // Adjust position as needed
-        .attr('width', vuln_viz / 2) // Adjust size as needed
+        .attr('width', stats_viz / 2) // Adjust size as needed
         .attr('height', vuln_data_viz_height / 2 ); // Adjust size as needed
 
     foreignObject.append('xhtml:div')

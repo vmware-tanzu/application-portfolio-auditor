@@ -205,18 +205,18 @@
     const vulns_critical = {{SLSCAN__VULNS_CRITICAL}}
 
     // Dimensions and margins of the support data graph
-    const vuln_viz = 680,
+    const stats_viz = 680,
     vuln_data_viz_height = 450,
     vuln_data_viz_margin = 50;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(vuln_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
-    const svg = d3.select("#vuln_viz")
+    const radius = Math.min(stats_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
+    const svg = d3.select("#stats_viz")
       .append("svg")
-        .attr("width", vuln_viz)
+        .attr("width", stats_viz)
         .attr("height", vuln_data_viz_height)
       .append("g")
-        .attr("transform", `translate(${vuln_viz/2},${vuln_data_viz_height/2})`);
+        .attr("transform", `translate(${stats_viz/2},${vuln_data_viz_height/2})`);
 
     const support_data = [
       { id: 1, label: 'Low', count: vulns_low, color: colorFindingYellow },
@@ -293,9 +293,9 @@
 
     // Add HTML content using foreignObject
     const foreignObject = svg.append('foreignObject')
-        .attr('x', -vuln_viz / 4) // Adjust position as needed
+        .attr('x', -stats_viz / 4) // Adjust position as needed
         .attr('y', -vuln_data_viz_height / 12) // Adjust position as needed
-        .attr('width', vuln_viz / 2) // Adjust size as needed
+        .attr('width', stats_viz / 2) // Adjust size as needed
         .attr('height', vuln_data_viz_height / 2 ); // Adjust size as needed
 
     foreignObject.append('xhtml:div')
