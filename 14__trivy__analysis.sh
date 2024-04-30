@@ -46,14 +46,12 @@ function analyze() {
 			if [[ -z "${PREFIX}" ]]; then
 				log_console_error "Invalid application: '${APP}'"
 			else
-				#set -x
 				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
 					-v "${OUT_DIR}:/out:delegated" -v "${APP_FOLDER}:/src:ro" -v "${DIST_DIR}/templating:/tmpl:ro" \
 					"${CONTAINER_IMAGE_NAME_TRIVY}" "${PREFIX}" \
 					-f template --template "@/tmpl/trivy_csv.tpl" -o "/out/${APP_NAME_SHORT}_trivy.tmp" \
-					--no-progress --scanners "vuln,config,secret,license" \
-					--debug --skip-db-update --skip-java-db-update --offline-scan "/src/${APP_NAME}" 2>>"${LOG_FILE}"
-				#set +x
+					--no-progress --scanners "vuln,misconfig,secret,license" \
+					--skip-db-update --skip-java-db-update --offline-scan "/src/${APP_NAME}" 2>>"${LOG_FILE}"
 				OUT_FILE="${OUT_DIR}/${APP_NAME_SHORT}_trivy"
 				sed 's/"/\x27\x27/g; s/`/\x27/g; s/____/"/g' "${OUT_FILE}.tmp" >"${OUT_FILE}.csv"
 				rm -f "${OUT_FILE}.tmp"
