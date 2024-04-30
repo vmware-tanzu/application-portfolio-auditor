@@ -115,56 +115,56 @@
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
                           </div>
                         </div>
                         {{/HAS_ODC_REPORT}}
                         {{#HAS_FSB_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50px" width="50px" alt="Find Security Bugs"></a>
+                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
                           </div>  
                         </div>
                         {{/HAS_FSB_REPORT}}
                         {{#HAS_SLSCAN_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
+                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
                           </div>  
                         </div>
                         {{/HAS_SLSCAN_REPORT}}
                         {{#HAS_INSIDER_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px; opacity: 0.3;">
-                            <a href="./../12__INSIDER/{{APP}}.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
+                            <a href="./../12__INSIDER/{{APP}}.html"><img src="./../static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
                           </div>  
                         </div>
                         {{/HAS_INSIDER_REPORT}}
                         {{#HAS_GRYPE_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50px" width="50px" alt="Grype"></a>
+                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
                           </div>  
                         </div>
                         {{/HAS_GRYPE_REPORT}}
                         {{#HAS_TRIVY_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy"></a>
+                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
                           </div>  
                         </div>
                         {{/HAS_TRIVY_REPORT}}
                         {{#HAS_OSV_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV"></a>
+                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
                           </div>  
                         </div>
                         {{/HAS_OSV_REPORT}}
                         {{#HAS_BEARER_REPORT}}
                         <div class="col-3 mb-3">
                           <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
-                            <a href="./../17__BEARER/{{APP}}.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
+                            <a href="./../17__BEARER/{{APP}}.html"><img src="./../static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
                           </div>  
                         </div>
                         {{/HAS_BEARER_REPORT}}
