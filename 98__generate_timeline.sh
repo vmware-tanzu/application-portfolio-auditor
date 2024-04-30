@@ -175,9 +175,9 @@ function generate_timeline_report() {
 	# shellcheck source=/dev/null
 	source "${REPORT_VARS}"
 	{
-		${MUSTACHE} "${TEMPLATE_DIR}/info_timeline_01.mo"
+		${MUSTACHE} "${TEMPLATE_DIR}/reports/info/info_timeline_01.mo"
 		cat "${TIMELINE_JSON}"
-		${MUSTACHE} "${TEMPLATE_DIR}/info_timeline_02.mo"
+		${MUSTACHE} "${TEMPLATE_DIR}/reports/info/info_timeline_02.mo"
 	} >"${INFO_REPORT}"
 
 	rm -f "${TIMELINE_JSON}" "${REPORT_VARS}"
