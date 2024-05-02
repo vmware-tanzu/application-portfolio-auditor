@@ -1,15 +1,15 @@
     const dataUri = "data:text/plain;base64," + btoa(unescape(encodeURIComponent(longText)));
+    
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
 
-    var colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
-    var colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
-    var colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
-    var colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
-    var colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
-    var colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
-    var colorTextWhite = '#ffffff';
-
-    // Draw table
-    function drawTable(data) {    
+  // Draw table
+  function drawTable(data) {
       var sortAscending = true;
       var table = d3.select('#page-wrap').append('table');
       var titles = Object.keys(data[0]);
@@ -81,31 +81,31 @@
           return d.value;
         });
     };
-    
+  
     d3.csv(dataUri)
     .then(function(data){drawTable(data);})
     .catch(function(error){throw error;})
 
     // Values of the support data graph
-    const vulns_total = {{TRIVY__VULNS_ALL}}
-    const vulns_low = {{TRIVY__VULNS_LOW}}
-    const vulns_medium = {{TRIVY__VULNS_MEDIUM}}
-    const vulns_high = {{TRIVY__VULNS_HIGH}}
-    const vulns_critical = {{TRIVY__VULNS_CRITICAL}}
+    const vulns_total = {{OSV__VULNS_ALL}}
+    const vulns_low = {{OSV__VULNS_LOW}}
+    const vulns_medium = {{OSV__VULNS_MEDIUM}}
+    const vulns_high = {{OSV__VULNS_HIGH}}
+    const vulns_critical = {{OSV__VULNS_CRITICAL}}
 
     // Dimensions and margins of the support data graph
-    const vuln_viz = 680,
+    const stats_viz = 680,
     vuln_data_viz_height = 450,
     vuln_data_viz_margin = 50;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(vuln_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
-    const svg = d3.select("#vuln_viz")
+    const radius = Math.min(stats_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
+    const svg = d3.select("#stats_viz")
       .append("svg")
-        .attr("width", vuln_viz)
+        .attr("width", stats_viz)
         .attr("height", vuln_data_viz_height)
       .append("g")
-        .attr("transform", `translate(${vuln_viz/2},${vuln_data_viz_height/2})`);
+        .attr("transform", `translate(${stats_viz/2},${vuln_data_viz_height/2})`);
 
     const support_data = [
       { id: 1, label: 'Low', count: vulns_low, color: colorFindingYellow },
@@ -182,9 +182,9 @@
 
     // Add HTML content using foreignObject
     const foreignObject = svg.append('foreignObject')
-        .attr('x', -vuln_viz / 4) // Adjust position as needed
+        .attr('x', -stats_viz / 4) // Adjust position as needed
         .attr('y', -vuln_data_viz_height / 12) // Adjust position as needed
-        .attr('width', vuln_viz / 2) // Adjust size as needed
+        .attr('width', stats_viz / 2) // Adjust size as needed
         .attr('height', vuln_data_viz_height / 2 ); // Adjust size as needed
 
     foreignObject.append('xhtml:div')

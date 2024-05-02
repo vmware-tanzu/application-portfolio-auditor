@@ -28,8 +28,8 @@
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link active" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
@@ -44,9 +44,9 @@
   <!-- Masthead -->
   <div class="bd-masthead py-1" id="content" role="main">
     <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
+      <h1 class="display-4 mt-4 mb-2">Quality reports</h1>
       <div>
-        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
+        <p class="lead mb-3 text-black-50">Consolidated code quality findings.</p>
       </div>
     </div>
   </div>
@@ -55,10 +55,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
+          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
           <div>
-            <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-            Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">Archeologist <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
+            Find unsupported and unnecessary ancient libraries in your applications. (<a href="../{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="../{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -67,9 +67,9 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Grype</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item"><a href="./../quality.html">Quality</a></li>
+        <li class="breadcrumb-item">Archeologist </li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
@@ -79,7 +79,7 @@
       <p></p>
     </div>
     <div class="row">
-      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Grype</span>.</p>
+      <p>Nothing found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Archeo</span>.</p>
     </div>
   </div>
   <!-- /.container -->

@@ -44,8 +44,17 @@
       content: "\21E1";
     }
     th { text-align:center }
-    tr:nth-child(1), td:nth-child(1) { width: 35%; }
-    tr:nth-child(2), td:nth-child(2) { width: 5%; }
+    tr:nth-child(1), td:nth-child(1) { width: 30%; }
+    tr:nth-child(2), td:nth-child(2) { width: 1%; }
+    tr:nth-child(3), td:nth-child(3) { width: 5%; }
+    tr:nth-child(4), td:nth-child(4) { width: 5%; }
+    tr:nth-child(5), td:nth-child(5) { width: 5%; }
+    tr:nth-child(6), td:nth-child(6) { width: 5%; }
+    tr:nth-child(7), td:nth-child(7) { width: 5%; }
+    tr:nth-child(8), td:nth-child(8) { width: 5%; }
+    tr:nth-child(9), td:nth-child(9) { width: 5%; }
+    tr:nth-child(10), td:nth-child(10) { width: 5%; }
+
     /* Center badge counting tools */
     span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
@@ -132,16 +141,6 @@
         <div class="collapse" id="collapseTools">
           <div class="panel-body">
             <div class="container">
-{{#HAS_ODC_REPORT}}
-            <div class="d-flex">
-              <a href="{{ODC_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
-              <div>
-                <h5 class="mt-0 mb-1">Open Web Application Security Project (OWASP) Dependency-Check <a href="https://www.owasp.org/index.php/OWASP_Dependency_Check" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OWASP_DC_VERSION}}</a></h5>
-                Identifies well-known security vulnerabilities in embedded libraries. (<a href="{{ODC_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{ODC_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-                <br/><br/>
-              </div>
-            </div>
-{{/HAS_ODC_REPORT}}
 {{#HAS_FSB_REPORT}}
             <div class="d-flex">
               <a href="{{FSB_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
@@ -152,36 +151,16 @@
               </div>
             </div>
 {{/HAS_FSB_REPORT}}
-{{#HAS_SLSCAN_REPORT}}
+{{#HAS_ODC_REPORT}}
             <div class="d-flex">
-              <a href="{{SLSCAN_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
+              <a href="{{ODC_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
               <div>
-                <h5 class="mt-0 mb-1">ShiftLeft SAST Scan <a href="https://github.com/ShiftLeftSecurity/sast-scan" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SLSCAN_VERSION}}</a></h5>
-                Identifies security vulnerabilities focussing on the <a href="https://owasp.org/www-project-top-ten/" rel="noreferrer" target="_blank" class="link">OWASP Top 10</a>. (<a href="{{SLSCAN_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{SLSCAN_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+                <h5 class="mt-0 mb-1">Open Web Application Security Project (OWASP) Dependency-Check <a href="https://www.owasp.org/index.php/OWASP_Dependency_Check" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OWASP_DC_VERSION}}</a></h5>
+                Identifies well-known security vulnerabilities in embedded libraries. (<a href="{{ODC_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{ODC_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
                 <br/><br/>
               </div>
             </div>
-{{/HAS_SLSCAN_REPORT}}
-{{#HAS_INSIDER_REPORT}}
-            <div class="d-flex">
-              <a href="{{INSIDER_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
-              <div>
-                <h5 class="mt-0 mb-1">Insider SAST <a href="https://github.com/insidersec/insider" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{INSIDER_VERSION}}</a></h5>
-                Identifies locally various kinds of security issues in application code. (<a href="{{INSIDER_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{INSIDER_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-                <br/><br/>
-              </div>
-            </div>
-{{/HAS_INSIDER_REPORT}}
-{{#HAS_GRYPE_REPORT}}
-            <div class="d-flex">
-              <a href="{{GRYPE_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/grype.png" height="50" width="50" alt="Grype"></a>
-              <div>
-                <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-                Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-                <br/><br/>
-              </div>
-            </div>
-{{/HAS_GRYPE_REPORT}}
+{{/HAS_ODC_REPORT}}
 {{#HAS_TRIVY_REPORT}}
             <div class="d-flex">
               <a href="{{TRIVY_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
@@ -192,6 +171,16 @@
               </div>
             </div>
 {{/HAS_TRIVY_REPORT}}
+{{#HAS_GRYPE_REPORT}}
+            <div class="d-flex">
+              <a href="{{GRYPE_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/grype.png" height="50" width="50" alt="Grype"></a>
+              <div>
+                <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
+                Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+                <br/><br/>
+              </div>
+            </div>
+{{/HAS_GRYPE_REPORT}}
 {{#HAS_OSV_REPORT}}
             <div class="d-flex">
               <a href="{{OSV_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/osv.png" height="50" width="50" alt="OSV"></a>
@@ -202,6 +191,16 @@
               </div>
             </div>
 {{/HAS_OSV_REPORT}}
+{{#HAS_INSIDER_REPORT}}
+            <div class="d-flex">
+              <a href="{{INSIDER_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
+              <div>
+                <h5 class="mt-0 mb-1">Insider SAST <a href="https://github.com/insidersec/insider" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{INSIDER_VERSION}}</a></h5>
+                Identifies locally various kinds of security issues in application code. (<a href="{{INSIDER_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{INSIDER_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+                <br/><br/>
+              </div>
+            </div>
+{{/HAS_INSIDER_REPORT}}
 {{#HAS_BEARER_REPORT}}
             <div class="d-flex">
               <a href="{{BEARER_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
@@ -212,6 +211,16 @@
               </div>
             </div>
 {{/HAS_BEARER_REPORT}}
+{{#HAS_SLSCAN_REPORT}}
+            <div class="d-flex">
+              <a href="{{SLSCAN_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
+              <div>
+                <h5 class="mt-0 mb-1">ShiftLeft SAST Scan <a href="https://github.com/ShiftLeftSecurity/sast-scan" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SLSCAN_VERSION}}</a></h5>
+                Identifies security vulnerabilities focussing on the <a href="https://owasp.org/www-project-top-ten/" rel="noreferrer" target="_blank" class="link">OWASP Top 10</a>. (<a href="{{SLSCAN_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{SLSCAN_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+                <br/><br/>
+              </div>
+            </div>
+{{/HAS_SLSCAN_REPORT}}
           </div>
         </div> 
       </div> 
@@ -232,16 +241,14 @@
           <div class="card card-body">
             <p>As columns, you will find respectively the ...</p>
             <ul>
-            {{#HAS_ODC_REPORT}}<li>count of vulnerabilities with 'Low', 'Medium', 'High', and 'Critical' severity found by OWASP Dependency-Check in embedded libraries.</li>
-            <li>total number of vulnerable libraries found by OWASP Dependency-Check.</li>{{/HAS_ODC_REPORT}}
-            {{#HAS_FSB_REPORT}}<li>count of 'Low', 'Medium', 'High' severity security warnings found by Find Security Bugs (FSB).</li>
-            <li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/HAS_FSB_REPORT}}
-            {{#HAS_SLSCAN_REPORT}}<li>total number of vulnerabilities found by ShiftLeft SAST Scan (SLScan).</li>{{/HAS_SLSCAN_REPORT}}
-            {{#HAS_INSIDER_REPORT}}<li>total number of vulnerabilities found by Insider SAST.</li>{{/HAS_INSIDER_REPORT}}
-            {{#HAS_GRYPE_REPORT}}<li>total number of vulnerabilities found by Grype.</li>{{/HAS_GRYPE_REPORT}}
+            {{#HAS_FSB_REPORT}}<li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/HAS_FSB_REPORT}}
+            {{#HAS_ODC_REPORT}}<li>total number of vulnerabilities found by OWASP Dependency-Check in embedded libraries.</li>{{/HAS_ODC_REPORT}}
             {{#HAS_TRIVY_REPORT}}<li>total number of vulnerabilities found by Trivy.</li>{{/HAS_TRIVY_REPORT}}
+            {{#HAS_GRYPE_REPORT}}<li>total number of vulnerabilities found by Grype.</li>{{/HAS_GRYPE_REPORT}}
             {{#HAS_OSV_REPORT}}<li>total number of vulnerabilities found by OSV.</li>{{/HAS_OSV_REPORT}}
+            {{#HAS_INSIDER_REPORT}}<li>total number of vulnerabilities found by Insider SAST.</li>{{/HAS_INSIDER_REPORT}}
             {{#HAS_BEARER_REPORT}}<li>total number of vulnerabilities found by Bearer.</li>{{/HAS_BEARER_REPORT}}
+            {{#HAS_SLSCAN_REPORT}}<li>total number of vulnerabilities found by ShiftLeft SAST Scan (SLScan).</li>{{/HAS_SLSCAN_REPORT}}
             </ul>
           </div>
         </div>

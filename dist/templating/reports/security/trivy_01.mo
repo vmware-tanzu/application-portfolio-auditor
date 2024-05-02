@@ -22,6 +22,15 @@
       border-collapse: collapse;
       margin: 0px auto;
     } 
+  
+    :root {
+      --findingPurple: #a61c00;
+      --findingRed: #cc0000;
+      --findingOrange: #e69138;
+      --findingYellow: #f1c232; 
+      --findingGreen: #6aa84f;
+    }
+
     /* Zebra striping */
     tr:nth-of-type(odd) {
       background: #f2f2f2;
@@ -69,7 +78,7 @@
         {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
-          <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
+          <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{NAV_LINK}}" rel="noreferrer" target="_blank"><i class="{{NAV_ICON}}"></i></a>
@@ -105,18 +114,134 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Trivy</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item">Trivy</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
 
   <div class="container">
-    <div class="row">
-      <p></p>
+
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <div id="stats_viz"></div>
+      </div>
+      <div class="col-4">
+        <div class="card mt-5 border-0">
+          <div class="row gy-2">
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-6">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Vulnerable libraries</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <h6 class="text-end"><span class="h3 m-0">{{TRIVY__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{TRIVY__ALL_LIBS}}</span></h6>
+                    </div>
+                  </div>
+                  <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
+                    <div class="progress" style="padding-left: 0px; padding-right: 0px;">
+                      <div class="progress-bar" role="progressbar" style="width: {{TRIVY__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{TRIVY__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{TRIVY__PERCENT_VULN_LIBS}}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{#HAS_ANOTHER_SECURITY_REPORT}}
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
+                <div class="card-body" style="padding-bottom: 0px;">
+                  <div class="row align-items-center">
+                    <div class="col-3 mb-3">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Linked reports</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-9">
+                      <div class="row justify-content-end" style="margin-right: 0px; margin-left: 0px; ">
+                        {{#HAS_ODC_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_ODC_REPORT}}
+                        {{#HAS_FSB_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_FSB_REPORT}}
+                        {{#HAS_SLSCAN_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
+                          </div>
+                        </div>
+                        {{/HAS_SLSCAN_REPORT}}
+                        {{#HAS_INSIDER_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../12__INSIDER/{{APP}}.html"><img src="./../static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
+                          </div>
+                        </div>
+                        {{/HAS_INSIDER_REPORT}}
+                        {{#HAS_GRYPE_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
+                          </div>
+                        </div>
+                        {{/HAS_GRYPE_REPORT}}
+                        {{#HAS_TRIVY_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px; opacity: 0.3;">
+                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_TRIVY_REPORT}}
+                        {{#HAS_OSV_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_OSV_REPORT}}
+                        {{#HAS_BEARER_REPORT}}
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../17__BEARER/{{APP}}.html"><img src="./../static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
+                          </div>  
+                        </div>
+                        {{/HAS_BEARER_REPORT}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/HAS_ANOTHER_SECURITY_REPORT}}
+          </div>
+        </div>
+      </div>
     </div>
     <div class="row">
-      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Trivy</span>.</p>
+      <p>The following table summarizes the findings of <span class="text-bold">Trivy</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+    </div>
+    <div class="flex-column">
+      <div id="page-wrap">
+      </div>
+    </div>
+    <div class="row">
+      <p></p>
     </div>
   </div>
   <!-- /.container -->
@@ -153,5 +278,10 @@
     </footer>
   </section>
 
-</body>
-</html>
+  <!-- Bootstrap core JavaScript -->
+  <script src="./../static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
+  <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
+  <script>
+    const app_name="{{APP}}"
+    const longText = `\

@@ -46,7 +46,7 @@
     td, th {
       padding: 6px;
       border: 1px solid #ccc;
-      text-align: left;
+      text-align: center;
     }
     th.des:after {
       content: "\21E3";
@@ -54,13 +54,12 @@
     th.aes:after {
       content: "\21E1";
     }
-    th { text-align:center }
     tr:nth-child(1), td:nth-child(1) { width: 15%; }
-    tr:nth-child(2), td:nth-child(2) { width: 12%; }
-    tr:nth-child(3), td:nth-child(3) { width: 5%; }
+    tr:nth-child(2), td:nth-child(2) { width: 4%; }
+    tr:nth-child(3), td:nth-child(3) { width: 15%; }
     tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(5) { width: 5%; }
-    tr:nth-child(6), td:nth-child(6) { width: 43%; word-break:break-word;}
+    tr:nth-child(5), td:nth-child(5) { width: 15%; word-break:break-word;}
+    tr:nth-child(6), td:nth-child(6) { width: 50%; word-break:break-word;}
     span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
@@ -101,10 +100,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../14__TRIVY/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
+          <a href="./../15__OSV/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
           <div>
-            <h5 class="mt-0 mb-1">Trivy <a href="https://github.com/aquasecurity/trivy" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TRIVY_VERSION}}</a></h5>
-            Find vulnerabilities, misconfigurations, secrets. (<a href="{{TRIVY_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{TRIVY_REPORT_DIR}}/../14__TRIVY.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">OSV <a href="https://github.com/google/osv.dev" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OSV_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
+            Find vulnerable dependencies according to the OSV database. (<a href="./.{{OSV_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{OSV_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -114,8 +113,8 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Trivy</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item">OSV</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
@@ -124,7 +123,7 @@
 
     <div class="row justify-content-center">
       <div class="col-8">
-        <div id="vuln_viz"></div>
+        <div id="stats_viz"></div>
       </div>
       <div class="col-4">
         <div class="card mt-5 border-0">
@@ -141,12 +140,12 @@
                       </div>
                     </div>
                     <div class="col-6">
-                      <h6 class="text-end"><span class="h3 m-0">{{TRIVY__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{TRIVY__ALL_LIBS}}</span></h6>
+                      <h6 class="text-end"><span class="h3 m-0">{{OSV__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{OSV__ALL_LIBS}}</span></h6>
                     </div>
                   </div>
                   <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
                     <div class="progress" style="padding-left: 0px; padding-right: 0px;">
-                      <div class="progress-bar" role="progressbar" style="width: {{TRIVY__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{TRIVY__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{TRIVY__PERCENT_VULN_LIBS}}%</div>
+                      <div class="progress-bar" role="progressbar" style="width: {{OSV__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{OSV__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{OSV__PERCENT_VULN_LIBS}}%</div>
                     </div>
                   </div>
                 </div>
@@ -168,57 +167,57 @@
                       <div class="row justify-content-end" style="margin-right: 0px; margin-left: 0px; ">
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../05__OWASP_DC/{{APP}}_dc_report.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
                           </div>  
                         </div>
                         {{/HAS_ODC_REPORT}}
                         {{#HAS_FSB_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50px" width="50px" alt="Find Security Bugs"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
                           </div>  
                         </div>
                         {{/HAS_FSB_REPORT}}
                         {{#HAS_SLSCAN_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
                           </div>  
                         </div>
                         {{/HAS_SLSCAN_REPORT}}
                         {{#HAS_INSIDER_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../12__INSIDER/{{APP}}_report.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../12__INSIDER/{{APP}}.html"><img src="./../static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
                           </div>  
                         </div>
                         {{/HAS_INSIDER_REPORT}}
                         {{#HAS_GRYPE_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50px" width="50px" alt="Grype"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
                           </div>  
                         </div>
                         {{/HAS_GRYPE_REPORT}}
                         {{#HAS_TRIVY_REPORT}}
-                        <!--<div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy"></a>
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
                           </div>  
-                        </div>-->
+                        </div>
                         {{/HAS_TRIVY_REPORT}}
                         {{#HAS_OSV_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px; opacity: 0.3;">
+                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
                           </div>  
                         </div>
                         {{/HAS_OSV_REPORT}}
                         {{#HAS_BEARER_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../17__BEARER/{{APP}}_security_bearer.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../17__BEARER/{{APP}}.html"><img src="./../static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
                           </div>  
                         </div>
                         {{/HAS_BEARER_REPORT}}
@@ -234,7 +233,7 @@
       </div>
     </div>
     <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">Trivy</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+      <p>The following table summarizes the findings of <span class="text-bold">OSV</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
     <div class="flex-column">
       <div id="page-wrap">
@@ -283,5 +282,5 @@
   <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
   <script>
-    var app_name="{{APP}}"
+    const app_name="{{APP}}"
     const longText = `\

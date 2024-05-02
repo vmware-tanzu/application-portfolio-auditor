@@ -55,10 +55,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../15__OSV/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
+          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
           <div>
-            <h5 class="mt-0 mb-1">OSV <a href="https://github.com/google/osv.dev" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OSV_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-            Find vulnerable dependencies according to the OSV database. (<a href="{{OSV_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{OSV_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
+            Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -68,8 +68,8 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">OSV</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item">Grype</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
@@ -79,7 +79,7 @@
       <p></p>
     </div>
     <div class="row">
-      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">OSV</span>.</p>
+      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Grype</span>.</p>
     </div>
   </div>
   <!-- /.container -->

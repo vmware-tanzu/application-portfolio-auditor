@@ -113,7 +113,27 @@ function analyze_html() {
 		while read -r FILE; do
 			echo -e "  >>>  Analyzing '${FILE}'"
 			vnu --errors-only "${FILE}"
-		done < <(find "${REPORT_DIR}" "${REPORT_DIR}/13__GRYPE" "${REPORT_DIR}/14__TRIVY" "${REPORT_DIR}/15__OSV" "${REPORT_DIR}/16__ARCHEO" -mindepth 1 -maxdepth 1 -type f -name '*.html')
+		done < <(find "${REPORT_DIR}" "${REPORT_DIR}/13__GRYPE" "${REPORT_DIR}/11__SLSCAN" "${REPORT_DIR}/14__TRIVY" "${REPORT_DIR}/15__OSV" "${REPORT_DIR}/16__ARCHEO" -mindepth 1 -maxdepth 1 -type f -name '*.html')
+
+		while read -r FILE; do
+			echo -e "  >>>  Analyzing '${FILE}'"
+			vnu --errors-only "${FILE}"
+		done < <(find "${REPORT_DIR}/05__OWASP_DC" -mindepth 1 -maxdepth 1 -type f -name '*.html' ! -name '*_dc_report.html' )
+
+		while read -r FILE; do
+			echo -e "  >>>  Analyzing '${FILE}'"
+			vnu --errors-only "${FILE}"
+		done < <(find "${REPORT_DIR}/09__FindSecBugs" -mindepth 1 -maxdepth 1 -type f -name '*.html' ! -name '*_fsb.html' )
+
+		while read -r FILE; do
+			echo -e "  >>>  Analyzing '${FILE}'"
+			vnu --errors-only "${FILE}"
+		done < <(find "${REPORT_DIR}/12__INSIDER" -mindepth 1 -maxdepth 1 -type f -name '*.html' ! -name '*_report.html' )
+
+		while read -r FILE; do
+			echo -e "  >>>  Analyzing '${FILE}'"
+			vnu --errors-only "${FILE}"
+		done < <(find "${REPORT_DIR}/17__BEARER" -mindepth 1 -maxdepth 1 -type f -name '*.html' ! -name '*_bearer.html' )
 
 	done < <(find "${REPORT_FOLDER}" -mindepth 1 -maxdepth 1 -type d -name '20*' | sort -f)
 }

@@ -1,12 +1,12 @@
     const dataUri = "data:text/plain;base64," + btoa(unescape(encodeURIComponent(longText)));
 
-    var colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
-    var colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
-    var colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
-    var colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
-    var colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
-    var colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
-    var colorTextWhite = '#ffffff';
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
 
     // Draw table
     function drawTable(data) {    
@@ -47,7 +47,7 @@
         }).enter()
         .append('td')
         .style('text-align',function(d) {
-          if (!d || !d.name || !d.name.startsWith("Description") && !d.name.startsWith("Library") ) return 'center';
+          if (!d || !d.name || !d.name.startsWith("Description")) return 'center';
           return 'left';
         })
         .style("background-color", function(d) {
@@ -57,7 +57,7 @@
             case "High": return colorFindingRed;
             case "Medium": return colorFindingOrange;
             case "Low": return colorFindingYellow;
-            case "Info": return colorFindingGreen;
+            case "Unknown": return "#747474";
             default: return "";
           }
         })
@@ -87,46 +87,42 @@
     .catch(function(error){throw error;})
 
     // Values of the support data graph
-    const libs_total = {{ARCHEO__ALL_LIBS}}
-    const libs_duplicated = {{ARCHEO__DUPLICATED_LIBS}}
-    const libs_undesirable = {{ARCHEO__UNDESIRABLE_LIBS}}
-    const libs_supported = {{ARCHEO__SUPPORTED_LIBS}}
-    const libs_expiring_oss = {{ARCHEO__OSS_SUPPORT_ENDING_SOON_LIBS}}
-    const libs_commercial_only = {{ARCHEO__ONLY_COMMERCIAL_SUPPORTED_LIBS}}
-    const libs_unsupported = {{ARCHEO__UNSUPPORTED_LIBS}}
-    const libs_unsupportable = {{ARCHEO__NON_SUPPORTABLE_LIBS}}
+    const vulns_total = {{TRIVY__VULNS_ALL}}
+    const vulns_low = {{TRIVY__VULNS_LOW}}
+    const vulns_medium = {{TRIVY__VULNS_MEDIUM}}
+    const vulns_high = {{TRIVY__VULNS_HIGH}}
+    const vulns_critical = {{TRIVY__VULNS_CRITICAL}}
 
     // Dimensions and margins of the support data graph
-    const support_data_viz_width = 680,
-    support_data_viz_height = 450,
-    support_data_viz_margin = 50;
+    const stats_viz = 680,
+    vuln_data_viz_height = 450,
+    vuln_data_viz_margin = 50;
 
     // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    const radius = Math.min(support_data_viz_width, support_data_viz_height) / 2 - support_data_viz_margin
-    const svg = d3.select("#support_data_viz")
+    const radius = Math.min(stats_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
+    const svg = d3.select("#stats_viz")
       .append("svg")
-        .attr("width", support_data_viz_width)
-        .attr("height", support_data_viz_height)
+        .attr("width", stats_viz)
+        .attr("height", vuln_data_viz_height)
       .append("g")
-        .attr("transform", `translate(${support_data_viz_width/2},${support_data_viz_height/2})`);
+        .attr("transform", `translate(${stats_viz/2},${vuln_data_viz_height/2})`);
 
     const support_data = [
-      { id: 1, label: 'Supported', count: libs_supported, color: colorFindingGreen },
-      { id: 2, label: 'Expiring OSS', count: libs_expiring_oss, color: colorFindingOrange },
-      { id: 3, label: 'Commercial only', count: libs_commercial_only, color: colorFindingRed },
-      { id: 4, label: 'Unsupported', count: libs_unsupported, color: colorFindingPurple },
-      { id: 5, label: 'Other', count: libs_unsupportable, color: '#ccc' },
+      { id: 1, label: 'Low', count: vulns_low, color: colorFindingYellow },
+      { id: 2, label: 'Medium', count: vulns_medium, color: colorFindingOrange },
+      { id: 3, label: 'High', count: vulns_high, color: colorFindingRed },
+      { id: 4, label: 'Critical', count: vulns_critical, color: colorFindingPurple },
     ];
 
     // Define the log scale
-    const logScale = d3.scaleLog()
+    /*const logScale = d3.scaleLog()
     .domain([1, d3.max(support_data, d => d.count)+1]) // Set the domain to start from 1 to avoid log(0)
-    .range([1, 20]); // Map the log scale to values between 1 and 20
+    .range([1, 20]); // Map the log scale to values between 1 and 20*/
 
     // Compute the position of each group on the pie:
     const pie = d3.pie()
       .sort(null) // Do not sort group by size
-      .value(d => logScale(d.count))
+      .value(d => d.count)
     const support_data_ready = pie(support_data)
 
     // The arc generator
@@ -186,13 +182,13 @@
 
     // Add HTML content using foreignObject
     const foreignObject = svg.append('foreignObject')
-        .attr('x', -support_data_viz_width / 4) // Adjust position as needed
-        .attr('y', -support_data_viz_height / 12) // Adjust position as needed
-        .attr('width', support_data_viz_width / 2) // Adjust size as needed
-        .attr('height', support_data_viz_height / 2 ); // Adjust size as needed
+        .attr('x', -stats_viz / 4) // Adjust position as needed
+        .attr('y', -vuln_data_viz_height / 12) // Adjust position as needed
+        .attr('width', stats_viz / 2) // Adjust size as needed
+        .attr('height', vuln_data_viz_height / 2 ); // Adjust size as needed
 
     foreignObject.append('xhtml:div')
-       .html('<div style="text-align:center;color:black;font-size:16px;"><span style="font-size:30px;font-weight:bold;">'+(libs_commercial_only + libs_unsupported)+'&nbsp;</span>libraries<br/>without OSS support</div>');
+       .html('<div style="text-align:center;color:black;font-size:16px;"><span style="font-size:30px;font-weight:bold;">'+vulns_total+'</span><br/>Vulnerabilities</div>');
 
   </script>
 </body>

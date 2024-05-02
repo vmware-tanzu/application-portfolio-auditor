@@ -29,37 +29,9 @@
       --findingOrange: #e69138;
       --findingYellow: #f1c232; 
       --findingGreen: #6aa84f;
+      --findingBlue: #4b77d1;
     }
-
-    /* Zebra striping */
-    tr:nth-of-type(odd) {
-      background: #f2f2f2;
-    }
-    th {
-      background: #333;
-      color: white;
-      font-weight: bold;
-      cursor: s-resize;
-      background-repeat: no-repeat;
-      background-position: 3% center;
-    }
-    td, th {
-      padding: 6px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th.des:after {
-      content: "\21E3";
-    }
-    th.aes:after {
-      content: "\21E1";
-    }
-    tr:nth-child(1), td:nth-child(1) { width: 15%; }
-    tr:nth-child(2), td:nth-child(2) { width: 4%; }
-    tr:nth-child(3), td:nth-child(3) { width: 15%; }
-    tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(5) { width: 15%; word-break:break-word;}
-    tr:nth-child(6), td:nth-child(6) { width: 50%; word-break:break-word;}
+    
     span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
@@ -100,10 +72,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../15__OSV/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
+          <a href="./../17__BEARER/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
           <div>
-            <h5 class="mt-0 mb-1">OSV <a href="https://github.com/google/osv.dev" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OSV_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-            Find vulnerable dependencies according to the OSV database. (<a href="./.{{OSV_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{OSV_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">Bearer <a href="https://github.com/Bearer/bearer" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{BEARER_VERSION}}</a></h5>
+            Discover, filter and prioritize security and privacy risks in your code. (<a href="./.{{BEARER_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{BEARER_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -113,45 +85,21 @@
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">OSV</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item">Bearer</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
 
   <div class="container">
-
     <div class="row justify-content-center">
       <div class="col-8">
-        <div id="vuln_viz"></div>
+        <div id="stats_viz"></div>
       </div>
+      {{#HAS_ANOTHER_SECURITY_REPORT}}
       <div class="col-4">
         <div class="card mt-5 border-0">
           <div class="row gy-2">
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Vulnerable libraries</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <h6 class="text-end"><span class="h3 m-0">{{OSV__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{OSV__ALL_LIBS}}</span></h6>
-                    </div>
-                  </div>
-                  <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
-                    <div class="progress" style="padding-left: 0px; padding-right: 0px;">
-                      <div class="progress-bar" role="progressbar" style="width: {{OSV__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{OSV__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{OSV__PERCENT_VULN_LIBS}}%</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {{#HAS_ANOTHER_SECURITY_REPORT}}
             <div class="col-12">
               <div class="card border-0" style="background-color: #333333; color: #ffffff;">
                 <div class="card-body" style="padding-bottom: 0px;">
@@ -167,57 +115,57 @@
                       <div class="row justify-content-end" style="margin-right: 0px; margin-left: 0px; ">
                         {{#HAS_ODC_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../05__OWASP_DC/{{APP}}_dc_report.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
-                          </div>  
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../05__OWASP_DC/{{APP}}.html"><img src="./../static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
+                          </div>
                         </div>
                         {{/HAS_ODC_REPORT}}
                         {{#HAS_FSB_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50px" width="50px" alt="Find Security Bugs"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
                           </div>  
                         </div>
                         {{/HAS_FSB_REPORT}}
                         {{#HAS_SLSCAN_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
                           </div>  
                         </div>
                         {{/HAS_SLSCAN_REPORT}}
                         {{#HAS_INSIDER_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../12__INSIDER/{{APP}}_report.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../12__INSIDER/{{APP}}.html"><img src="./../static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
                           </div>  
                         </div>
                         {{/HAS_INSIDER_REPORT}}
                         {{#HAS_GRYPE_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50px" width="50px" alt="Grype"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
                           </div>  
                         </div>
                         {{/HAS_GRYPE_REPORT}}
                         {{#HAS_TRIVY_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
                           </div>  
                         </div>
                         {{/HAS_TRIVY_REPORT}}
                         {{#HAS_OSV_REPORT}}
-                        <!--<div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV"></a>
+                        <div class="col-3 mb-3">
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px;">
+                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50" width="50" alt="OSV"></a>
                           </div>  
-                        </div>-->
+                        </div>
                         {{/HAS_OSV_REPORT}}
                         {{#HAS_BEARER_REPORT}}
                         <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../17__BEARER/{{APP}}_security_bearer.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
+                          <div class="card text-center justify-content-center" style="width: 58px; height: 58px; opacity: 0.3;">
+                            <a href="./../17__BEARER/{{APP}}.html"><img src="./../static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
                           </div>  
                         </div>
                         {{/HAS_BEARER_REPORT}}
@@ -227,14 +175,22 @@
                 </div>
               </div>
             </div>
-            {{/HAS_ANOTHER_SECURITY_REPORT}}
           </div>
         </div>
       </div>
+      {{/HAS_ANOTHER_SECURITY_REPORT}}
     </div>
-    <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">OSV</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+  </div>
+  <!-- /.container -->
+  
+  <div class="container">
+    <div class="ratio ratio-1x1">
+      <iframe id="iframeReport" class="embed-responsive-item" src="./{{APP}}_bearer.html" allowfullscreen></iframe>
     </div>
+  </div>
+  <!-- /.container -->
+
+  <div class="container">
     <div class="flex-column">
       <div id="page-wrap">
       </div>
@@ -282,5 +238,123 @@
   <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
   <script>
-    var app_name="{{APP}}"
-    const longText = `\
+    const app_name="{{APP}}"
+
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingBlue = getComputedStyle(document.documentElement).getPropertyValue('--findingBlue');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
+
+    // Values of the support data graph
+    const vulns_total = {{BEARER__ISSUES_ALL}}
+    const vulns_info = {{BEARER__ISSUES_WARNING}}
+    const vulns_low = {{BEARER__ISSUES_LOW}}
+    const vulns_medium = {{BEARER__ISSUES_MEDIUM}}
+    const vulns_high = {{BEARER__ISSUES_HIGH}}
+    const vulns_critical = {{BEARER__ISSUES_CRITICAL}}
+
+    // Dimensions and margins of the support data graph
+    const stats_viz = 680,
+    vuln_data_viz_height = 450,
+    vuln_data_viz_margin = 50;
+
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+    const radius = Math.min(stats_viz, vuln_data_viz_height) / 2 - vuln_data_viz_margin
+    const svg = d3.select("#stats_viz")
+      .append("svg")
+        .attr("width", stats_viz)
+        .attr("height", vuln_data_viz_height)
+      .append("g")
+        .attr("transform", `translate(${stats_viz/2},${vuln_data_viz_height/2})`);
+
+    const support_data = [
+      { id: 0, label: 'Info', count: vulns_info, color: colorFindingBlue },
+      { id: 1, label: 'Low', count: vulns_low, color: colorFindingYellow },
+      { id: 2, label: 'Medium', count: vulns_medium, color: colorFindingOrange },
+      { id: 3, label: 'High', count: vulns_high, color: colorFindingRed },
+      { id: 4, label: 'Critical', count: vulns_critical, color: colorFindingPurple },
+    ];
+
+    // Define the log scale
+    /*const logScale = d3.scaleLog()
+    .domain([1, d3.max(support_data, d => d.count)+1]) // Set the domain to start from 1 to avoid log(0)
+    .range([1, 20]); // Map the log scale to values between 1 and 20*/
+
+    // Compute the position of each group on the pie:
+    const pie = d3.pie()
+      .sort(null) // Do not sort group by size
+      .value(d => d.count)
+    const support_data_ready = pie(support_data)
+
+    // The arc generator
+    const arc = d3.arc()
+      .innerRadius(radius * 0.5) // Size of the donut hole
+      .outerRadius(radius * 0.8)
+
+    // Another arc that won't be drawn. Just for labels positioning
+    const outerArc = d3.arc()
+      .innerRadius(radius * 0.9)
+      .outerRadius(radius * 0.9)
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    svg
+      .selectAll('allSlices')
+      .data(support_data_ready.filter(d => d.data.count > 0))
+      .join('path')
+      .attr('d', arc)
+      .attr('fill', d => d.data.color)
+      .attr("stroke", "white")
+      .style("stroke-width", "2px")
+      .style("opacity", 1)
+
+    // Add the polylines between chart and labels:
+    svg
+      .selectAll('allPolylines')
+      .data(support_data_ready.filter(d => d.data.count > 0))
+      .join('polyline')
+        .attr("stroke", "black")
+        .style("fill", "none")
+        .attr("stroke-width", 1)
+        .attr('points', function(d) {
+          const posA = arc.centroid(d) // line insertion in the slice
+          const posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+          const posC = outerArc.centroid(d); // Label position = almost the same as posB
+          const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
+          posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+          return [posA, posB, posC]
+        })
+
+    // Add the text for the polylines:
+    svg
+      .selectAll('allLabels')
+      .data(support_data_ready.filter(d => d.data.count > 0))
+      .join('text')
+        .text(d => d.data.label+' ('+d.data.count+')')
+        .attr('transform', function(d) {
+            const pos = outerArc.centroid(d);
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+            pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+            return `translate(${pos})`;
+        })
+        .style('text-anchor', function(d) {
+            const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+            return (midangle < Math.PI ? 'start' : 'end')
+        })
+
+    // Add HTML content using foreignObject
+    const foreignObject = svg.append('foreignObject')
+        .attr('x', -stats_viz / 4) // Adjust position as needed
+        .attr('y', -vuln_data_viz_height / 12) // Adjust position as needed
+        .attr('width', stats_viz / 2) // Adjust size as needed
+        .attr('height', vuln_data_viz_height / 2 ); // Adjust size as needed
+
+    foreignObject.append('xhtml:div')
+       .html('<div style="text-align:center;color:black;font-size:16px;"><span style="font-size:30px;font-weight:bold;">'+vulns_total+'</span><br/>Issues</div>');
+
+  </script>
+</body>
+</html>

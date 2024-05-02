@@ -46,7 +46,7 @@
     td, th {
       padding: 6px;
       border: 1px solid #ccc;
-      text-align: center;
+      text-align: left;
     }
     th.des:after {
       content: "\21E3";
@@ -54,13 +54,12 @@
     th.aes:after {
       content: "\21E1";
     }
-    tr:nth-child(1), td:nth-child(1) { width: 15%; }
-    tr:nth-child(2), td:nth-child(2) { width: 15%; }
-    tr:nth-child(3), td:nth-child(3) { width: 5%; }
-    tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(5) { width: 5%; }
-    tr:nth-child(6), td:nth-child(6) { width: 40%; word-break:break-word;}
-    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
+    th { text-align:center }
+    tr:nth-child(1), td:nth-child(1) { width: 36%; word-break:break-word;}
+    tr:nth-child(2), td:nth-child(2) { width: 7%; }
+    tr:nth-child(3), td:nth-child(3) { width: 7%; }
+    tr:nth-child(4), td:nth-child(4) { width: 7%; }
+    tr:nth-child(5), td:nth-child(5) { width: 40%; word-break:break-word;}    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
 </head>
@@ -73,8 +72,8 @@
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link active" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
           <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
@@ -89,9 +88,9 @@
   <!-- Masthead -->
   <div class="bd-masthead py-1" id="content" role="main">
     <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
+      <h1 class="display-4 mt-4 mb-2">Quality reports</h1>
       <div>
-        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
+        <p class="lead mb-3 text-black-50">Consolidated code quality findings.</p>
       </div>
     </div>
   </div>
@@ -100,10 +99,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../13__GRYPE/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/grype.png" height="50" width="50" alt="Grype"></a>
+          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
           <div>
-            <h5 class="mt-0 mb-1">Grype <a href="https://github.com/anchore/grype" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{GRYPE_VERSION}}</a> and Syft <a href="https://github.com/anchore/syft" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{SYFT_VERSION}}</a></h5>
-            Identifies known security vulnerabilities in application binaries and code. (<a href="{{GRYPE_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{GRYPE_REPORT_DIR}}/../13__GRYPE.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">Archeologist <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
+            Find unsupported and unnecessary ancient libraries in your applications. (<a href="../{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="../{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -112,9 +111,9 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item active">Grype</li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item"><a href="./../quality.html">Quality</a></li>
+        <li class="breadcrumb-item">Archeologist </li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
@@ -123,7 +122,7 @@
 
     <div class="row justify-content-center">
       <div class="col-8">
-        <div id="vuln_viz"></div>
+        <div id="support_data_viz"></div>
       </div>
       <div class="col-4">
         <div class="card mt-5 border-0">
@@ -135,105 +134,77 @@
                     <div class="col-6">
                       <div class="d-flex align-items-center">
                         <div>
-                          <h6 class="m-0">Vulnerable libraries</h6>
+                          <h6 class="m-0">Total libraries</h6>
                         </div>
                       </div>
                     </div>
                     <div class="col-6">
-                      <h6 class="text-end"><span class="h3 m-0">{{GRYPE__VULN_LIBS}}&nbsp;</span><span class="m-0 h6">out of</span><span class="h3 m-0">&nbsp;{{GRYPE__ALL_LIBS}}</span></h6>
-                    </div>
-                  </div>
-                  <div class="row align-items-center" style="margin-left: 0px; margin-right: 0px;">
-                    <div class="progress" style="padding-left: 0px; padding-right: 0px;">
-                      <div class="progress-bar" role="progressbar" style="width: {{GRYPE__PERCENT_VULN_LIBS}}%; background-color: var(--findingPurple);padding-top: 2px" aria-valuenow="{{GRYPE__PERCENT_VULN_LIBS}}" aria-valuemin="0" aria-valuemax="100">{{GRYPE__PERCENT_VULN_LIBS}}%</div>
+                      <h6 class="h3 text-end m-0">{{ARCHEO__ALL_LIBS}}</h6>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {{#HAS_ANOTHER_SECURITY_REPORT}}
             <div class="col-12">
               <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body" style="padding-bottom: 0px;">
+                <div class="card-body">
                   <div class="row align-items-center">
-                    <div class="col-3 mb-3">
+                    <div class="col-6">
                       <div class="d-flex align-items-center">
                         <div>
-                          <h6 class="m-0">Linked reports</h6>
+                          <h6 class="m-0">Total findings</h6>
                         </div>
                       </div>
                     </div>
-                    <div class="col-9">
-                      <div class="row justify-content-end" style="margin-right: 0px; margin-left: 0px; ">
-                        {{#HAS_ODC_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../05__OWASP_DC/{{APP}}_dc_report.html"><img src="./../static/img/owasp.svg" height="50px" width="50px" alt="Open Web Application Security Project Dependency-Check"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_ODC_REPORT}}
-                        {{#HAS_FSB_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../09__FindSecBugs/{{APP}}.html"><img src="./../static/img/fsb.png" height="50px" width="50px" alt="Find Security Bugs"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_FSB_REPORT}}
-                        {{#HAS_SLSCAN_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../11__SLSCAN/{{APP}}.html"><img src="./../static/img/scan-light.png" height="50px" width="50px" alt="ShiftLeft SAST Scan"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_SLSCAN_REPORT}}
-                        {{#HAS_INSIDER_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../12__INSIDER/{{APP}}_report.html"><img src="./../static/img/insider.png" height="50px" width="50px" alt="Insider SAST"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_INSIDER_REPORT}}
-                        {{#HAS_GRYPE_REPORT}}
-                        <!--<div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../13__GRYPE/{{APP}}.html"><img src="./../static/img/grype.png" height="50px" width="50px" alt="Grype"></a>
-                          </div>  
-                        </div>-->
-                        {{/HAS_GRYPE_REPORT}}
-                        {{#HAS_TRIVY_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../14__TRIVY/{{APP}}.html"><img src="./../static/img/trivy.svg" height="50px" width="50px" alt="Trivy"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_TRIVY_REPORT}}
-                        {{#HAS_OSV_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../15__OSV/{{APP}}.html"><img src="./../static/img/osv.png" height="50px" width="50px" alt="OSV"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_OSV_REPORT}}
-                        {{#HAS_BEARER_REPORT}}
-                        <div class="col-3 mb-3">
-                          <div class="card text-center justify-content-center" style="width: 55px; height: 55px;">
-                            <a href="./../17__BEARER/{{APP}}_security_bearer.html"><img src="./../static/img/bearer.png" height="50px" width="50px" alt="Bearer"></a>
-                          </div>  
-                        </div>
-                        {{/HAS_BEARER_REPORT}}
-                      </div>
+                    <div class="col-6">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__COUNT_FINDINGS}}</h6>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {{/HAS_ANOTHER_SECURITY_REPORT}}
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #ccc">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-7">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Duplicated libraries</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-5">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__DUPLICATED_LIBS}}</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card border-0" style="background-color: #ccc">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-7">
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="m-0">Undesirable libraries</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-5">
+                      <h6 class="h3 text-end m-0">{{ARCHEO__UNDESIRABLE_LIBS}}</h6>                    
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">Grype</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+      <p>The following table summarizes the findings of <span class="text-bold">Archeo</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
     <div class="flex-column">
       <div id="page-wrap">
@@ -282,5 +253,5 @@
   <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
   <script>
-    var app_name="{{APP}}"
+    const app_name="{{APP}}"
     const longText = `\

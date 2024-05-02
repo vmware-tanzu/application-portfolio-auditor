@@ -22,15 +22,6 @@
       border-collapse: collapse;
       margin: 0px auto;
     } 
-  
-    :root {
-      --findingPurple: #a61c00;
-      --findingRed: #cc0000;
-      --findingOrange: #e69138;
-      --findingYellow: #f1c232; 
-      --findingGreen: #6aa84f;
-    }
-
     /* Zebra striping */
     tr:nth-of-type(odd) {
       background: #f2f2f2;
@@ -55,11 +46,13 @@
       content: "\21E1";
     }
     th { text-align:center }
-    tr:nth-child(1), td:nth-child(1) { width: 36%; word-break:break-word;}
-    tr:nth-child(2), td:nth-child(2) { width: 7%; }
-    tr:nth-child(3), td:nth-child(3) { width: 7%; }
-    tr:nth-child(4), td:nth-child(4) { width: 7%; }
-    tr:nth-child(5), td:nth-child(5) { width: 40%; word-break:break-word;}    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
+    tr:nth-child(1), td:nth-child(1) { width: 15%; }
+    tr:nth-child(2), td:nth-child(2) { width: 12%; }
+    tr:nth-child(3), td:nth-child(3) { width: 5%; }
+    tr:nth-child(4), td:nth-child(4) { width: 5%; }
+    tr:nth-child(5), td:nth-child(5) { width: 5%; }
+    tr:nth-child(6), td:nth-child(6) { width: 43%; word-break:break-word;}
+    span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
 </head>
@@ -72,11 +65,11 @@
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./../index.html">Overview</a></li>
         {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./../cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link active" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
+        <li class="nav-item"><a class="nav-link active" href="./../security.html">Security</a></li>
+        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./../quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
         {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./../languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
         <li class="nav-item">
-          <a class="nav-link" href="./../info.html"><i class="bi bi-speedometer"></i></a>
+          <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{NAV_LINK}}" rel="noreferrer" target="_blank"><i class="{{NAV_ICON}}"></i></a>
@@ -88,9 +81,9 @@
   <!-- Masthead -->
   <div class="bd-masthead py-1" id="content" role="main">
     <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Quality reports</h1>
+      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
       <div>
-        <p class="lead mb-3 text-black-50">Consolidated code quality findings.</p>
+        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
       </div>
     </div>
   </div>
@@ -99,10 +92,10 @@
   <div class="bd-masthead py-3 mb-3" id="tools" role="main">
     <div class="container">
       <div class="d-flex">
-          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
+          <a href="./../14__TRIVY/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
           <div>
-            <h5 class="mt-0 mb-1">Archeologist <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
-            Find unsupported and unnecessary ancient libraries in your applications. (<a href="../{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="../{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <h5 class="mt-0 mb-1">Trivy <a href="https://github.com/aquasecurity/trivy" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TRIVY_VERSION}}</a></h5>
+            Find vulnerabilities, misconfigurations, secrets. (<a href="{{TRIVY_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{TRIVY_REPORT_DIR}}/../14__TRIVY.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
           </div>
       </div>
     </div>
@@ -111,107 +104,19 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../quality.html">Quality</a></li>
-        <li class="breadcrumb-item active">Archeologist </li>
-        <li class="breadcrumb-item">{{APP}}</li>
+        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
+        <li class="breadcrumb-item">Trivy</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
       </ol>
     </nav>
   </div>
 
   <div class="container">
-
-    <div class="row justify-content-center">
-      <div class="col-8">
-        <div id="support_data_viz"></div>
-      </div>
-      <div class="col-4">
-        <div class="card mt-5 border-0">
-          <div class="row gy-2">
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Total libraries</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <h6 class="h3 text-end m-0">{{ARCHEO__ALL_LIBS}}</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #333333; color: #ffffff;">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Total findings</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <h6 class="h3 text-end m-0">{{ARCHEO__COUNT_FINDINGS}}</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #ccc">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-7">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Duplicated libraries</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-5">
-                      <h6 class="h3 text-end m-0">{{ARCHEO__DUPLICATED_LIBS}}</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12">
-              <div class="card border-0" style="background-color: #ccc">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-7">
-                      <div class="d-flex align-items-center">
-                        <div>
-                          <h6 class="m-0">Undesirable libraries</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-5">
-                      <h6 class="h3 text-end m-0">{{ARCHEO__UNDESIRABLE_LIBS}}</h6>                    
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">Archeo</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
-    </div>
-    <div class="flex-column">
-      <div id="page-wrap">
-      </div>
-    </div>
     <div class="row">
       <p></p>
+    </div>
+    <div class="row">
+      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Trivy</span>.</p>
     </div>
   </div>
   <!-- /.container -->
@@ -248,10 +153,5 @@
     </footer>
   </section>
 
-  <!-- Bootstrap core JavaScript -->
-  <script src="./../static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
-  <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
-  <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
-  <script>
-    var app_name="{{APP}}"
-    const longText = `\
+</body>
+</html>
