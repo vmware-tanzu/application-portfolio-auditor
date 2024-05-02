@@ -27,6 +27,7 @@ function generate_csv() {
 		SLSCAN_OUTPUT_STATS="${APP_DIR_OUT}/${APP}.stats"
 		VULNS="n/a"
 		if [ -f "${TXT_IN}" ]; then
+			VULNS=0
 			COUNT_VULNS_LOW=0
 			COUNT_VULNS_MEDIUM=0
 			COUNT_VULNS_HIGH=0
