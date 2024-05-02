@@ -452,26 +452,17 @@ function generate_security_csv() {
 	TMP_CSV=${1}
 	rm -f "${TMP_CSV}"
 
-	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC/_results_extracted.csv"
 	export FSB_CSV_FILE="${REPORTS_DIR}/09__FindSecBugs/_results_extracted.csv"
 	export FSB_CSV="./09__FindSecBugs/_results_extracted.csv"
-	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN/_results_extracted.csv"
-	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER/_results_extracted.csv"
-	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE/_results_extracted.csv"
+	export ODC_CSV_FILE="${REPORTS_DIR}/05__OWASP_DC/_results_extracted.csv"
 	export TRIVY_CSV_FILE="${REPORTS_DIR}/14__TRIVY/_results_extracted.csv"
+	export GRYPE_CSV_FILE="${REPORTS_DIR}/13__GRYPE/_results_extracted.csv"
 	export OSV_CSV_FILE="${REPORTS_DIR}/15__OSV/_results__security__osv.csv"
+	export INSIDER_CSV_FILE="${REPORTS_DIR}/12__INSIDER/_results_extracted.csv"
 	export BEARER_CSV_FILE="${REPORTS_DIR}/17__BEARER/_results__security__bearer.csv"
+	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN/_results_extracted.csv"
 
-	# Debug info to compare the result counts
-	#echo "LANG_CSV     - $(cat $LANG_CSV | wc -l |  tr -d ' \t') entries - $LANG_CSV"
-	#echo "ODC_CSV_FILE      - $(cat $ODC_CSV_FILE | wc -l |  tr -d ' \t') entries - $ODC_CSV_FILE"
-	#echo "FSB_CSV_FILE      - $(cat $FSB_CSV_FILE | wc -l |  tr -d ' \t') entries - $FSB_CSV_FILE"
-	#echo "SLSCAN_CSV_FILE      - $(cat $SLSCAN_CSV_FILE | wc -l |  tr -d ' \t') entries - $SLSCAN_CSV_FILE"
-	#echo "INSIDER_CSV_FILE      - $(cat $INSIDER_CSV_FILE | wc -l |  tr -d ' \t') entries - $INSIDER_CSV_FILE"
-	#echo "GRYPE_CSV_FILE      - $(cat $GRYPE_CSV_FILE | wc -l |  tr -d ' \t') entries - $GRYPE_CSV_FILE"
-	#echo "TRIVY_CSV_FILE      - $(cat $TRIVY_CSV_FILE | wc -l |  tr -d ' \t') entries - $TRIVY_CSV_FILE"
-
-	CSV_FILES=("${ODC_CSV_FILE}" "${FSB_CSV_FILE}" "${SLSCAN_CSV_FILE}" "${INSIDER_CSV_FILE}" "${GRYPE_CSV_FILE}" "${TRIVY_CSV_FILE}" "${OSV_CSV_FILE}" "${BEARER_CSV_FILE}")
+	CSV_FILES=("${FSB_CSV_FILE}" "${ODC_CSV_FILE}" "${TRIVY_CSV_FILE}" "${GRYPE_CSV_FILE}" "${OSV_CSV_FILE}" "${INSIDER_CSV_FILE}" "${BEARER_CSV_FILE}" "${SLSCAN_CSV_FILE}" )
 
 	for CSV in "${CSV_FILES[@]}"; do
 		concatenate_csv "${CSV}" "${TMP_CSV}"
@@ -890,36 +881,36 @@ function generate_reports() {
 		# Generate CSV file with all results
 		generate_security_csv "${SECURITY_TMP_CSV}"
 
-		if [[ "${HAS_ODC_REPORT}" == TRUE ]]; then
-			generate_owasp_dc_html
-		fi
-
 		if [[ "${HAS_FSB_REPORT}" == TRUE ]]; then
 			generate_fsb_html
 		fi
 
-		if [[ "${HAS_SLSCAN_REPORT}" == TRUE ]]; then
-			generate_slscan_html
-		fi
-
-		if [[ "${HAS_INSIDER_REPORT}" == TRUE ]]; then
-			generate_insider_html
-		fi
-
-		if [[ "${HAS_GRYPE_REPORT}" == TRUE ]]; then
-			generate_grype_html
+		if [[ "${HAS_ODC_REPORT}" == TRUE ]]; then
+			generate_owasp_dc_html
 		fi
 
 		if [[ "${HAS_TRIVY_REPORT}" == TRUE ]]; then
 			generate_trivy_html
 		fi
 
+		if [[ "${HAS_GRYPE_REPORT}" == TRUE ]]; then
+			generate_grype_html
+		fi
+
 		if [[ "${HAS_OSV_REPORT}" == TRUE ]]; then
 			generate_osv_html
 		fi
 
+		if [[ "${HAS_INSIDER_REPORT}" == TRUE ]]; then
+			generate_insider_html
+		fi
+
 		if [[ "${HAS_BEARER_REPORT}" == TRUE ]]; then
 			generate_bearer_html
+		fi
+
+		if [[ "${HAS_SLSCAN_REPORT}" == TRUE ]]; then
+			generate_slscan_html
 		fi
 
 		if [[ -f "${SECURITY_TMP_CSV}" ]]; then
