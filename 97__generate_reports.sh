@@ -93,7 +93,7 @@ function apply_template() {
 			[[ -f "${PROPERTY_FILE}" ]] && cat "${PROPERTY_FILE}"
 			env
 		} >"${HBS_PROPERTY_FILE}"
-		${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/footer.hbs" "${TEMPLATE_DIR}/reports_hbs/partials/navbar.hbs" "${HBS_PROPERTY_FILE}"
+		${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/"* "${HBS_PROPERTY_FILE}"
 		rm -f "${HBS_PROPERTY_FILE}"
 		unset IS_OVERVIEW_REPORT IS_QUALITY_REPORT IS_INFO_REPORT IS_CLOUD_REPORT IS_SECURITY_REPORT IS_LANGUAGES_REPORT ROOT_DIR_NAV
 	else

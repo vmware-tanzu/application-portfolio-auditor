@@ -1,0 +1,35 @@
+{{> navbar}}
+
+<!-- Masthead -->
+<div class="bd-masthead py-1" id="content" role="main">
+<div class="container">
+    <h1 class="display-4 mt-4 mb-2">{{> page_title}}</h1>
+    <div>
+        <p class="lead mb-3 text-black-50">{{> page_description}}</p>
+    </div>
+</div>
+</div>
+
+<!-- Tools -->
+<div class="bd-masthead py-3 mb-3" id="tools" role="main">
+    <div class="container">
+        <div class="d-flex">
+            <a href="{{ROOT_DIR_NAV}}./{{> tool_url_report}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="{{ROOT_DIR_NAV}}./static/img/{{> tool_image}}" height="50" width="50" alt="{{> tool_name}}"></a>
+            <div>
+            <h5 class="mt-0 mb-1">{{> tool_name}} <a href="{{> tool_url}}" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{> tool_version}}</a></h5>
+            {{> tool_description}} (<a href="{{ROOT_DIR_NAV}}./{{> tool_url_report}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{ROOT_DIR_NAV}}{{> tool_url_log}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ROOT_DIR_NAV}}./{{> page_url}}">{{> page_title}}</a></li>
+        <li class="breadcrumb-item">{{> tool_name}}</li>
+        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
+        </ol>
+    </nav>
+</div>

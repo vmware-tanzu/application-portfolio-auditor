@@ -17,50 +17,25 @@
       width: 100%;
       border-collapse: collapse;
       margin: 0px auto;
-    } 
-  
-
-    
+    }
     span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
     a.badge.bg-light.text-dark {text-decoration: none;}
   </style>
 </head>
 
 <body>
-  {{> navbar}}
-
-  <!-- Masthead -->
-  <div class="bd-masthead py-1" id="content" role="main">
-    <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
-      <div>
-        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tools -->
-  <div class="bd-masthead py-3 mb-3" id="tools" role="main">
-    <div class="container">
-      <div class="d-flex">
-          <a href="./../17__BEARER/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
-          <div>
-            <h5 class="mt-0 mb-1">Bearer <a href="https://github.com/Bearer/bearer" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{BEARER_VERSION}}</a></h5>
-            Discover, filter and prioritize security and privacy risks in your code. (<a href="./.{{BEARER_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{BEARER_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-          </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item">Bearer</li>
-        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
-      </ol>
-    </nav>
-  </div>
+  {{#> tool_header}}
+    {{#*inline "page_title"}}Security reports{{/inline}}
+    {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
+    {{#*inline "page_url"}}security.html{{/inline}}    
+    {{#*inline "tool_name"}}Bearer{{/inline}}
+    {{#*inline "tool_description"}}Discover, filter and prioritize security and privacy risks in your code.{{/inline}}
+    {{#*inline "tool_url"}}https://github.com/Bearer/bearer{{/inline}}
+    {{#*inline "tool_version"}}{{BEARER_VERSION}}{{/inline}}
+    {{#*inline "tool_url_report"}}17__BEARER/{{/inline}}
+    {{#*inline "tool_url_log"}}{{BEARER_LOG}}{{/inline}}
+    {{#*inline "tool_image"}}bearer.png{{/inline}}
+  {{/tool_header}}
 
   <div class="container">
     <div class="row justify-content-center">

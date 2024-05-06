@@ -53,40 +53,18 @@
 </head>
 
 <body>
-  {{> navbar}}
-
-  <!-- Masthead -->
-  <div class="bd-masthead py-1" id="content" role="main">
-    <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Quality reports</h1>
-      <div>
-        <p class="lead mb-3 text-black-50">Consolidated code quality findings.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tools -->
-  <div class="bd-masthead py-3 mb-3" id="tools" role="main">
-    <div class="container">
-      <div class="d-flex">
-          <a href="./../16__ARCHEO/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
-          <div>
-            <h5 class="mt-0 mb-1">Archeologist <a href="https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TOOL_VERSION}}</a></h5>
-            Find unsupported and unnecessary ancient libraries in your applications. (<a href="../{{ARCHEO_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="../{{ARCHEO_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-          </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../quality.html">Quality</a></li>
-        <li class="breadcrumb-item">Archeologist </li>
-        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
-      </ol>
-    </nav>
-  </div>
+  {{#> tool_header}}
+    {{#*inline "page_title"}}Quality reports{{/inline}}
+    {{#*inline "page_description"}}Consolidated code quality findings.{{/inline}}
+    {{#*inline "page_url"}}quality.html{{/inline}}    
+    {{#*inline "tool_name"}}Archeologist{{/inline}}
+    {{#*inline "tool_description"}}Find unsupported and unnecessary ancient libraries in your applications.{{/inline}}
+    {{#*inline "tool_url"}}https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh{{/inline}}
+    {{#*inline "tool_version"}}{{TOOL_VERSION}}{{/inline}}
+    {{#*inline "tool_url_report"}}16__ARCHEO{{/inline}}
+    {{#*inline "tool_url_log"}}{{ARCHEO_LOG}}{{/inline}}
+    {{#*inline "tool_image"}}archeo.png{{/inline}}
+  {{/tool_header}}
 
   <div class="container">
 
