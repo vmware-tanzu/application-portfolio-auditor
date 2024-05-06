@@ -59,7 +59,7 @@ function analyze() {
 				## Run -Grype- using the -Syft- output file and using a locally cached DB
 				#set -x
 				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
-					-v "${GRYPE_VULN_CACHE_DIR}:/db" -v "${DIST_DIR}/templating/reports/security:/tmpl:ro" -v "${OUT_DIR}:/out:delegated" \
+					-v "${GRYPE_VULN_CACHE_DIR}:/db" -v "${DIST_DIR}/templating/reports_hbs/security:/tmpl:ro" -v "${OUT_DIR}:/out:delegated" \
 					-e GRYPE_CHECK_FOR_APP_UPDATE=false -e GRYPE_DB_CACHE_DIR="/db" -e GRYPE_DB_VALIDATE_AGE="${HAS_INTERNET_CONNECTION}" -e GRYPE_DB_AUTO_UPDATE="${HAS_INTERNET_CONNECTION}" \
 					--name Grype "${CONTAINER_IMAGE_NAME_GRYPE}" \
 					-q -o template -t "/tmpl/grype_csv.tmpl" "/out/${APP_NAME_SHORT}_syft.json" >"${GRYPE_OUTPUT}.tmp" 2>>"${LOG_FILE}"
