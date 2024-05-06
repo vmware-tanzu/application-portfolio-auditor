@@ -1,7 +1,3 @@
-<!--
-    Copyright 2019-2024 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,10 +37,10 @@
       <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-icon" src="./static/img/company-icon.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
-        {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
+        {{#if HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/if}}
+        {{#if HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/if}}
+        {{#if HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/if}}
+        {{#if HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/if}}
         <li class="nav-item">
           <a class="nav-link active" href="./info.html"><i class="bi bi-speedometer"></i></a>
         </li>
@@ -143,50 +139,50 @@
           "children":[
             {
               "name":"OWASP Dependency Check",
-              "active":{{#HAS_ODC_REPORT}}true{{/HAS_ODC_REPORT}}{{^HAS_ODC_REPORT}}false{{/HAS_ODC_REPORT}},
+              "active":{{#if HAS_ODC_REPORT}}true{{else}}false{{/if}},
               "value":{{ ODC_RULES }},
               "url":"https://owasp.org/www-project-dependency-check/"
             },
             {
               "name":"ShiftLeft Scan",
-              "active":{{#HAS_SLSCAN_REPORT}}true{{/HAS_SLSCAN_REPORT}}{{^HAS_SLSCAN_REPORT}}false{{/HAS_SLSCAN_REPORT}},
+              "active":{{#if HAS_SLSCAN_REPORT}}true{{else}}false{{/if}},
               "value":{{ SLSCAN_RULES }},
               "url":"https://github.com/ShiftLeftSecurity/sast-scan"
             },
             {
               "name":"Find Security",
               "name_ext":"Bugs",
-              "active":{{#HAS_FSB_REPORT}}true{{/HAS_FSB_REPORT}}{{^HAS_FSB_REPORT}}false{{/HAS_FSB_REPORT}},
+              "active":{{#if HAS_FSB_REPORT}}true{{else}}false{{/if}},
               "value":{{ FSB_RULES }},
               "url":"https://find-sec-bugs.github.io/"
             },
             {
               "name":"Insider",
-              "active":{{#HAS_INSIDER_REPORT}}true{{/HAS_INSIDER_REPORT}}{{^HAS_INSIDER_REPORT}}false{{/HAS_INSIDER_REPORT}},
+              "active":{{#if HAS_INSIDER_REPORT}}true{{else}}false{{/if}},
               "value":{{ INSIDER_RULES }},
               "url":"https://github.com/insidersec/insider"
             },
             {
               "name":"Grype",
-              "active":{{#HAS_GRYPE_REPORT}}true{{/HAS_GRYPE_REPORT}}{{^HAS_GRYPE_REPORT}}false{{/HAS_GRYPE_REPORT}},
+              "active":{{#if HAS_GRYPE_REPORT}}true{{else}}false{{/if}},
               "value":{{ GRYPE_RULES }},
               "url":"https://github.com/anchore/grype"
             },
             {
               "name":"Trivy",
-              "active":{{#HAS_TRIVY_REPORT}}true{{/HAS_TRIVY_REPORT}}{{^HAS_TRIVY_REPORT}}false{{/HAS_TRIVY_REPORT}},
+              "active":{{#if HAS_TRIVY_REPORT}}true{{else}}false{{/if}},
               "value":{{ TRIVY_RULES }},
               "url":"https://github.com/aquasecurity/trivy"
             },
             {
               "name":"OSV",
-              "active":{{#HAS_OSV_REPORT}}true{{/HAS_OSV_REPORT}}{{^HAS_OSV_REPORT}}false{{/HAS_OSV_REPORT}},
+              "active":{{#if HAS_OSV_REPORT}}true{{else}}false{{/if}},
               "value":{{ OSV_RULES }},
               "url":"https://osv.dev/"
             },
             {
               "name":"Bearer",
-              "active":{{#HAS_BEARER_REPORT}}true{{/HAS_BEARER_REPORT}}{{^HAS_BEARER_REPORT}}false{{/HAS_BEARER_REPORT}},
+              "active":{{#if HAS_BEARER_REPORT}}true{{else}}false{{/if}},
               "value":{{ BEARER_RULES }},
               "url":"https://github.com/Bearer/bearer"
             }
@@ -197,41 +193,41 @@
           "children":[
             {
               "name":"CLOC",
-              "active":{{#HAS_LANGUAGES_REPORT}}true{{/HAS_LANGUAGES_REPORT}}{{^HAS_LANGUAGES_REPORT}}false{{/HAS_LANGUAGES_REPORT}},
+              "active":{{#if HAS_LANGUAGES_REPORT}}true{{else}}false{{/if}},
               "value":{{ CLOC_RULES }},
               "url":"https://github.com/AlDanial/cloc"
             },
             {
               "name":"GitHub",
               "name_ext":"Linguist",
-              "active":{{#HAS_LANGUAGES_REPORT}}true{{/HAS_LANGUAGES_REPORT}}{{^HAS_LANGUAGES_REPORT}}false{{/HAS_LANGUAGES_REPORT}},
+              "active":{{#if HAS_LANGUAGES_REPORT}}true{{else}}false{{/if}},
               "value":{{ LINGUIST_RULES }},
               "url":"https://github.com/github/linguist"
             },
             {
               "name":"Microsoft",
               "name_ext":"App Inspector",
-              "active":{{#HAS_MAI_REPORT}}true{{/HAS_MAI_REPORT}}{{^HAS_MAI_REPORT}}false{{/HAS_MAI_REPORT}},
+              "active":{{#if HAS_MAI_REPORT}}true{{else}}false{{/if}},
               "value":{{ MAI_RULES }},
               "url":"https://github.com/Microsoft/ApplicationInspector"
             },
             {
               "name":"Scancode",
               "name_ext":"Toolkit",
-              "active":{{#HAS_SCANCODE_REPORT}}true{{/HAS_SCANCODE_REPORT}}{{^HAS_SCANCODE_REPORT}}false{{/HAS_SCANCODE_REPORT}},
+              "active":{{#if HAS_SCANCODE_REPORT}}true{{else}}false{{/if}},
               "value":{{ SCANCODE_RULES }},
               "url":"https://github.com/nexB/scancode-toolkit"
             },
             {
               "name":"PMD",
               "name_ext":"Analyzer",
-              "active":{{#HAS_PMD_REPORT}}true{{/HAS_PMD_REPORT}}{{^HAS_PMD_REPORT}}false{{/HAS_PMD_REPORT}},
+              "active":{{#if HAS_PMD_REPORT}}true{{else}}false{{/if}},
               "value":{{ PMD_RULES }},
               "url":"https://pmd.github.io/"
             },
             {
               "name":"Archeo",
-              "active":{{#HAS_ARCHEO_REPORT}}true{{/HAS_ARCHEO_REPORT}}{{^HAS_ARCHEO_REPORT}}false{{/HAS_ARCHEO_REPORT}},
+              "active":{{#if HAS_ARCHEO_REPORT}}true{{else}}false{{/if}},
               "value":{{ ARCHEO_RULES }},
               "url":"https://github.com/vmware-tanzu/application-portfolio-auditor"
             }
@@ -242,19 +238,19 @@
           "children":[
             {
               "name":"Windup",
-              "active":{{#HAS_WINDUP_REPORT}}true{{/HAS_WINDUP_REPORT}}{{^HAS_WINDUP_REPORT}}false{{/HAS_WINDUP_REPORT}},
+              "active":{{#if HAS_WINDUP_REPORT}}true{{else}}false{{/if}},
               "value":{{ WINDUP_RULES }},
               "url":"https://github.com/windup/windup"
             },
             {
               "name":"IBM WAMT",
-              "active":{{#HAS_WAMT_REPORT}}true{{/HAS_WAMT_REPORT}}{{^HAS_WAMT_REPORT}}false{{/HAS_WAMT_REPORT}},
+              "active":{{#if HAS_WAMT_REPORT}}true{{else}}false{{/if}},
               "value":{{ WAMT_RULES }},
               "url":"https://www.ibm.com/support/pages/websphere-application-server-migration-toolkit"
             },
             {
               "name":"Cloud Suitability Analyzer",
-              "active":{{#HAS_CSA_REPORT}}true{{/HAS_CSA_REPORT}}{{^HAS_CSA_REPORT}}false{{/HAS_CSA_REPORT}},
+              "active":{{#if HAS_CSA_REPORT}}true{{else}}false{{/if}},
               "value":{{ CSA_RULES }},
               "url":"https://github.com/vmware-tanzu/cloud-suitability-analyzer"
             }

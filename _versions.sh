@@ -51,6 +51,7 @@ export BOOTSTRAP_VERSION='5.3.3'
 export BOOTSTRAP_ICONS_VERSION='1.11.3'
 export TIMELINES_CHART_VERSION='2.12.1'
 export NGINX_VERSION='1.26.0'
+export HBS_VERSION='5.1.2'
 
 # Name of all container images
 export CONTAINER_IMAGE_NAME_FERNFLOWER="fernflower:${FERNFLOWER_VERSION}"

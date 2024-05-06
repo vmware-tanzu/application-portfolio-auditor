@@ -1,7 +1,3 @@
-<!--
-    Copyright 2019-2024 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,9 +98,9 @@
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
         <li class="nav-item"><a class="nav-link active" href="#">Cloud</a></li>
-        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
-        {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
+        {{#if HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/if}}
+        {{#if HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/if}}
+        {{#if HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/if}}
         <li class="nav-item">
           <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
         </li>
@@ -131,14 +127,14 @@
       <div class="panel-heading">
         <h4 class="panel-title">
           <a data-bs-toggle="collapse" href="#collapseTools" role="button" aria-expanded="false" aria-controls="collapseTools">
-            <span class="badge bg-dark">{{TOOLS_CLOUD_COUNT}}</span> analysis tool{{#HAS_MULTIPLE_CLOUD_TOOLS}}s{{/HAS_MULTIPLE_CLOUD_TOOLS}} used
+            <span class="badge bg-dark">{{TOOLS_CLOUD_COUNT}}</span> analysis tool{{#if HAS_MULTIPLE_CLOUD_TOOLS}}s{{/if}} used
           </a>
         </h4>
       </div>
       <div class="collapse" id="collapseTools">
         <div class="panel-body">
           <div class="container">
-{{#HAS_CSA_REPORT}}
+{{#if HAS_CSA_REPORT}}
             <div class="d-flex">
               <a href="{{CSA_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/csa.svg" height="50" width="50" alt="Cloud Suitability Analyzer"></a>
               <div>
@@ -147,18 +143,18 @@
                   <br/><br/>
                 </div>
               </div>
-{{/HAS_CSA_REPORT}}
-{{#HAS_WINDUP_OR_PACKAGES_REPORT}}
+{{/if}}
+{{#if HAS_WINDUP_OR_PACKAGES_REPORT}}
             <div class="d-flex">
-              <a href="{{#HAS_WINDUP_REPORT}}{{WINDUP_URL}}{{/HAS_WINDUP_REPORT}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/windup.png" height="50" width="50" alt="Windup"></a>
+              <a href="{{#if HAS_WINDUP_REPORT}}{{WINDUP_URL}}{{/if}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/windup.png" height="50" width="50" alt="Windup"></a>
               <div>
                 <h5 class="mt-0 mb-1">Windup <a href="https://github.com/windup/windup" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{WINDUP_VERSION}}</a></h5>
-                Detection of proprietary code, dependencies, and technologies. ({{#HAS_WINDUP_REPORT}}<a href="{{WINDUP_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{WINDUP_CSV_ALL}}" rel="noreferrer" target="_blank" class="report-link">csv</a> - {{/HAS_WINDUP_REPORT}}{{#HAS_WINDUP_PACKAGES_REPORT}}<a href="{{WINDUP_PACKAGES}}" rel="noreferrer" target="_blank" class="report-link">packages</a>{{#HAS_WINDUP_REPORT}} - {{/HAS_WINDUP_REPORT}}{{/HAS_WINDUP_PACKAGES_REPORT}}{{#HAS_WINDUP_REPORT}}<a href="{{WINDUP_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>{{/HAS_WINDUP_REPORT}})
+                Detection of proprietary code, dependencies, and technologies. ({{#if HAS_WINDUP_REPORT}}<a href="{{WINDUP_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{WINDUP_CSV_ALL}}" rel="noreferrer" target="_blank" class="report-link">csv</a> - {{/if}}{{#if HAS_WINDUP_PACKAGES_REPORT}}<a href="{{WINDUP_PACKAGES}}" rel="noreferrer" target="_blank" class="report-link">packages</a>{{#if HAS_WINDUP_REPORT}} - {{/if}}{{/if}}{{#if HAS_WINDUP_REPORT}}<a href="{{WINDUP_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>{{/if}})
                 <br/><br/>
               </div>
             </div>
-{{/HAS_WINDUP_OR_PACKAGES_REPORT}}
-{{#HAS_WAMT_REPORT}}
+{{/if}}
+{{#if HAS_WAMT_REPORT}}
             <div class="d-flex">
               <a href="{{WAMT_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/ibm.jpg" height="50" width="50" alt="IBM WebSphere Application Migration Toolkit"></a>
               <div>
@@ -167,7 +163,7 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_WAMT_REPORT}}
+{{/if}}
           </div>
         </div> 
       </div> 
@@ -187,9 +183,9 @@
           <div class="card card-body">
             <p>As columns, you will find respectively the ...</p>
             <ul>
-              {{#HAS_CSA_REPORT}}<li>CSA technical score (cloud-compatibility) from 0 to 10: higher scores are better.</li>{{/HAS_CSA_REPORT}}
-              {{#HAS_WINDUP}}<li>WINDUP total story points (efforts for application migration): lower scores are better.</li>{{/HAS_WINDUP}}
-              {{#HAS_WAMT_REPORT}}<li>WAMT counts of critical, warning, and total issues : lower scores are better.</li>{{/HAS_WAMT_REPORT}}
+              {{#if HAS_CSA_REPORT}}<li>CSA technical score (cloud-compatibility) from 0 to 10: higher scores are better.</li>{{/if}}
+              {{#if HAS_WINDUP}}<li>WINDUP total story points (efforts for application migration): lower scores are better.</li>{{/if}}
+              {{#if HAS_WAMT_REPORT}}<li>WAMT counts of critical, warning, and total issues : lower scores are better.</li>{{/if}}
             </ul>
           </div>
         </div>
@@ -242,5 +238,3 @@
   <script src="./static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/d3.v{{D3_VERSION}}.min.js"></script>
   <script>
-
-

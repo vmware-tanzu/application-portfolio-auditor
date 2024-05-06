@@ -1,7 +1,3 @@
-<!--
-    Copyright 2019-2024 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,10 +100,10 @@
       <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-icon" src="./static/img/company-icon.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
+        {{#if HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/if}}
         <li class="nav-item"><a class="nav-link active" href="#">Security</a></li>
-        {{#HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/HAS_QUALITY_REPORT}}
-        {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
+        {{#if HAS_QUALITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./quality.html">Quality</a></li>{{/if}}
+        {{#if HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/if}}
         <li class="nav-item">
           <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
         </li>
@@ -134,14 +130,14 @@
       <div class="panel-heading">
         <h4 class="panel-title">
           <a data-bs-toggle="collapse" href="#collapseTools" role="button" aria-expanded="false" aria-controls="collapseTools">
-            <span class="badge bg-dark">{{TOOLS_SECURITY_COUNT}}</span> analysis tool{{#HAS_MULTIPLE_SECURITY_TOOLS}}s{{/HAS_MULTIPLE_SECURITY_TOOLS}} used
+            <span class="badge bg-dark">{{TOOLS_SECURITY_COUNT}}</span> analysis tool{{#if HAS_MULTIPLE_SECURITY_TOOLS}}s{{/if}} used
           </a>
         </h4>
         </div>
         <div class="collapse" id="collapseTools">
           <div class="panel-body">
             <div class="container">
-{{#HAS_FSB_REPORT}}
+{{#if HAS_FSB_REPORT}}
             <div class="d-flex">
               <a href="{{FSB_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
               <div>
@@ -150,8 +146,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_FSB_REPORT}}
-{{#HAS_ODC_REPORT}}
+{{/if}}
+{{#if HAS_ODC_REPORT}}
             <div class="d-flex">
               <a href="{{ODC_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
               <div>
@@ -160,8 +156,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_ODC_REPORT}}
-{{#HAS_TRIVY_REPORT}}
+{{/if}}
+{{#if HAS_TRIVY_REPORT}}
             <div class="d-flex">
               <a href="{{TRIVY_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
               <div>
@@ -170,8 +166,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_TRIVY_REPORT}}
-{{#HAS_GRYPE_REPORT}}
+{{/if}}
+{{#if HAS_GRYPE_REPORT}}
             <div class="d-flex">
               <a href="{{GRYPE_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/grype.png" height="50" width="50" alt="Grype"></a>
               <div>
@@ -180,8 +176,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_GRYPE_REPORT}}
-{{#HAS_OSV_REPORT}}
+{{/if}}
+{{#if HAS_OSV_REPORT}}
             <div class="d-flex">
               <a href="{{OSV_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/osv.png" height="50" width="50" alt="OSV"></a>
               <div>
@@ -190,8 +186,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_OSV_REPORT}}
-{{#HAS_INSIDER_REPORT}}
+{{/if}}
+{{#if HAS_INSIDER_REPORT}}
             <div class="d-flex">
               <a href="{{INSIDER_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/insider.png" height="50" width="50" alt="Insider SAST"></a>
               <div>
@@ -200,8 +196,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_INSIDER_REPORT}}
-{{#HAS_BEARER_REPORT}}
+{{/if}}
+{{#if HAS_BEARER_REPORT}}
             <div class="d-flex">
               <a href="{{BEARER_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/bearer.png" height="50" width="50" alt="Bearer"></a>
               <div>
@@ -210,8 +206,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_BEARER_REPORT}}
-{{#HAS_SLSCAN_REPORT}}
+{{/if}}
+{{#if HAS_SLSCAN_REPORT}}
             <div class="d-flex">
               <a href="{{SLSCAN_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/scan-light.png" height="50" width="50" alt="ShiftLeft SAST Scan"></a>
               <div>
@@ -220,14 +216,14 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_SLSCAN_REPORT}}
+{{/if}}
           </div>
         </div> 
       </div> 
     </div>
   </div>
 
-{{#HAS_SECURITY_REPORT_TABLE}}
+{{#if HAS_SECURITY_REPORT_TABLE}}
   <!-- Page Content -->
   <div class="container mb-3">
     <div class="col">
@@ -241,14 +237,14 @@
           <div class="card card-body">
             <p>As columns, you will find respectively the ...</p>
             <ul>
-            {{#HAS_FSB_REPORT}}<li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/HAS_FSB_REPORT}}
-            {{#HAS_ODC_REPORT}}<li>total number of vulnerabilities found by OWASP Dependency-Check in embedded libraries.</li>{{/HAS_ODC_REPORT}}
-            {{#HAS_TRIVY_REPORT}}<li>total number of vulnerabilities found by Trivy.</li>{{/HAS_TRIVY_REPORT}}
-            {{#HAS_GRYPE_REPORT}}<li>total number of vulnerabilities found by Grype.</li>{{/HAS_GRYPE_REPORT}}
-            {{#HAS_OSV_REPORT}}<li>total number of vulnerabilities found by OSV.</li>{{/HAS_OSV_REPORT}}
-            {{#HAS_INSIDER_REPORT}}<li>total number of vulnerabilities found by Insider SAST.</li>{{/HAS_INSIDER_REPORT}}
-            {{#HAS_BEARER_REPORT}}<li>total number of vulnerabilities found by Bearer.</li>{{/HAS_BEARER_REPORT}}
-            {{#HAS_SLSCAN_REPORT}}<li>total number of vulnerabilities found by ShiftLeft SAST Scan (SLScan).</li>{{/HAS_SLSCAN_REPORT}}
+            {{#if HAS_FSB_REPORT}}<li>total number of security warnings issued by Find Security Bugs (FSB).</li>{{/if}}
+            {{#if HAS_ODC_REPORT}}<li>total number of vulnerabilities found by OWASP Dependency-Check in embedded libraries.</li>{{/if}}
+            {{#if HAS_TRIVY_REPORT}}<li>total number of vulnerabilities found by Trivy.</li>{{/if}}
+            {{#if HAS_GRYPE_REPORT}}<li>total number of vulnerabilities found by Grype.</li>{{/if}}
+            {{#if HAS_OSV_REPORT}}<li>total number of vulnerabilities found by OSV.</li>{{/if}}
+            {{#if HAS_INSIDER_REPORT}}<li>total number of vulnerabilities found by Insider SAST.</li>{{/if}}
+            {{#if HAS_BEARER_REPORT}}<li>total number of vulnerabilities found by Bearer.</li>{{/if}}
+            {{#if HAS_SLSCAN_REPORT}}<li>total number of vulnerabilities found by ShiftLeft SAST Scan (SLScan).</li>{{/if}}
             </ul>
           </div>
         </div>
@@ -264,7 +260,7 @@
     </div>
   </div>
   <!-- /.container -->
-{{/HAS_SECURITY_REPORT_TABLE}}
+{{/if}}
 
   <!-- Footer -->
   <section class="footer-component footer-container">
@@ -302,6 +298,6 @@
   <script src="./static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
   <script src="./static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
   <script src="./static/js/d3.v{{D3_VERSION}}.min.js"></script>
-{{#HAS_SECURITY_REPORT_TABLE}}
+{{#if HAS_SECURITY_REPORT_TABLE}}
 <script>
-{{/HAS_SECURITY_REPORT_TABLE}}
+{{/if}}

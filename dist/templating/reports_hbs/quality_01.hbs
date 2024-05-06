@@ -1,7 +1,3 @@
-<!--
-    Copyright 2019-2024 VMware, Inc.
-    SPDX-License-Identifier: Apache-2.0
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,10 +101,10 @@
       <a class="navbar-brand mr-0 me-md-2" href="./index.html"><img class="mr-3 me-3 filter-white company-icon" src="./static/img/company-icon.svg" alt="VMware"/>Application Portfolio Auditor</a>
       <ul class="navbar-nav bd-navbar-nav justify-content-end">
         <li class="nav-item"><a class="nav-link" href="./index.html">Overview</a></li>
-        {{#HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/HAS_CLOUD_REPORT}}
-        {{#HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/HAS_SECURITY_REPORT}}
+        {{#if HAS_CLOUD_REPORT}}<li class="nav-item"><a class="nav-link" href="./cloud.html">Cloud</a></li>{{/if}}
+        {{#if HAS_SECURITY_REPORT}}<li class="nav-item"><a class="nav-link" href="./security.html">Security</a></li>{{/if}}
         <li class="nav-item"><a class="nav-link active" href="#">Quality</a></li>
-        {{#HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/HAS_LANGUAGES_REPORT}}
+        {{#if HAS_LANGUAGES_REPORT}}<li class="nav-item"><a class="nav-link" href="./languages.html">Languages</a></li>{{/if}}
         <li class="nav-item">
           <a class="nav-link" href="./info.html"><i class="bi bi-speedometer"></i></a>
         </li>
@@ -135,14 +131,14 @@
       <div class="panel-heading">
         <h4 class="panel-title">
           <a data-bs-toggle="collapse" href="#collapseTools" role="button" aria-expanded="false" aria-controls="collapseTools">
-            <span class="badge bg-dark">{{TOOLS_QUALITY_COUNT}}</span> analysis tool{{#HAS_MULTIPLE_QUALITY_TOOLS}}s{{/HAS_MULTIPLE_QUALITY_TOOLS}} used
+            <span class="badge bg-dark">{{TOOLS_QUALITY_COUNT}}</span> analysis tool{{#if HAS_MULTIPLE_QUALITY_TOOLS}}s{{/if}} used
           </a>
         </h4>
       </div>
       <div class="collapse" id="collapseTools">
         <div class="panel-body">
           <div class="container">
-{{#HAS_ARCHEO_REPORT}}
+{{#if HAS_ARCHEO_REPORT}}
             <div class="d-flex">
               <a href="{{ARCHEO_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/archeo.png" height="50" width="50" alt="Archeo"></a>
               <div>
@@ -151,8 +147,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_ARCHEO_REPORT}}
-{{#HAS_PMD_REPORT}}
+{{/if}}
+{{#if HAS_PMD_REPORT}}
             <div class="d-flex">
               <a href="{{PMD_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/pmd.png" width="50" alt="PMD Source Code Analyzer"></a>
               <div>
@@ -161,8 +157,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_PMD_REPORT}}
-{{#HAS_SCANCODE_REPORT}}
+{{/if}}
+{{#if HAS_SCANCODE_REPORT}}
             <div class="d-flex">
               <a href="{{SCANCODE_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/scancode.png" height="50" width="50" alt="ScanCode Toolkit"></a>
               <div>
@@ -171,8 +167,8 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_SCANCODE_REPORT}}
-{{#HAS_MAI_REPORT}}
+{{/if}}
+{{#if HAS_MAI_REPORT}}
             <div class="d-flex">
               <a href="{{MAI_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/microsoft.png" height="50" width="50" alt="Microsoft Application Inspector"></a>
               <div>
@@ -181,7 +177,7 @@
                 <br/><br/>
               </div>
             </div>
-{{/HAS_MAI_REPORT}}
+{{/if}}
           </div>
         </div> 
       </div> 
@@ -201,11 +197,11 @@
           <div class="card card-body">
             <p>As columns, you will find respectively the ...</p>
             <ul>
-              {{#HAS_ARCHEO_REPORT}}<li>numbers of Archeo findings.</li>{{/HAS_ARCHEO_REPORT}}
-              {{#HAS_PMD_REPORT}}<li>numbers of triggered PMD rules and violations.</li>{{/HAS_PMD_REPORT}}
-              {{#HAS_PMD_REPORT}}<li>numbers of copy-pasted source code fragments (several lines), lines (several tokens), and tokens (chars and operators).</li>{{/HAS_PMD_REPORT}}
-              {{#HAS_SCANCODE_REPORT}}<li>numbers of embedded licenses and copyrights detected by ScanCode.</li>{{/HAS_SCANCODE_REPORT}}
-              {{#HAS_MAI_REPORT}}<li>numbers of detected features types ('tags') by MAI.</li>{{/HAS_MAI_REPORT}}
+              {{#if HAS_ARCHEO_REPORT}}<li>numbers of Archeo findings.</li>{{/if}}
+              {{#if HAS_PMD_REPORT}}<li>numbers of triggered PMD rules and violations.</li>{{/if}}
+              {{#if HAS_PMD_REPORT}}<li>numbers of copy-pasted source code fragments (several lines), lines (several tokens), and tokens (chars and operators).</li>{{/if}}
+              {{#if HAS_SCANCODE_REPORT}}<li>numbers of embedded licenses and copyrights detected by ScanCode.</li>{{/if}}
+              {{#if HAS_MAI_REPORT}}<li>numbers of detected features types ('tags') by MAI.</li>{{/if}}
             </ul>
           </div>
         </div>
