@@ -1,4 +1,13 @@
 /* Core */
+:root {
+  --findingPurple: #a61c00;
+  --findingRed: #cc0000;
+  --findingOrange: #e69138;
+  --findingYellow: #f1c232; 
+  --findingGreen: #6aa84f;
+  --findingBlue: #4b77d1;
+}
+
 body {
   font-family: 'metropolislight', Fallback, sans-serif;
 }
