@@ -18,24 +18,37 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut handlebars = Handlebars::new();
     // Load template file
-    handlebars.register_template_file("main_template", template_file)?;
+    if Path::new(template_file).exists() {
+        handlebars.register_template_file("main_template", template_file)?;
+    } else {
+        eprintln!("Error - Template file does not exit: '{}'", template_file);
+        return Ok(());
+    }
+
     // Load partials
     for partial in &partials {
         // Get the name of the partial file without extension from the path
-        let partial_stem = Path::new(partial)
-            .file_stem()
-            .and_then(|f| f.to_str())
-            .unwrap_or_default();
-        handlebars.register_template_file(partial_stem, partial)?;
+        if Path::new(partial).exists() {
+            let partial_stem = Path::new(partial)
+                .file_stem()
+                .and_then(|f| f.to_str())
+                .unwrap_or_default();
+            handlebars.register_template_file(partial_stem, partial)?;
+        } else {
+            eprintln!("Error - Partial file does not exit: '{}'", partial);
+            return Ok(());
+        }
     }
 
     // Load variables from property file
     let mut variables = HashMap::new();
-    let variable_content = std::fs::read_to_string(variable_file)?;
-    for line in variable_content.lines() {
-        let mut parts = line.splitn(2, '=');
-        if let (Some(key), Some(value)) = (parts.next(), parts.next()) {
-            variables.insert(key.trim().to_string(), value.trim().to_string());
+    if Path::new(variable_file).exists() {
+        let variable_content = std::fs::read_to_string(variable_file)?;
+        for line in variable_content.lines() {
+            let mut parts = line.splitn(2, '=');
+            if let (Some(key), Some(value)) = (parts.next(), parts.next()) {
+                variables.insert(key.trim().to_string(), value.trim().to_string());
+            }
         }
     }
 
