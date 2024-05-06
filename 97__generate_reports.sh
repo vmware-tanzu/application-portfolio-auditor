@@ -504,7 +504,7 @@ function generate_owasp_dc_html() {
 		ODC_REPORT="${ODC_DIR}/${APP}.html"
 		ODC_STATS="${ODC_DIR}/${APP}_dc_report.stats"
 		if [ -f "${ODC_STATS}" ]; then
-			${MUSTACHE} -s="${ODC_STATS}" "${TEMPLATE_DIR}/reports/security/owasp_dc.mo" >"${ODC_REPORT}"
+			${MUSTACHE} -s="${ODC_STATS}" "${TEMPLATE_DIR}/reports_mo/security/owasp_dc.mo" >"${ODC_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -519,7 +519,7 @@ function generate_fsb_html() {
 		FSB_REPORT="${FSB_DIR}/${APP}.html"
 		FSB_STATS="${FSB_DIR}/${APP}.stats"
 		if [ -f "${FSB_STATS}" ]; then
-			${MUSTACHE} -s="${FSB_STATS}" "${TEMPLATE_DIR}/reports/security/fsb.mo" >"${FSB_REPORT}"
+			${MUSTACHE} -s="${FSB_STATS}" "${TEMPLATE_DIR}/reports_mo/security/fsb.mo" >"${FSB_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -540,10 +540,10 @@ function generate_slscan_html() {
 		TXT_IN="${REPORTS_DIR}/11__SLSCAN/${APP}.txt"
 		SLSCAN_STATS="${REPORTS_DIR}/11__SLSCAN/${APP}.stats"
 		{
-			${MUSTACHE} -s="${SLSCAN_STATS}" "${TEMPLATE_DIR}/reports/security/slscan_01.mo"
+			${MUSTACHE} -s="${SLSCAN_STATS}" "${TEMPLATE_DIR}/reports_mo/security/slscan_01.mo"
 			echo "Tool,Critical,High,Medium,Low,Status"
 			tail -n +3 "${TXT_IN}" | sed 's/║//g' | sed 's/│/,/g' | awk '{$1=$1};1' | sed 's/ , /,/g' | sed '$s/$/\`;/'
-			${MUSTACHE} -s="${SLSCAN_STATS}" "${TEMPLATE_DIR}/reports/security/slscan_02.mo"
+			${MUSTACHE} -s="${SLSCAN_STATS}" "${TEMPLATE_DIR}/reports_mo/security/slscan_02.mo"
 		} >"${SLSCAN_REPORT}"
 	done <"${APP_LIST}"
 	rm -f "${APP_LIST}"
@@ -564,14 +564,14 @@ function generate_osv_html() {
 		OSV_STATS="${OSV_DIR}/${APP}_osv.stats"
 		if [ -f "${OSV_CSV}" ] && [ $(wc -l <(tail -n +2 "${OSV_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				${MUSTACHE} -s="${OSV_STATS}" "${TEMPLATE_DIR}/reports/security/osv_01.mo"
+				${MUSTACHE} -s="${OSV_STATS}" "${TEMPLATE_DIR}/reports_mo/security/osv_01.mo"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${OSV_CSV}"
-				${MUSTACHE} -s="${OSV_STATS}" "${TEMPLATE_DIR}/reports/security/osv_02.mo"
+				${MUSTACHE} -s="${OSV_STATS}" "${TEMPLATE_DIR}/reports_mo/security/osv_02.mo"
 			} >"${OSV_REPORT}"
 		else
 			# Empty result file
-			${MUSTACHE} "${TEMPLATE_DIR}/reports/security/osv_empty.mo" >"${OSV_REPORT}"
+			${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/security/osv_empty.mo" >"${OSV_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -586,7 +586,7 @@ function generate_insider_html() {
 		INSIDER_REPORT="${INSIDER_DIR}/${APP}.html"
 		INSIDER_STATS="${INSIDER_DIR}/${APP}_insider.stats"
 		if [ -f "${INSIDER_STATS}" ]; then
-			${MUSTACHE} -s="${INSIDER_STATS}" "${TEMPLATE_DIR}/reports/security/insider.mo" >"${INSIDER_REPORT}"
+			${MUSTACHE} -s="${INSIDER_STATS}" "${TEMPLATE_DIR}/reports_mo/security/insider.mo" >"${INSIDER_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -606,14 +606,14 @@ function generate_grype_html() {
 		GRYPE_STATS="${GRYPE_DIR}/${APP}_grype.stats"
 		if [ -f "${GRYPE_CSV}" ] && [ $(wc -l <(tail -n +2 "${GRYPE_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				${MUSTACHE} -s="${GRYPE_STATS}" "${TEMPLATE_DIR}/reports/security/grype_01.mo"
+				${MUSTACHE} -s="${GRYPE_STATS}" "${TEMPLATE_DIR}/reports_mo/security/grype_01.mo"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${GRYPE_CSV}"
-				${MUSTACHE} -s="${GRYPE_STATS}" "${TEMPLATE_DIR}/reports/security/grype_02.mo"
+				${MUSTACHE} -s="${GRYPE_STATS}" "${TEMPLATE_DIR}/reports_mo/security/grype_02.mo"
 			} >"${GRYPE_REPORT}"
 		else
 			# Empty result file
-			${MUSTACHE} "${TEMPLATE_DIR}/reports/security/grype_empty.mo" >"${GRYPE_REPORT}"
+			${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/security/grype_empty.mo" >"${GRYPE_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -628,7 +628,7 @@ function generate_bearer_html() {
 		BEARER_REPORT="${BEARER_DIR}/${APP}.html"
 		BEARER_STATS="${BEARER_DIR}/${APP}_bearer.stats"
 		if [ -f "${BEARER_STATS}" ]; then
-			${MUSTACHE} -s="${BEARER_STATS}" "${TEMPLATE_DIR}/reports/security/bearer.mo" >"${BEARER_REPORT}"
+			${MUSTACHE} -s="${BEARER_STATS}" "${TEMPLATE_DIR}/reports_mo/security/bearer.mo" >"${BEARER_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -788,7 +788,7 @@ function generate_trivy_html() {
 
 		if [ $(wc -l <(tail -n +2 "${TRIVY_CSV}") | tr -d ' ' | cut -d'/' -f 1) -eq 0 ]; then
 			# Empty result file
-			${MUSTACHE} "${TEMPLATE_DIR}/reports/security/trivy_empty.mo" >"${TRIVY_REPORT}"
+			${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/security/trivy_empty.mo" >"${TRIVY_REPORT}"
 		else
 			sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}" | tr -s ' ' >"${TRIVY_TMP}"
 			stream_edit "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
@@ -799,9 +799,9 @@ function generate_trivy_html() {
 			stream_edit "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
 			stream_edit "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
 			{
-				${MUSTACHE} -s="${TRIVY_STATS}" "${TEMPLATE_DIR}/reports/security/trivy_01.mo"
+				${MUSTACHE} -s="${TRIVY_STATS}" "${TEMPLATE_DIR}/reports_mo/security/trivy_01.mo"
 				cat "${TRIVY_TMP}"
-				${MUSTACHE} -s="${TRIVY_STATS}" "${TEMPLATE_DIR}/reports/security/trivy_02.mo"
+				${MUSTACHE} -s="${TRIVY_STATS}" "${TEMPLATE_DIR}/reports_mo/security/trivy_02.mo"
 			} >"${TRIVY_REPORT}"
 		fi
 		rm -f "${TRIVY_TMP}" "${TRIVY_TMP}-e"
@@ -824,14 +824,14 @@ function generate_archeo_html() {
 		ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo_findings.csv"
 		if [ -f "${ARCHEO_CSV}" ] && [ $(wc -l <(tail -n +2 "${ARCHEO_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				${MUSTACHE} -s="${ARCHEO_STATS}" "${TEMPLATE_DIR}/reports/quality/archeo_01.mo"
+				${MUSTACHE} -s="${ARCHEO_STATS}" "${TEMPLATE_DIR}/reports_mo/quality/archeo_01.mo"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; ' "${ARCHEO_CSV}"
-				${MUSTACHE} -s="${ARCHEO_STATS}" "${TEMPLATE_DIR}/reports/quality/archeo_02.mo"
+				${MUSTACHE} -s="${ARCHEO_STATS}" "${TEMPLATE_DIR}/reports_mo/quality/archeo_02.mo"
 			} >"${ARCHEO_REPORT}"
 		else
 			# Empty result file
-			${MUSTACHE} "${TEMPLATE_DIR}/reports/quality/archeo_empty.mo" >"${ARCHEO_REPORT}"
+			${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/quality/archeo_empty.mo" >"${ARCHEO_REPORT}"
 		fi
 	done <"${APP_LIST}"
 
@@ -850,7 +850,7 @@ function generate_reports() {
 	export_vars
 
 	# Generate overview report (index)
-	${MUSTACHE} "${TEMPLATE_DIR}/reports/index.mo" >"${LINK_REPORT}"
+	${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/index.mo" >"${LINK_REPORT}"
 	log_console_success "Open this file for reviewing all generated reports: ${LINK_REPORT}"
 
 	# Generate cloud report
@@ -863,12 +863,12 @@ function generate_reports() {
 
 		# Generate cloud HTML file
 		{
-			${MUSTACHE} "${TEMPLATE_DIR}/reports/cloud_01.mo"
+			${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/cloud_01.mo"
 			echo 'const longText = `'\\
 			cat "${CLOUD_TMP_CSV}"
 			echo '`;'
 			[[ -f "${RESULT_REPORT_MAP}" ]] && cat "${RESULT_REPORT_MAP}"
-			${MUSTACHE} "${TEMPLATE_DIR}/reports/cloud_02.mo"
+			${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/cloud_02.mo"
 		} >"${CLOUD_REPORT}"
 
 		#rm -f "${RESULT_REPORT_MAP}"
@@ -917,17 +917,17 @@ function generate_reports() {
 			export HAS_SECURITY_REPORT_TABLE=TRUE
 			# Generate security HTML file with table
 			{
-				${MUSTACHE} "${TEMPLATE_DIR}/reports/security_01.mo"
+				${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/security_01.mo"
 				echo 'const longText = `'\\
 				cat "${SECURITY_TMP_CSV}"
 				echo '`;'
-				${MUSTACHE} "${TEMPLATE_DIR}/reports/security_02.mo"
+				${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/security_02.mo"
 			} >"${SECURITY_REPORT}"
 		else
 			export HAS_SECURITY_REPORT_TABLE=''
 			# Generate security HTML file without table
 			{
-				${MUSTACHE} "${TEMPLATE_DIR}/reports/security_01.mo"
+				${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/security_01.mo"
 			} >"${SECURITY_REPORT}"
 		fi
 
@@ -947,11 +947,11 @@ function generate_reports() {
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then
 			# Generate quality HTML file
 			{
-				${MUSTACHE} "${TEMPLATE_DIR}/reports/quality_01.mo"
+				${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/quality_01.mo"
 				echo 'const longText = `'\\
 				cat "${QUALITY_TMP_CSV}"
 				echo '`;'
-				${MUSTACHE} "${TEMPLATE_DIR}/reports/quality_02.mo"
+				${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/quality_02.mo"
 			} >"${QUALITY_REPORT}"
 			log_console_info "Open this file for reviewing all generated reports: ${QUALITY_REPORT}"
 		else
@@ -962,7 +962,7 @@ function generate_reports() {
 	# shellcheck source=/dev/null
 	source "${DIST_DIR}/rules.counts"
 	export ARCHEO_RULES CSA_RULES CLOC_RULES FSB_RULES GRYPE_RULES INSIDER_RULES LINGUIST_RULES MAI_RULES ODC_RULES OSV_RULES BEARER_RULES PMD_RULES SCANCODE_RULES SLSCAN_RULES TRIVY_RULES WAMT_RULES WINDUP_RULES
-	${MUSTACHE} "${TEMPLATE_DIR}/reports/info/info_rules.mo" >"${INFO_RULES_REPORT}"
+	${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/info/info_rules.mo" >"${INFO_RULES_REPORT}"
 
 	# Merging all results in one summary CSV file (${SUMMARY_CSV})
 	rm -f "${SUMMARY_CSV}"
@@ -1016,7 +1016,7 @@ function generate_language_report() {
 		HEIGHT=$((450 > CALCULATED_HEIGHT ? 450 : CALCULATED_HEIGHT))
 
 		# Header
-		${MUSTACHE} "${TEMPLATE_DIR}/reports/languages_01.mo" >"${LANGUAGES_REPORT}"
+		${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/languages_01.mo" >"${LANGUAGES_REPORT}"
 		# Append prepared data
 		{
 			echo 'const longTextCloc = `'\\
@@ -1027,7 +1027,7 @@ function generate_language_report() {
 			echo '`;'
 		} >>"${LANGUAGES_REPORT}"
 		# Footer
-		${MUSTACHE} "${TEMPLATE_DIR}/reports/languages_02.mo" >>"${LANGUAGES_REPORT}"
+		${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/languages_02.mo" >>"${LANGUAGES_REPORT}"
 		log_console_info "Open this file for reviewing all generated reports: ${LANGUAGES_REPORT}"
 
 	fi
