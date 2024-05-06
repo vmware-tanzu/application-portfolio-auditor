@@ -462,7 +462,7 @@ function generate_security_csv() {
 	export BEARER_CSV_FILE="${REPORTS_DIR}/17__BEARER/_results__security__bearer.csv"
 	export SLSCAN_CSV_FILE="${REPORTS_DIR}/11__SLSCAN/_results_extracted.csv"
 
-	CSV_FILES=("${FSB_CSV_FILE}" "${ODC_CSV_FILE}" "${TRIVY_CSV_FILE}" "${GRYPE_CSV_FILE}" "${OSV_CSV_FILE}" "${INSIDER_CSV_FILE}" "${BEARER_CSV_FILE}" "${SLSCAN_CSV_FILE}" )
+	CSV_FILES=("${FSB_CSV_FILE}" "${ODC_CSV_FILE}" "${TRIVY_CSV_FILE}" "${GRYPE_CSV_FILE}" "${OSV_CSV_FILE}" "${INSIDER_CSV_FILE}" "${BEARER_CSV_FILE}" "${SLSCAN_CSV_FILE}")
 
 	for CSV in "${CSV_FILES[@]}"; do
 		concatenate_csv "${CSV}" "${TMP_CSV}"
