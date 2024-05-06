@@ -33,6 +33,7 @@ util/00__release/json-v2.sh
 /docs/
 py_env
 /reports*
+target
 /tmp/
 /work-in-progress/
 node_modules
