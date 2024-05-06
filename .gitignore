@@ -20,6 +20,7 @@ dist/containerized_security_reports/_trivy_scan__oci*
 dist/owasp_data/*
 dist/grype_cache/*
 dist/templating/mo_*
+dist/templating/hbs_*
 dist/templating/static/img/*
 dist/templating/static/fonts/bootstrap-icons*
 dist/templating/static/fonts/Metropolis-*
