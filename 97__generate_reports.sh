@@ -40,7 +40,7 @@ QUALITY_TMP_CSV="${REPORTS_DIR}/99__results__quality.csv"
 # All relevant variables for the generated reports
 REPORT_VARIABLES=(
 	# General
-	"TOOLS_COUNT" "APP_GROUP" "APP_COUNT" "CSV_URL" "NAV_LINK" "NAV_ICON" "HAS_MULTIPLE_APPS" "HAS_MULTIPLE_TOOLS"
+	"TOOLS_COUNT" "APP_GROUP" "APP_COUNT" "CSV_URL" "NAV_LINK" "NAV_ICON" "HAS_MULTIPLE_APPS" "HAS_MULTIPLE_TOOLS" "ROOT_DIR_NAV"
 
 	# Cloud-readiness
 	"TOOLS_CLOUD_COUNT" "HAS_MULTIPLE_CLOUD_TOOLS" "HAS_WINDUP" "HAS_WINDUP_REPORT" "HAS_WINDUP_PACKAGES_REPORT" "HAS_WINDUP_OR_PACKAGES_REPORT" "WINDUP_URL" "WINDUP_PACKAGES" "WINDUP_CSV_ALL" "WINDUP_LOG" "WAMT_URL" "WAMT_LOG" "HAS_CSA_REPORT" "HAS_WAMT_REPORT" "HAS_CLOUD_REPORT" "HAS_INDEX_CLOUD_REPORT"
@@ -57,17 +57,46 @@ REPORT_VARIABLES=(
 
 # Generate content from template file
 function apply_template() {
-	PROPERTY_FILE=${1}
-	TEMPLATE_FILE=${2}
+	URL_DEPTH=${1}
+	PROPERTY_FILE=${2}
+	TEMPLATE_FILE=${3}
+
 	if [[ "${IS_TEMPLATE_ENGINE_HBS}" == "TRUE" ]]; then
 		local HBS_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_hbs/${TEMPLATE_FILE}.hbs"
 		local HBS_PROPERTY_FILE="/tmp/hbs.property"
+
+		if [[ "${URL_DEPTH}" == '1' ]]; then
+			export ROOT_DIR_NAV='./.'	
+		fi
+
+		case "${TEMPLATE_FILE}" in
+		index*)
+			export IS_OVERVIEW_REPORT="TRUE"
+
+			;;
+		quality*)
+			export IS_QUALITY_REPORT="TRUE"
+			;;
+		info*)
+			export IS_INFO_REPORT="TRUE"
+			;;
+		cloud*)
+			export IS_CLOUD_REPORT="TRUE"
+			;;
+		security*)
+			export IS_SECURITY_REPORT="TRUE"
+			;;
+		languages*)
+			export IS_LANGUAGES_REPORT="TRUE"
+			;;
+		esac
 		{
 			[[ -f "${PROPERTY_FILE}" ]] && cat "${PROPERTY_FILE}"
 			env
 		} >"${HBS_PROPERTY_FILE}"
-		${HBS} "${HBS_TEMPLATE_FILE}" "${HBS_PROPERTY_FILE}"
+		${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/footer.hbs" "${TEMPLATE_DIR}/reports_hbs/partials/navbar.hbs" "${HBS_PROPERTY_FILE}"
 		rm -f "${HBS_PROPERTY_FILE}"
+		unset IS_OVERVIEW_REPORT IS_QUALITY_REPORT IS_INFO_REPORT IS_CLOUD_REPORT IS_SECURITY_REPORT IS_LANGUAGES_REPORT ROOT_DIR_NAV
 	else
 		local MUSTACHE_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_mo/${TEMPLATE_FILE}.mo"
 		if [[ -f "${PROPERTY_FILE}" ]]; then
@@ -533,7 +562,7 @@ function generate_owasp_dc_html() {
 		ODC_REPORT="${ODC_DIR}/${APP}.html"
 		ODC_STATS="${ODC_DIR}/${APP}_dc_report.stats"
 		if [ -f "${ODC_STATS}" ]; then
-			apply_template "${ODC_STATS}" "security/owasp_dc" >"${ODC_REPORT}"
+			apply_template '1' "${ODC_STATS}" "security/owasp_dc" >"${ODC_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -548,7 +577,7 @@ function generate_fsb_html() {
 		FSB_REPORT="${FSB_DIR}/${APP}.html"
 		FSB_STATS="${FSB_DIR}/${APP}.stats"
 		if [ -f "${FSB_STATS}" ]; then
-			apply_template "${FSB_STATS}" "security/fsb" >"${FSB_REPORT}"
+			apply_template '1' "${FSB_STATS}" "security/fsb" >"${FSB_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -569,10 +598,10 @@ function generate_slscan_html() {
 		TXT_IN="${REPORTS_DIR}/11__SLSCAN/${APP}.txt"
 		SLSCAN_STATS="${REPORTS_DIR}/11__SLSCAN/${APP}.stats"
 		{
-			apply_template "${SLSCAN_STATS}" "security/slscan_01"
+			apply_template '1' "${SLSCAN_STATS}" "security/slscan_01"
 			echo "Tool,Critical,High,Medium,Low,Status"
 			tail -n +3 "${TXT_IN}" | sed 's/║//g' | sed 's/│/,/g' | awk '{$1=$1};1' | sed 's/ , /,/g' | sed '$s/$/\`;/'
-			apply_template "${SLSCAN_STATS}" "security/slscan_02"
+			apply_template '1' "${SLSCAN_STATS}" "security/slscan_02"
 		} >"${SLSCAN_REPORT}"
 	done <"${APP_LIST}"
 	rm -f "${APP_LIST}"
@@ -593,14 +622,14 @@ function generate_osv_html() {
 		OSV_STATS="${OSV_DIR}/${APP}_osv.stats"
 		if [ -f "${OSV_CSV}" ] && [ $(wc -l <(tail -n +2 "${OSV_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				apply_template "${OSV_STATS}" "security/osv_01"
+				apply_template '1' "${OSV_STATS}" "security/osv_01"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${OSV_CSV}"
-				apply_template "${OSV_STATS}" "security/osv_02"
+				apply_template '1' "${OSV_STATS}" "security/osv_02"
 			} >"${OSV_REPORT}"
 		else
 			# Empty result file
-			apply_template "${OSV_STATS}" "security/osv_empty" >"${OSV_REPORT}"
+			apply_template '1' "${OSV_STATS}" "security/osv_empty" >"${OSV_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -615,7 +644,7 @@ function generate_insider_html() {
 		INSIDER_REPORT="${INSIDER_DIR}/${APP}.html"
 		INSIDER_STATS="${INSIDER_DIR}/${APP}_insider.stats"
 		if [ -f "${INSIDER_STATS}" ]; then
-			apply_template "${INSIDER_STATS}" "security/insider" >"${INSIDER_REPORT}"
+			apply_template '1' "${INSIDER_STATS}" "security/insider" >"${INSIDER_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -635,14 +664,14 @@ function generate_grype_html() {
 		GRYPE_STATS="${GRYPE_DIR}/${APP}_grype.stats"
 		if [ -f "${GRYPE_CSV}" ] && [ $(wc -l <(tail -n +2 "${GRYPE_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				apply_template "${GRYPE_STATS}" "security/grype_01"
+				apply_template '1' "${GRYPE_STATS}" "security/grype_01"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; s/^"Library,/Library,/g;' "${GRYPE_CSV}"
-				apply_template "${GRYPE_STATS}" "security/grype_02"
+				apply_template '1' "${GRYPE_STATS}" "security/grype_02"
 			} >"${GRYPE_REPORT}"
 		else
 			# Empty result file
-			apply_template "${GRYPE_STATS}" "security/grype_empty" >"${GRYPE_REPORT}"
+			apply_template '1' "${GRYPE_STATS}" "security/grype_empty" >"${GRYPE_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -657,7 +686,7 @@ function generate_bearer_html() {
 		BEARER_REPORT="${BEARER_DIR}/${APP}.html"
 		BEARER_STATS="${BEARER_DIR}/${APP}_bearer.stats"
 		if [ -f "${BEARER_STATS}" ]; then
-			apply_template "${BEARER_STATS}" "security/bearer" >"${BEARER_REPORT}"
+			apply_template '1' "${BEARER_STATS}" "security/bearer" >"${BEARER_REPORT}"
 		fi
 	done <"${APP_LIST}"
 }
@@ -817,7 +846,7 @@ function generate_trivy_html() {
 
 		if [ $(wc -l <(tail -n +2 "${TRIVY_CSV}") | tr -d ' ' | cut -d'/' -f 1) -eq 0 ]; then
 			# Empty result file
-			apply_template '' 'security/trivy_empty' >"${TRIVY_REPORT}"
+			apply_template '1' '' 'security/trivy_empty' >"${TRIVY_REPORT}"
 		else
 			sed 's/\$/\\\$/g; s/\`/"/g; s|\(java-archive\)|jar|g; s/^""/"/g; s/^"Library,/Library,/g; s#\(http[s]*://\)# \1#g' "${TRIVY_CSV}" | tr -s ' ' >"${TRIVY_TMP}"
 			stream_edit "${TRIVY_PATTERNS_1}" "${TRIVY_TMP}"
@@ -828,9 +857,9 @@ function generate_trivy_html() {
 			stream_edit "${TRIVY_PATTERNS_6}" "${TRIVY_TMP}"
 			stream_edit "${TRIVY_PATTERNS_7}" "${TRIVY_TMP}"
 			{
-				apply_template "${TRIVY_STATS}" "security/trivy_01"
+				apply_template '1' "${TRIVY_STATS}" "security/trivy_01"
 				cat "${TRIVY_TMP}"
-				apply_template "${TRIVY_STATS}" "security/trivy_02"
+				apply_template '1' "${TRIVY_STATS}" "security/trivy_02"
 			} >"${TRIVY_REPORT}"
 		fi
 		rm -f "${TRIVY_TMP}" "${TRIVY_TMP}-e"
@@ -853,14 +882,14 @@ function generate_archeo_html() {
 		ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo_findings.csv"
 		if [ -f "${ARCHEO_CSV}" ] && [ $(wc -l <(tail -n +2 "${ARCHEO_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
-				apply_template "${ARCHEO_STATS}" "quality/archeo_01"
+				apply_template '1' "${ARCHEO_STATS}" "quality/archeo_01"
 				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
 				sed 's/\$/\\\$/g; s/\`/"/g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; ' "${ARCHEO_CSV}"
-				apply_template "${ARCHEO_STATS}" "quality/archeo_02"
+				apply_template '1' "${ARCHEO_STATS}" "quality/archeo_02"
 			} >"${ARCHEO_REPORT}"
 		else
 			# Empty result file
-			apply_template '' 'quality/archeo_empty' >"${ARCHEO_REPORT}"
+			apply_template '1' '' 'quality/archeo_empty' >"${ARCHEO_REPORT}"
 		fi
 	done <"${APP_LIST}"
 
@@ -879,7 +908,7 @@ function generate_reports() {
 	export_vars
 
 	# Generate overview report (index)
-	apply_template '' 'index' >"${LINK_REPORT}"
+	apply_template '0' '' 'index' >"${LINK_REPORT}"
 	log_console_success "Open this file for reviewing all generated reports: ${LINK_REPORT}"
 
 	# Generate cloud report
@@ -892,12 +921,12 @@ function generate_reports() {
 
 		# Generate cloud HTML file
 		{
-			apply_template '' 'cloud_01'
+			apply_template '0' '' 'cloud_01'
 			echo 'const longText = `'\\
 			cat "${CLOUD_TMP_CSV}"
 			echo '`;'
 			[[ -f "${RESULT_REPORT_MAP}" ]] && cat "${RESULT_REPORT_MAP}"
-			apply_template '' 'cloud_02'
+			apply_template '0' '' 'cloud_02'
 		} >"${CLOUD_REPORT}"
 
 		#rm -f "${RESULT_REPORT_MAP}"
@@ -946,17 +975,17 @@ function generate_reports() {
 			export HAS_SECURITY_REPORT_TABLE=TRUE
 			# Generate security HTML file with table
 			{
-				apply_template '' 'security_01'
+				apply_template '0' '' 'security_01'
 				echo 'const longText = `'\\
 				cat "${SECURITY_TMP_CSV}"
 				echo '`;'
-				apply_template '' 'security_02'
+				apply_template '0' '' 'security_02'
 			} >"${SECURITY_REPORT}"
 		else
 			export HAS_SECURITY_REPORT_TABLE=''
 			# Generate security HTML file without table
 			{
-				apply_template '' 'security_01'
+				apply_template '0' '' 'security_01'
 			} >"${SECURITY_REPORT}"
 		fi
 
@@ -976,11 +1005,11 @@ function generate_reports() {
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then
 			# Generate quality HTML file
 			{
-				apply_template '' 'quality_01'
+				apply_template '0' '' 'quality_01'
 				echo 'const longText = `'\\
 				cat "${QUALITY_TMP_CSV}"
 				echo '`;'
-				apply_template '' 'quality_02'
+				apply_template '0' '' 'quality_02'
 			} >"${QUALITY_REPORT}"
 			log_console_info "Open this file for reviewing all generated reports: ${QUALITY_REPORT}"
 		else
@@ -991,7 +1020,7 @@ function generate_reports() {
 	# shellcheck source=/dev/null
 	source "${DIST_DIR}/rules.counts"
 	export ARCHEO_RULES CSA_RULES CLOC_RULES FSB_RULES GRYPE_RULES INSIDER_RULES LINGUIST_RULES MAI_RULES ODC_RULES OSV_RULES BEARER_RULES PMD_RULES SCANCODE_RULES SLSCAN_RULES TRIVY_RULES WAMT_RULES WINDUP_RULES
-	apply_template '' 'info/info_rules' >"${INFO_RULES_REPORT}"
+	apply_template '0' '' 'info/info_rules' >"${INFO_RULES_REPORT}"
 
 	# Merging all results in one summary CSV file (${SUMMARY_CSV})
 	rm -f "${SUMMARY_CSV}"
@@ -1046,14 +1075,14 @@ function generate_language_report() {
 
 		# Append prepared data
 		{
-			apply_template '' 'languages_01'
+			apply_template '0' '' 'languages_01'
 			echo 'const longTextCloc = `'\\
 			cat "${OUTPUT_CLOC_FILE}"
 			echo '`;'
 			echo 'const longTextLinguist = `'\\
 			cat "${OUTPUT_LINGUIST_FILE}"
 			echo '`;'
-			apply_template '' 'languages_02'
+			apply_template '0' '' 'languages_02'
 		} >"${LANGUAGES_REPORT}"
 
 		log_console_info "Open this file for reviewing all generated reports: ${LANGUAGES_REPORT}"
