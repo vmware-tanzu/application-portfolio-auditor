@@ -12,6 +12,7 @@
 *.iml
 *.old
 *.img
+.venv
 /apps*
 conf/Fernflower/excluded_sha1.txt
 dist/containerized/*.zip
