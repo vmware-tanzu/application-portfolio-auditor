@@ -12,6 +12,16 @@ export CONTAINER_ENGINE="docker"
 export DOCKER_CLI_HINTS=false
 
 # ------ Do not modify
+source "${CURRENT_DIR}/_versions.sh"
+
+export GREEN RED ORANGE BLUE N B
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+ORANGE='\033[0;33m'
+BLUE='\033[1;34m'
+N='\033[0m' # aka. 'NORMAL' 'NC' no color
+B='\033[1m' # aka. 'BOLD'
 
 # Argument for the container engine execution
 case "${CONTAINER_ENGINE}" in
@@ -25,14 +35,65 @@ case "${CONTAINER_ENGINE}" in
 	;;
 esac
 
-export GREEN RED ORANGE BLUE N B
+# Configuration of the templating engine
+export TEMPLATE_DIR="${DIST_DIR}/templating"
+export MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
+export HBS="${TEMPLATE_DIR}/hbs_${HBS_VERSION}"
+export IS_TEMPLATE_ENGINE_HBS=FALSE
+if [[ -f "${HBS}" ]]; then
+	export IS_TEMPLATE_ENGINE_HBS=TRUE
+fi
 
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-ORANGE='\033[0;33m'
-BLUE='\033[1;34m'
-N='\033[0m' # aka. 'NORMAL' 'NC' no color
-B='\033[1m' # aka. 'BOLD'
+# Generate content from template file
+function apply_template() {
+	URL_DEPTH=${1}
+	PROPERTY_FILE=${2}
+	TEMPLATE_FILE=${3}
+
+	if [[ "${IS_TEMPLATE_ENGINE_HBS}" == "TRUE" ]]; then
+		local HBS_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_hbs/${TEMPLATE_FILE}.hbs"
+		local HBS_PROPERTY_FILE="/tmp/hbs.property"
+
+		if [[ "${URL_DEPTH}" == '1' ]]; then
+			export ROOT_DIR_NAV='./.'
+		fi
+
+		case "${TEMPLATE_FILE}" in
+		index*)
+			export IS_OVERVIEW_REPORT="TRUE"
+			;;
+		quality*)
+			export IS_QUALITY_REPORT="TRUE"
+			;;
+		info*)
+			export IS_INFO_REPORT="TRUE"
+			;;
+		cloud*)
+			export IS_CLOUD_REPORT="TRUE"
+			;;
+		security*)
+			export IS_SECURITY_REPORT="TRUE"
+			;;
+		languages*)
+			export IS_LANGUAGES_REPORT="TRUE"
+			;;
+		esac
+		{
+			[[ -f "${PROPERTY_FILE}" ]] && cat "${PROPERTY_FILE}"
+			env
+		} >"${HBS_PROPERTY_FILE}"
+		${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/"* "${HBS_PROPERTY_FILE}"
+		rm -f "${HBS_PROPERTY_FILE}"
+		unset IS_OVERVIEW_REPORT IS_QUALITY_REPORT IS_INFO_REPORT IS_CLOUD_REPORT IS_SECURITY_REPORT IS_LANGUAGES_REPORT ROOT_DIR_NAV
+	else
+		local MUSTACHE_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_mo/${TEMPLATE_FILE}.mo"
+		if [[ -f "${PROPERTY_FILE}" ]]; then
+			${MUSTACHE} -s="${PROPERTY_FILE}" "${MUSTACHE_TEMPLATE_FILE}"
+		else
+			${MUSTACHE} "${MUSTACHE_TEMPLATE_FILE}"
+		fi
+	fi
+}
 
 function log_tool_start() {
 	set -u
@@ -144,3 +205,6 @@ function check_debug_mode() {
 		exec 6>/dev/null
 	fi
 }
+
+# Export function for download_and_update_tools.sh
+export -f echo_console_tool_info

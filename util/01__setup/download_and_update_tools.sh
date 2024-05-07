@@ -20,12 +20,6 @@ SCRIPT_PATH="$(
 	cd -- "$(dirname "$0")" >/dev/null 2>&1
 	pwd -P
 )"
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-HOME_DIR="${SCRIPT_DIR}/../.."
-export DIST_DIR="${HOME_DIR}/dist"
-
-# shellcheck source=/dev/null
-source "${HOME_DIR}/_versions.sh"
 
 # Determining platform architecture for the build
 ARCH="$(uname -m)"
@@ -37,9 +31,6 @@ if [[ "${CONTAINER_ARCH}" == "arm64" ]]; then
 else
 	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${CONTAINER_ARCH}"
 fi
-
-# shellcheck disable=SC1091
-source "${CURRENT_DIR}/_shared_functions.sh"
 
 function check_container_engine() {
 	if [[ -z "$(command -v ${CONTAINER_ENGINE})" ]]; then
@@ -843,7 +834,7 @@ simple_check_and_download "Script - github_release_api.sh" "../util/00__release/
 simple_check_and_download "Script - github_release_manager.sh" "../util/00__release/github_release_manager.sh" 'https://raw.githubusercontent.com/pgdurand/github-release-api/master/github_release_manager.sh' "latest"
 simple_check_and_download "Script - json-v2.sh" "../util/00__release/json-v2.sh" 'https://raw.githubusercontent.com/pgdurand/github-release-api/master/json-v2.sh' "latest"
 
-chmod +x "${SCRIPT_DIR}/../00__release/"*.sh
+chmod +x "${DIST_DIR}/../util/00__release/"*.sh
 
 # Remove dangling images
 if [ -n "$(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)" ]; then

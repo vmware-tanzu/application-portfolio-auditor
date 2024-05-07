@@ -16,7 +16,6 @@ readonly RED='\033[0;31m'
 readonly NORMAL='\033[0m'
 
 function main {
-
 	if [[ -z "$(command -v trivy)" ]]; then
 		if [[ "${IS_MAC}" == "true" ]]; then
 			echo -e "${RED}Local 'trivy' installation is not available. Please install it ([MacOS] '$ brew install trivy') to use this functionality.${NORMAL}"

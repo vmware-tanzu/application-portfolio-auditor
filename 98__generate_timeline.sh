@@ -18,8 +18,6 @@ CAT_ANALYSIS="Analysis"
 CAT_EXTRACTION="Extraction"
 
 INFO_REPORT="${REPORTS_DIR}/info.html"
-TEMPLATE_DIR="${DIST_DIR}/templating"
-MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 
 export LOG_FILE="${REPORTS_DIR}/${STEP}__generate_timeline.log"
 export AUDIT_DURATION
@@ -175,11 +173,10 @@ function generate_timeline_report() {
 	# shellcheck source=/dev/null
 	source "${REPORT_VARS}"
 	{
-		${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/info/info_timeline_01.mo"
+		apply_template '0' '' "info/info_timeline_01"
 		cat "${TIMELINE_JSON}"
-		${MUSTACHE} "${TEMPLATE_DIR}/reports_mo/info/info_timeline_02.mo"
+		apply_template '0' '' "info/info_timeline_02"
 	} >"${INFO_REPORT}"
-
 	rm -f "${TIMELINE_JSON}" "${REPORT_VARS}"
 }
 

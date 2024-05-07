@@ -14,10 +14,10 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 DIST_DIR=${SCRIPT_DIR}/../../dist
 CONF_DIR=${SCRIPT_DIR}/../../conf
 
-# shellcheck source=./../../_shared_functions.sh
-source "${SCRIPT_DIR}/../../_shared_functions.sh"
-# shellcheck source=./../../_versions.sh
-source "${SCRIPT_DIR}/../../_versions.sh"
+
+# shellcheck disable=SC1091
+export CURRENT_DIR="${SCRIPT_DIR}/../.."
+source "${CURRENT_DIR}/_shared_functions.sh"
 
 ###### 02 - CSA
 CSA_RULES_DIR="${CONF_DIR}/CSA/default-rules"

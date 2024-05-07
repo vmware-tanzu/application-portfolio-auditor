@@ -27,15 +27,11 @@ export DIST_DIR=${CURRENT_DIR}/dist
 export INSTALL_DIR=${CURRENT_DIR}/bin
 export REPORTING_DIR=${CURRENT_DIR}/reports
 
+# Import shared functions and tool version numbers
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
 
-# Import tool version numbers
-# shellcheck disable=SC1091
-source "${CURRENT_DIR}/_versions.sh"
-
 function versions() {
-
 	# Display all current versions in use
 	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N}"
 	echo -e "-> CSA v.${CSA_VERSION}"
@@ -57,7 +53,6 @@ function versions() {
 	echo -e "-> OSV v.${OSV_VERSION}"
 	echo -e "-> Bearer v.${BEARER_VERSION}"
 	exit
-
 }
 
 function usage() {
