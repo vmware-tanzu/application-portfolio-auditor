@@ -812,14 +812,14 @@ function generate_archeo_html() {
 	export APP ARCHEO_REPORT_DIR
 	ARCHEO_REPORT_DIR=./../16__ARCHEO
 
-	APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
-
+	# Generate one report per application
+	local APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 	while read -r FILE; do
-		APP="$(basename "${FILE}")"
-		ARCHEO_DIR="${REPORTS_DIR}/16__ARCHEO"
-		ARCHEO_REPORT="${ARCHEO_DIR}/${APP}.html"
-		ARCHEO_STATS="${ARCHEO_DIR}/${APP}_archeo_findings.stats"
-		ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo_findings.csv"
+		local APP="$(basename "${FILE}")"
+		local ARCHEO_DIR="${REPORTS_DIR}/16__ARCHEO"
+		local ARCHEO_REPORT="${ARCHEO_DIR}/${APP}.html"
+		local ARCHEO_STATS="${ARCHEO_DIR}/${APP}_archeo_findings.stats"
+		local ARCHEO_CSV="${ARCHEO_DIR}/${APP}_archeo_findings.csv"
 		if [ -f "${ARCHEO_CSV}" ] && [ $(wc -l <(tail -n +2 "${ARCHEO_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
 			{
 				apply_template '1' "${ARCHEO_STATS}" "quality/archeo_01"
@@ -833,6 +833,10 @@ function generate_archeo_html() {
 		fi
 	done <"${APP_LIST}"
 
+	# Generate summary report
+	local ARCHEO_SUMMARY_REPORT="${ARCHEO_DIR}/__summary.html"
+	local ARCHEO_SUMMARY_STATS="${ARCHEO_DIR}/_results__quality__archeo.stats"
+	apply_template '1' "${ARCHEO_SUMMARY_STATS}" "quality/archeo_summary" >"${ARCHEO_SUMMARY_REPORT}"
 }
 
 # Generate all pages

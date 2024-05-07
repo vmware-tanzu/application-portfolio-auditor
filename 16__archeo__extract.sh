@@ -14,7 +14,8 @@ STEP=$(get_step)
 SEPARATOR=","
 
 APP_DIR_OUT="${REPORTS_DIR}/${STEP}__ARCHEO"
-RESULT_FILE="${APP_DIR_OUT}/_results__quality__archeo.csv"
+RESULT_SUMMARY_HEATMAP_CSV="${APP_DIR_OUT}/_results__quality__archeo.csv"
+RESULT_SUMMARY_FINDINGS_STATS="${APP_DIR_OUT}/_results__quality__archeo.stats"
 CONF_DIR="${CURRENT_DIR}/conf/archeo"
 export LOG_FILE="${APP_DIR_OUT}.log"
 TODAY="$(date +%Y-%m-%d)"
@@ -181,17 +182,47 @@ function check_support() {
 }
 
 function generate_csv() {
-	echo "Applications${SEPARATOR}Archeo Findings" >"${RESULT_FILE}"
+
+	echo "Applications${SEPARATOR}Archeo Findings" >"${RESULT_SUMMARY_HEATMAP_CSV}"
+
+	# Applications
+	SUMMARY_COUNT_APPS_ALL=0
+
+	# --- Total based on worst supportability finding in each app
+	SUMMARY_COUNT_APPS_UNSUPPORTED=0
+	SUMMARY_COUNT_APPS_ONLY_COMMERCIAL_SUPPORTED=0
+	SUMMARY_COUNT_APPS_OSS_SUPPORT_ENDING_SOON=0
+	SUMMARY_COUNT_APPS_SUPPORTED=0
+	SUMMARY_COUNT_APPS_NOT_RELEVANT=0
+
+	# Libraries
+	SUMMARY_COUNT_LIBS_ALL=0
+
+	# --- Info -> total libs potentially supportable / non supportable (Spring + Micrometer libs)
+	SUMMARY_COUNT_LIBS_SUPPORTABLE=0
+	SUMMARY_COUNT_LIBS_NON_SUPPORTABLE=0
+
+	# --- Detailed supportability info
+	SUMMARY_COUNT_LIBS_SUPPORTED=0
+	SUMMARY_COUNT_LIBS_OSS_SUPPORT_ENDING_SOON=0
+	SUMMARY_COUNT_LIBS_ONLY_COMMERCIAL_SUPPORTED=0
+	SUMMARY_COUNT_LIBS_UNSUPPORTED=0
+
+	# --- Detailed anti-pattern info
+	SUMMARY_COUNT_LIBS_UNDESIRABLE=0
+	SUMMARY_COUNT_LIBS_DUPLICATED=0
+
+	# At the end: SUMMARY_COUNT_LIBS_WITH_NO_OSS_SUPPORT=$((SUMMARY_COUNT_LIBS_UNSUPPORTED + SUMMARY_COUNT_LIBS_ONLY_COMMERCIAL_SUPPORTED))
 
 	while read -r APP; do
 		APP_NAME="$(basename "${APP}")"
 		log_extract_message "app '${APP_NAME}'"
 		ARCHEO_OUTPUT="${APP_DIR_OUT}/${APP_NAME}_archeo.txt"
-		ARCHEO_APP_CSV="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.csv"
-		ARCHEO_STATS="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.stats"
+		APP_FINDINGS_CSV="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.csv"
+		APP_FINDINGS_STATS="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.stats"
 
 		if [[ -f "${ARCHEO_OUTPUT}" ]]; then
-			log_finding "${ARCHEO_APP_CSV}" "Library" "Version" "Category" "Severity" "Description"
+			log_finding "${APP_FINDINGS_CSV}" "Library" "Version" "Category" "Severity" "Description"
 
 			local COUNT_ALL_LIBS=0
 			local COUNT_ALL_SUPPORTABLE_LIBS=0
@@ -401,7 +432,7 @@ function generate_csv() {
 
 				if [[ -n "${DETECTED_PROJECT:-}" ]]; then
 					((COUNT_ALL_SUPPORTABLE_LIBS += 1))
-					check_support "${DETECTED_PROJECT}" "${ARCHEO_APP_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
+					check_support "${DETECTED_PROJECT}" "${APP_FINDINGS_CSV}" "${LIB}" "${E_VERSION_SHORT}" "${E_VERSION_FULL}"
 				fi
 
 				local LIB_TYPE=''
@@ -434,7 +465,7 @@ function generate_csv() {
 					# Replace all '/' by ':'
 					ENTRY_FINAL="${ENTRY_CLEAN//\//:}"
 					((COUNT_UNDESIRABLE_LIBS += 1))
-					log_finding "${ARCHEO_APP_CSV}" "${ENTRY_FINAL}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
+					log_finding "${APP_FINDINGS_CSV}" "${ENTRY_FINAL}" "${E_VERSION_FULL}" "Undesirable" "Low" "Remove '${LIB_TYPE}' library from production deployment"
 				fi
 			done <"${ARCHEO_OUTPUT}"
 
@@ -452,34 +483,95 @@ function generate_csv() {
 				if [[ ${LIB_COUNT} -gt 1 ]]; then
 					LIB="${LIBRARY//\//:}"
 					((COUNT_DUPLICATED_LIBS += 1))
-					log_finding "${ARCHEO_APP_CSV}" "${LIB}" "Multiple" "Duplicates" "Medium" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
+					log_finding "${APP_FINDINGS_CSV}" "${LIB}" "Multiple" "Duplicates" "Medium" "'${LIB}' has been found ${LIB_COUNT} times in following versions: ${VERSIONS//$'\n'/' & '}"
 				fi
 			done <<<"$LIBRARIES"
 		fi
 
 		###### 2. Add the aggregate findings count to the CSV file
 		COUNT_FINDINGS="n/a"
-		if [ -f "${ARCHEO_APP_CSV}" ]; then
+		if [ -f "${APP_FINDINGS_CSV}" ]; then
 			# Count all entries excepted the Info ones
-			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${ARCHEO_APP_CSV}" | grep -v ',Info,') | tr -d ' ' | cut -d'/' -f 1)
+			COUNT_FINDINGS=$(wc -l <(tail -n +2 "${APP_FINDINGS_CSV}" | grep -v ',Info,') | tr -d ' ' | cut -d'/' -f 1)
 		fi
-		echo "${APP_NAME}${SEPARATOR}${COUNT_FINDINGS}" >>"${RESULT_FILE}"
 
-		echo "ARCHEO__ALL_LIBS=${COUNT_ALL_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__SUPPORTABLE_LIBS=${COUNT_ALL_SUPPORTABLE_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__NON_SUPPORTABLE_LIBS=$((COUNT_ALL_LIBS - COUNT_ALL_SUPPORTABLE_LIBS))" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__SUPPORTED_LIBS=${COUNT_SUPPORTED_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__OSS_SUPPORT_ENDING_SOON_LIBS=${COUNT_OSS_SUPPORT_ENDING_SOON_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__ONLY_COMMERCIAL_SUPPORTED_LIBS=${COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__UNSUPPORTED_LIBS=${COUNT_UNSUPPORTED_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__UNDESIRABLE_LIBS=${COUNT_UNDESIRABLE_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__DUPLICATED_LIBS=${COUNT_DUPLICATED_LIBS}" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__LIBS_WITH_NO_OSS_SUPPORT=$((COUNT_UNSUPPORTED_LIBS + COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS))" >>"${ARCHEO_STATS}"
-		echo "ARCHEO__COUNT_FINDINGS=${COUNT_FINDINGS}" >>"${ARCHEO_STATS}"
+		# CSV file for Security Heatmap
+		echo "${APP_NAME}${SEPARATOR}${COUNT_FINDINGS}" >>"${RESULT_SUMMARY_HEATMAP_CSV}"
+
+		# Stats for single application HTML result file
+		{
+			echo "ARCHEO__ALL_LIBS=${COUNT_ALL_LIBS}"
+			echo "ARCHEO__SUPPORTABLE_LIBS=${COUNT_ALL_SUPPORTABLE_LIBS}"
+			echo "ARCHEO__NON_SUPPORTABLE_LIBS=$((COUNT_ALL_LIBS - COUNT_ALL_SUPPORTABLE_LIBS))"
+			echo "ARCHEO__SUPPORTED_LIBS=${COUNT_SUPPORTED_LIBS}"
+			echo "ARCHEO__OSS_SUPPORT_ENDING_SOON_LIBS=${COUNT_OSS_SUPPORT_ENDING_SOON_LIBS}"
+			echo "ARCHEO__ONLY_COMMERCIAL_SUPPORTED_LIBS=${COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS}"
+			echo "ARCHEO__UNSUPPORTED_LIBS=${COUNT_UNSUPPORTED_LIBS}"
+			echo "ARCHEO__UNDESIRABLE_LIBS=${COUNT_UNDESIRABLE_LIBS}"
+			echo "ARCHEO__DUPLICATED_LIBS=${COUNT_DUPLICATED_LIBS}"
+			echo "ARCHEO__LIBS_WITH_NO_OSS_SUPPORT=$((COUNT_UNSUPPORTED_LIBS + COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS))"
+			echo "ARCHEO__COUNT_FINDINGS=${COUNT_FINDINGS}"
+		} >"${APP_FINDINGS_STATS}"
+
+		# Updating summary statistics
+
+		# Applications
+		((SUMMARY_COUNT_APPS_ALL += 1))
+		set +e
+		# --- Total based on worst supportability finding in each app
+		if [[ ${COUNT_UNSUPPORTED_LIBS} -gt 1 ]]; then
+			((SUMMARY_COUNT_APPS_UNSUPPORTED += 1))
+		elif [[ ${COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS} -gt 1 ]]; then
+			((SUMMARY_COUNT_APPS_ONLY_COMMERCIAL_SUPPORTED += 1))
+		elif [[ ${COUNT_OSS_SUPPORT_ENDING_SOON_LIBS} -gt 1 ]]; then
+			((SUMMARY_COUNT_APPS_OSS_SUPPORT_ENDING_SOON += 1))
+		elif [[ ${COUNT_SUPPORTED_LIBS} -gt 1 ]]; then
+			((SUMMARY_COUNT_APPS_SUPPORTED += 1))
+		else
+			((SUMMARY_COUNT_APPS_NOT_RELEVANT += 1))
+		fi
+
+		# Libraries
+		((SUMMARY_COUNT_LIBS_ALL += COUNT_ALL_LIBS))
+
+		# --- Info -> total libs potentially supportable / non supportable (Spring + Micrometer libs)
+		((SUMMARY_COUNT_LIBS_SUPPORTABLE += COUNT_ALL_SUPPORTABLE_LIBS))
+		((SUMMARY_COUNT_LIBS_NON_SUPPORTABLE += COUNT_ALL_LIBS - COUNT_ALL_SUPPORTABLE_LIBS))
+
+		# --- Detailed supportability info
+		((SUMMARY_COUNT_LIBS_SUPPORTED += COUNT_SUPPORTED_LIBS))
+		((SUMMARY_COUNT_LIBS_OSS_SUPPORT_ENDING_SOON += COUNT_OSS_SUPPORT_ENDING_SOON_LIBS))
+		((SUMMARY_COUNT_LIBS_ONLY_COMMERCIAL_SUPPORTED += COUNT_ONLY_COMMERCIAL_SUPPORTED_LIBS))
+		((SUMMARY_COUNT_LIBS_UNSUPPORTED += COUNT_UNSUPPORTED_LIBS))
+
+		# --- Detailed anti-pattern info
+		((SUMMARY_COUNT_LIBS_UNDESIRABLE += COUNT_UNDESIRABLE_LIBS))
+		((SUMMARY_COUNT_LIBS_DUPLICATED += COUNT_DUPLICATED_LIBS))
+		set -e
 
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
 
-	log_console_success "Results: ${RESULT_FILE}"
+	# Stats for summary HTML page
+	{
+		echo "ARCHEO_SUMMARY__APPS_ALL=${SUMMARY_COUNT_APPS_ALL}"
+		echo "ARCHEO_SUMMARY__APPS_UNSUPPORTED=${SUMMARY_COUNT_APPS_UNSUPPORTED}"
+		echo "ARCHEO_SUMMARY__APPS_ONLY_COMMERCIAL_SUPPORTED=${SUMMARY_COUNT_APPS_ONLY_COMMERCIAL_SUPPORTED}"
+		echo "ARCHEO_SUMMARY__APPS_OSS_SUPPORT_ENDING_SOON=${SUMMARY_COUNT_APPS_OSS_SUPPORT_ENDING_SOON}"
+		echo "ARCHEO_SUMMARY__APPS_SUPPORTED=${SUMMARY_COUNT_APPS_SUPPORTED}"
+		echo "ARCHEO_SUMMARY__APPS_NOT_RELEVANT=${SUMMARY_COUNT_APPS_NOT_RELEVANT}"
+		echo "ARCHEO_SUMMARY__LIBS_ALL=${SUMMARY_COUNT_LIBS_ALL}"
+		echo "ARCHEO_SUMMARY__LIBS_SUPPORTABLE=${SUMMARY_COUNT_LIBS_SUPPORTABLE}"
+		echo "ARCHEO_SUMMARY__LIBS_NON_SUPPORTABLE=${SUMMARY_COUNT_LIBS_NON_SUPPORTABLE}"
+		echo "ARCHEO_SUMMARY__LIBS_SUPPORTED=${SUMMARY_COUNT_LIBS_SUPPORTED}"
+		echo "ARCHEO_SUMMARY__LIBS_OSS_SUPPORT_ENDING_SOON=${SUMMARY_COUNT_LIBS_OSS_SUPPORT_ENDING_SOON}"
+		echo "ARCHEO_SUMMARY__LIBS_ONLY_COMMERCIAL_SUPPORTED=${SUMMARY_COUNT_LIBS_ONLY_COMMERCIAL_SUPPORTED}"
+		echo "ARCHEO_SUMMARY__LIBS_UNSUPPORTED=${SUMMARY_COUNT_LIBS_UNSUPPORTED}"
+		echo "ARCHEO_SUMMARY__LIBS_UNDESIRABLE=${SUMMARY_COUNT_LIBS_UNDESIRABLE}"
+		echo "ARCHEO_SUMMARY__LIBS_DUPLICATED=${SUMMARY_COUNT_LIBS_DUPLICATED}"
+	} >"${RESULT_SUMMARY_FINDINGS_STATS}"
+
+	log_console_success "Results: ${RESULT_SUMMARY_HEATMAP_CSV}"
+	log_console_success "Results: ${RESULT_SUMMARY_FINDINGS_STATS}"
 }
 
 # Download all latest JSON files containing Spring Support information

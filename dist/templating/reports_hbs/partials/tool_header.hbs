@@ -27,9 +27,13 @@
 <div class="container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ROOT_DIR_NAV}}./{{> page_url}}">{{> page_title}}</a></li>
-        <li class="breadcrumb-item">{{#if has_short_name}}{{> tool_short_name}}{{else}}{{> tool_name}}{{/if}}</li>
-        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
+            <li class="breadcrumb-item"><a href="{{ROOT_DIR_NAV}}./{{> page_url}}">{{> page_title}}</a></li>
+            {{#if is_summary_header}}
+            <li class="breadcrumb-item"><span class="text-bold"></span>{{#if has_short_name}}{{> tool_short_name}}{{else}}{{> tool_name}}{{/if}}</li><span></li>
+            {{else}}
+            <li class="breadcrumb-item">{{#if has_summary}}<a href="./__summary.html">{{/if}}{{#if has_short_name}}{{> tool_short_name}}{{else}}{{> tool_name}}{{/if}}{{#if has_summary}}</a>{{/if}}</li>
+            <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
+            {{/if}}
         </ol>
     </nav>
 </div>
