@@ -18,8 +18,6 @@ CAT_ANALYSIS="Analysis"
 CAT_EXTRACTION="Extraction"
 
 INFO_REPORT="${REPORTS_DIR}/info.html"
-TEMPLATE_DIR="${DIST_DIR}/templating"
-MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
 
 export LOG_FILE="${REPORTS_DIR}/${STEP}__generate_timeline.log"
 export AUDIT_DURATION
@@ -136,13 +134,24 @@ function compute_audit_duration() {
 
 	if [[ -n "${line1}" ]] && [[ -n "${line2}" ]]; then
 		# Extract formatted date strings
-		date_str1=$(echo " ${line1}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4"__"$6"_"$7"_"$8}')
-		date_str2=$(echo " ${line2}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4"__"$6"_"$7"_"$8}')
+		if [[ "${IS_MAC}" == "true" ]]; then
+			date_str1=$(echo " ${line1}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4"__"$6"_"$7"_"$8}')
+			date_str2=$(echo " ${line2}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4"__"$6"_"$7"_"$8}')
+		else
+			date_str1=$(echo " ${line1}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4" "$6":"$7":"$8}')
+			date_str2=$(echo " ${line2}" | awk -F'[_\\[\\]]' '{print $2"-"$3"-"$4" "$6":"$7":"$8}')
+		fi
 
 		if [[ -n "${date_str1}" ]] && [[ -n "${date_str2}" ]]; then
+
 			# Convert formatted dates to UNIX timestamps
-			timestamp1=$(date -j -f "%Y-%m-%d__%H_%M_%S" "${date_str1}" "+%s")
-			timestamp2=$(date -j -f "%Y-%m-%d__%H_%M_%S" "${date_str2}" "+%s")
+			if [[ "${IS_MAC}" == "true" ]]; then
+				timestamp1=$(date -j -f "%Y-%m-%d__%H_%M_%S" "${date_str1}" "+%s")
+				timestamp2=$(date -j -f "%Y-%m-%d__%H_%M_%S" "${date_str2}" "+%s")
+			else
+				timestamp1=$(date -d "$(echo "${date_str1}")" "+%s")
+				timestamp2=$(date -d "$(echo "${date_str2}")" "+%s")
+			fi
 
 			# Calculate the time difference in seconds
 			time_difference=$((timestamp2 - timestamp1))
@@ -175,11 +184,10 @@ function generate_timeline_report() {
 	# shellcheck source=/dev/null
 	source "${REPORT_VARS}"
 	{
-		${MUSTACHE} "${TEMPLATE_DIR}/reports/info/info_timeline_01.mo"
+		apply_template '0' '' "info/info_timeline_01"
 		cat "${TIMELINE_JSON}"
-		${MUSTACHE} "${TEMPLATE_DIR}/reports/info/info_timeline_02.mo"
+		apply_template '0' '' "info/info_timeline_02"
 	} >"${INFO_REPORT}"
-
 	rm -f "${TIMELINE_JSON}" "${REPORT_VARS}"
 }
 

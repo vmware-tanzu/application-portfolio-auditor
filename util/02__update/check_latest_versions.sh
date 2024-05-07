@@ -10,10 +10,6 @@
 
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
-# Load shared functions for console logging
-# shellcheck disable=SC1091
-source "${SCRIPT_DIR}/../../_shared_functions.sh"
-
 PYTHON_CMD_FULL=$(command -v python3 || command -v python)
 
 if [[ -z "${PYTHON_CMD_FULL}" ]]; then
@@ -36,10 +32,6 @@ source "${VENV_DIR}/bin/activate"
 # Upgrade pip and import all required python libraries
 ${PYTHON_CMD} -m pip --quiet install --upgrade pip
 ${PYTHON_CMD} -m pip --quiet install BeautifulSoup4 requests aiohttp
-
-# Load the current version numbers
-# shellcheck source=/dev/null
-source "${SCRIPT_DIR}/../../_versions.sh"
 
 # Check for new versions
 # shellcheck source=/dev/null

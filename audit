@@ -27,15 +27,19 @@ export DIST_DIR=${CURRENT_DIR}/dist
 export INSTALL_DIR=${CURRENT_DIR}/bin
 export REPORTING_DIR=${CURRENT_DIR}/reports
 
+export IS_MAC="false"
+export IS_LINUX="false"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	IS_MAC="true"
+else
+	IS_LINUX="true"
+fi
+
+# Import shared functions and tool version numbers
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
 
-# Import tool version numbers
-# shellcheck disable=SC1091
-source "${CURRENT_DIR}/_versions.sh"
-
 function versions() {
-
 	# Display all current versions in use
 	echo -e "${B}Application Portfolio Auditor v.${TOOL_VERSION}${N}"
 	echo -e "-> CSA v.${CSA_VERSION}"
@@ -57,7 +61,6 @@ function versions() {
 	echo -e "-> OSV v.${OSV_VERSION}"
 	echo -e "-> Bearer v.${BEARER_VERSION}"
 	exit
-
 }
 
 function usage() {
@@ -138,8 +141,10 @@ function run_short_scripts() {
 			SHORT_SCRIPTS+=('util/01__setup/setup_macos.sh' 'util/01__setup/download_and_update_tools.sh')
 		elif [[ -e "/etc/centos-release" || -e "/etc/redhat-release" ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_centos.sh' 'util/01__setup/download_and_update_tools.sh')
-		elif [[ $(command -v lsb_release) && $(lsb_release -d |grep 'Ubuntu') ]]; then
+		elif [[ $(command -v lsb_release) && $(lsb_release -d |grep -q 'Ubuntu') ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_ubuntu.sh' 'util/01__setup/download_and_update_tools.sh')
+		elif [[ -e "/etc/os-release" && $(grep -q 'NAME="Amazon Linux"' /etc/os-release) ]]; then
+			SHORT_SCRIPTS+=('util/01__setup/setup_amazon_linux.sh' 'util/01__setup/download_and_update_tools.sh')
 		else
 			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS"
 			exit 1
@@ -194,14 +199,6 @@ if [[ -n "$(command -v ping)" ]]; then
 	fi
 fi
 set -e
-
-export IS_MAC="false"
-export IS_LINUX="false"
-if [[ "$(uname -s)" == "Darwin" ]]; then
-	IS_MAC="true"
-else
-	IS_LINUX="true"
-fi
 
 SHELL_USED=$(ps -p $$ | tail -1 | awk '{ print $4 }' | cut -d "-" -f 2 | tail -1)
 if [[ "${SHELL_USED}" != "bash" ]]; then

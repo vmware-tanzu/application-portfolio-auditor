@@ -24,7 +24,7 @@ class Color:
 
 # Tool names used to retrieve versions from OS environment variables
 tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FERNFLOWER', 'FSB',
-     'GRYPE', 'INSIDER', 'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
+     'GRYPE', 'HBS', 'INSIDER', 'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
     'PMD', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
 results = {}
@@ -211,6 +211,8 @@ if __name__ == '__main__':
         # Section for the supporting frameworks
         (print_bold_message, '', r'', '\nSupporting frameworks', '', None),
         (check_fernflower, '', r'', 'Fernflower', FERNFLOWER_VERSION, None),
+        (check_github_tag,'tests-always-included/mo', r'(.+)', 'Mustache', MUSTACHE_VERSION, None),
+        (check_github_tag, 'sunng87/handlebars-rust', r'v(.+)', 'Handlebars', HBS_VERSION, None),
         # NIST Data Mirror - end-of-life and unlikely to change
         (print_ok_message, '', r'', f'NIST Data Mirror - Version up-to-date: {NIST_MIRROR_VERSION}', '', None),
         # D3.js - Download from: https://cdn.jsdelivr.net/npm/d3@7.8.2/dist/d3.min.js
@@ -218,7 +220,6 @@ if __name__ == '__main__':
         (check_github, 'jquery/jquery', r'.*tag/(.+)', 'jQuery', JQUERY_VERSION, None),
         (check_github, 'twbs/bootstrap', r'.*tag/v(.+)','Bootstrap', BOOTSTRAP_VERSION, None),
         (check_github, 'twbs/icons', r'.*tag/v(.+)','Bootstrap Icons', BOOTSTRAP_ICONS_VERSION, None),
-        (check_github_tag,'tests-always-included/mo', r'(.+)', 'Mustache', MUSTACHE_VERSION, None),
         (check_github_tag,'nginx/nginx', r'release-(.+)', 'Nginx', NGINX_VERSION, None),
         (check_github_tag,'vasturiano/timelines-chart', r'v(.+)', 'Timeline Chart', TIMELINES_CHART_VERSION, None),
         (check_dotnet_runtime, '', r'', '.NET Runtime', DONET_RUNTIME_VERSION, None)

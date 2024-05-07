@@ -1,0 +1,83 @@
+# Copyright 2019-2024 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+- hosts: auditor-amazon-linux
+  vars:
+    auditor_extracted_dir: /opt/auditor
+    auditor_copy_dest: /opt/auditor/application-portfolio-auditor.zip
+
+  tasks:
+
+  - name: Get current architecture
+    become: true
+    shell: uname -m
+    register: "architecture"
+
+  - name: Install required RPM dependencies (disk size adjustment)
+    become: true
+    yum:
+      name:
+        - lvm2
+
+  - name: Create {{ auditor_extracted_dir }} directory
+    become: true
+    file: path={{ auditor_extracted_dir }} state=directory owner=vagrant group=vagrant
+
+  - name: Copy the latest "Application Portfolio Auditor" distribution
+    become: true
+    copy: src={{ auditor_local_zip }} dest={{ auditor_copy_dest }} owner="vagrant" group="vagrant" mode="0644"
+    register: auditor_copy
+
+  - name: Resize disk to maximum
+    when: 
+      - auditor_copy.changed
+      - architecture.stdout != "aarch64"
+    become: true
+    ansible.builtin.shell: (echo -e "yes\n100" | sudo parted /dev/sda ---pretend-input-tty unit % resizepart 1; sudo fdisk -l /dev/sda1; sudo fsadm resize /dev/sda1)
+
+  - name: Unpack "Application Portfolio Auditor"
+    when: auditor_copy.changed
+    become: true
+    unarchive: src={{ auditor_copy_dest }} dest={{ auditor_extracted_dir }} copy=no owner=vagrant group=vagrant
+
+  - name: Delete distribution zip file
+    when: auditor_copy.changed
+    become: true
+    ansible.builtin.shell: rm -f application-portfolio-auditor.zip 
+    args:
+      chdir: "{{ auditor_extracted_dir }}"
+    register: auditor_setup
+
+  - name: Setup with provided utility script 'setup_amazon_linux.sh'
+    when: auditor_copy.changed
+    become: true
+    ansible.builtin.shell: ./util/01__setup/setup_amazon_linux.sh > /opt/auditor/auditor-setup.log 2>&1 
+    args:
+      chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor"
+    register: auditor_setup
+
+  - name: Reboot the machine to apply all changes
+    when: auditor_setup.changed
+    become: true
+    reboot:
+      reboot_timeout: 240
+
+  - name: Run "Application Portfolio Auditor" for a test report
+    ansible.builtin.shell: ./audit -a -z -g test-application
+    args:
+      chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor"
+    register: auditor_run
+
+  - name: Find and copy the report
+    when: auditor_run.changed
+    become: true
+    ansible.builtin.command: 'find . -type f -name *.zip -exec cp \{\} /tmp/report.zip \;'
+    args:
+      chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor/reports"
+
+  - name: Retrieve the resulting report locally
+    when: auditor_run.changed
+    become: true
+    ansible.builtin.fetch:
+      src: "/tmp/report.zip"
+      dest: /tmp/report_amazon_linux.zip
+      flat: yes

@@ -43,7 +43,7 @@
       reboot_timeout: 240
 
   - name: Run "Application Portfolio Auditor" for a test report
-    ansible.builtin.shell: ./audit -a -z
+    ansible.builtin.shell: ./audit -a -z -g test-application
     args:
       chdir: "{{ auditor_extracted_dir }}/application-portfolio-auditor"
     register: auditor_run

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{> header title='Security reports - Trivy'}}
+  </head>
+  <body>
+    {{#> tool_header}}
+      {{#*inline "page_title"}}Security reports{{/inline}}
+      {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
+      {{#*inline "page_url"}}security.html{{/inline}}
+      {{#*inline "tool_name"}}Trivy{{/inline}}
+      {{#*inline "tool_description"}}Find vulnerabilities, misconfigurations, secrets.{{/inline}}
+      {{#*inline "tool_url"}}https://github.com/aquasecurity/trivy{{/inline}}
+      {{#*inline "tool_version"}}{{TRIVY_VERSION}}{{/inline}}
+      {{#*inline "tool_url_report"}}14__TRIVY{{/inline}}
+      {{#*inline "tool_url_log"}}./14__TRIVY.log{{/inline}}
+      {{#*inline "tool_image"}}trivy.svg{{/inline}}
+    {{/tool_header}}
+    <div class="container">
+      <div class="row">
+        <p></p>
+      </div>
+      <div class="row">
+        <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Trivy</span>.</p>
+      </div>
+    </div>
+    {{> footer}}
+  </body>
+</html>

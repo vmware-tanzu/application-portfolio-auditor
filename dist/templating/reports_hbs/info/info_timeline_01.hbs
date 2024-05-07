@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{> header title='Analysis information - Timelines'}}
+  <style>
+    h4.panel-title.panel-heading { margin-bottom: 0em!important; }
+    .container.mb-3 { margin-bottom: 0rem!important;}
+    /* Foldable list of tools used */ 
+    .panel-heading { padding: 0; border:0; }
+    .panel-title>span, .panel-title>a:active{
+      display:block;
+      padding-top:15px;
+      padding-bottom:15px;
+      color:#212529;
+      text-transform:uppercase;
+      word-spacing:3px;
+      text-decoration:none;
+    }
+  </style>
+</head>
+
+<body>
+  {{> navbar}}
+
+  <!-- Masthead -->
+  <div class="bd-masthead py-1" id="content" role="main">
+    <div class="container">
+      <h1 class="display-4 mt-4 mb-2">Analysis information</h1>
+      <div>
+        <p class="lead mb-3 text-black-50">Collected data on the tool executions.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <br/>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Timelines</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link tab-nav-link" href="./info_rules.html">Rules</a>
+      </li>
+    </ul>
+    <br/>
+    <div class="row">
+      <h4 class="panel-title">Execution timelines</h4>
+      <p style="margin-bottom: 0px;">Chart visualizing the execution timeline {{AUDIT_DURATION}} of the <span class="badge bg-secondary">{{TOOLS_COUNT}}</span> tools used, including <span style="color:#1f77b4">preparation</span>, <span style="color:#ff7f0e">analysis</span>, and result <span style="color:#2ca02c">extraction</span> phases.<br/><br/></p>
+      <div id="timelines-chart"></div>
+    </div>
+  </div>
+
+  {{> footer}}
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="./static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
+    <script src='./static/js/timelines-chart-{{TIMELINES_CHART_VERSION}}.min.js'></script>
+
+  <script>
+    const myData = 

@@ -147,3 +147,50 @@ div#content.bd-masthead {
 .bi-chevron-down::before { content: "\f282"; }
 .bi-speedometer::before { content: "\f57f"; }
 .bi-translate::before { content: "\f658"; }
+
+/* Heatmaps and tables */
+.bd-masthead { position: relative; padding: 3rem 15px; }
+div#tools.bd-masthead.py-3.mb-3 { padding-bottom: 0rem!important }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0px auto;
+} 
+
+/* Zebra striping */
+tr:nth-of-type(odd) {
+  background: #f2f2f2;
+}
+th {
+  background: #333;
+  color: white;
+  font-weight: bold;
+  cursor: s-resize;
+  background-repeat: no-repeat;
+  background-position: 3% center;
+}
+td, th {
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+th.des:after {
+  content: "\21E3";
+}
+th.aes:after {
+  content: "\21E1";
+}
+
+/* Center badge counting tools */
+span.badge.bg-dark, span.badge.bg-secondary, a.badge.bg-secondary, a.badge.bg-light.text-dark { vertical-align:middle; margin-top: -0.3em; }
+a.badge.bg-light.text-dark {text-decoration: none;}
+
+/* Severity colors*/
+:root {
+  --findingPurple: #a61c00;
+  --findingRed: #cc0000;
+  --findingOrange: #e69138;
+  --findingYellow: #f1c232; 
+  --findingGreen: #6aa84f;
+  --findingBlue: #4b77d1;
+}

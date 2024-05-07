@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{> header title='Security reports - Grype'}}
+  </head>
+  <body>
+    {{#> tool_header}}
+      {{#*inline "page_title"}}Security reports{{/inline}}
+      {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
+      {{#*inline "page_url"}}security.html{{/inline}}
+      {{#*inline "tool_name"}}Grype{{/inline}}
+      {{#*inline "tool_description"}}Identifies known security vulnerabilities in application binaries and code.{{/inline}}
+      {{#*inline "tool_url"}}https://github.com/anchore/grype{{/inline}}
+      {{#*inline "tool_version"}}{{GRYPE_VERSION}}{{/inline}}
+      {{#*inline "tool_url_report"}}13__GRYPE{{/inline}}
+      {{#*inline "tool_url_log"}}./13__GRYPE.log{{/inline}}
+      {{#*inline "tool_image"}}grype.png{{/inline}}
+    {{/tool_header}}
+    <div class="container">
+      <div class="row">
+        <p></p>
+      </div>
+      <div class="row">
+        <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Grype</span>.</p>
+      </div>
+    </div>
+    {{> footer}}
+  </body>
+</html>

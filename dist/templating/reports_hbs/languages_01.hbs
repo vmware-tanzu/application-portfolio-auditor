@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{> header title='Languages Report'}}
+  <style>
+    /* Foldable list of tools used */ 
+    .panel-heading { padding: 0; border:0; }
+    .panel-title>a, .panel-title>a:active{
+      display:block;
+      padding-top:15px;
+      padding-bottom:15px;
+      color:#212529;
+      text-transform:uppercase;
+      word-spacing:3px;
+      text-decoration:none;
+    }
+    .panel-heading a:before {
+      content: "\f282";
+      font-family: 'bootstrap-icons' !important;
+      speak: none;
+      float: right;
+      transition: all 0.5s;
+    }
+    .panel-heading.active a:before {
+      -webkit-transform: rotate(180deg);
+      -moz-transform: rotate(180deg);
+      transform: rotate(180deg);
+    }
+    div.card.card-body ul { margin-bottom: 0rem!important; }
+    div.card.card-body { padding: 1rem; background: #f2f2f2 !important; margin-bottom: 1rem!important; }
+    div#tools.bd-masthead.py-3.mb-3 {
+      padding-bottom: 0rem!important;
+      padding-top: 0.3rem!important;
+    }
+    .container.mb-3 { margin-bottom: 0rem!important;}
+    .nolink, .nolink:link, .nolink:visited, .nolink:hover, .nolink:active {
+      text-decoration:none!important;
+      color:#212529!important;
+    }
+  </style>
+</head>
+
+<body>
+  {{> navbar}}
+
+  <!-- Masthead -->
+  <div class="bd-masthead py-1" id="content" role="main">
+    <div class="container">
+      <h1 class="display-4 mt-4 mb-2">Distribution of languages</h1>
+      <div>
+        <p class="lead mb-3 text-black-50">Visualization of the used languages in each application.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tools -->
+  <div class="bd-masthead py-3 mb-3" id="tools" role="main">
+    <div class="container">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-bs-toggle="collapse" href="#collapseTools" role="button" aria-expanded="false" aria-controls="collapseTools">
+            <span class="badge bg-dark">{{TOOLS_LANGUAGE_COUNT}}</span> analysis tool{{#if HAS_MULTIPLE_LANGUAGE_TOOLS}}s{{/if}} used
+          </a>
+        </h4>
+      </div>
+      <div class="collapse" id="collapseTools">
+        <div class="panel-body">
+          <div class="container">
+            <div class="d-flex">
+              <img class="mr-3 me-3" src="./static/img/github.svg" height="50" width="50" alt="GitHub Linguist and CLOC">
+              <div>
+                <h5 class="mt-0 mb-1">GitHub Linguist <a href="https://github.com/github/linguist" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{LINGUIST_VERSION}}</a> and CLOC <a href="https://github.com/AlDanial/cloc" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{CLOC_VERSION}}</a></h5>
+                Analyze language usage and generate language breakdown graphs. (<a href="{{LINGUIST_CSV}}" rel="noreferrer" target="_blank" class="report-link">linguist csv</a> - <a href="{{CLOC_CSV}}" rel="noreferrer" target="_blank" class="report-link">cloc csv</a> - <a href="{{LANGUAGES_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+                <br/><br/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="container mb-3">
+    <div class="col">
+      <div class="row">
+        <p><a class="nolink" data-bs-toggle="collapse" href="#multiCollapseInfo" role="button" aria-expanded="false" aria-controls="multiCollapseInfo"><i class="bi bi-info-circle-fill"></i> The following diagram vizualizes the lines of code (LoC) count and languages used by each analyzed application.</a></p>
+      </div>
+    </div>
+    <div class="col" id="info">
+      <div class="row">
+        <div class="collapse multi-collapse" id="multiCollapseInfo">
+          <div class="card card-body">
+            <ul>
+              <li>Each bar stands for one app. Their length match the count of LOC.</li>
+              <li>Colors visualize the shares of programming languages used.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-3">
+    <!-- /.row -->
+    <div class="row">
+      <div class="col-sm"></div>
+      <div class="col-sm">
+        <div class="form-check form-switch">
+          <input type="checkbox" role="switch" class="form-check-input" id="simpleSwitch" checked="checked">
+          <label class="form-check-label" for="simpleSwitch">Simplified list</label>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="form-check form-switch">
+          <input type="checkbox" role="switch" class="form-check-input" id="scaleSwitch" checked="checked">
+          <label class="custom-control-label" for="scaleSwitch">Logarithmic scale</label>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="form-check form-switch">
+          <input type="checkbox" role="switch" class="form-check-input" id="sortSwitch">
+          <label class="custom-control-label" for="sortSwitch">Sort by name</label>
+        </div>
+      </div>
+    </div>
+    <div class="row"><br/></div>
+
+    <!-- Inspired from  https://bl.ocks.org/Andrew-Reid/0aedd5f3fb8b099e3e10690bd38bd458 -->
+    <div class="row">
+      <svg width="1060" height="{{HEIGHT}}"></svg>
+    </div>
+  </div>
+  <!-- /.container -->
+
+  {{> footer}}
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="./static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
+  <script src="./static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./static/js/d3.v4.min.js"></script>
+<script>

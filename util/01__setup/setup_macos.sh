@@ -12,6 +12,8 @@ set -x
 # --- Don't change
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
+echo "setup_macos.sh"
+
 # Install brew and xcode CLI (echo -e "\n")
 if type brew >/dev/null; then
 	echo ">>> Already installed: brew"

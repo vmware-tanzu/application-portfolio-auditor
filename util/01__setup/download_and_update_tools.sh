@@ -20,12 +20,6 @@ SCRIPT_PATH="$(
 	cd -- "$(dirname "$0")" >/dev/null 2>&1
 	pwd -P
 )"
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-HOME_DIR="${SCRIPT_DIR}/../.."
-export DIST_DIR="${HOME_DIR}/dist"
-
-# shellcheck source=/dev/null
-source "${HOME_DIR}/_versions.sh"
 
 # Determining platform architecture for the build
 ARCH="$(uname -m)"
@@ -37,9 +31,6 @@ if [[ "${CONTAINER_ARCH}" == "arm64" ]]; then
 else
 	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${CONTAINER_ARCH}"
 fi
-
-# shellcheck disable=SC1091
-source "${CURRENT_DIR}/_shared_functions.sh"
 
 function check_container_engine() {
 	if [[ -z "$(command -v ${CONTAINER_ENGINE})" ]]; then
@@ -139,18 +130,44 @@ function download_container_image() {
 check_container_engine
 
 ##############################################################################################################
-# 00 Mustache
+# 00 Templating: Mustache / Handlebars
 ##############################################################################################################
-MUSTACHE="../../templating/mo_${MUSTACHE_VERSION}"
 DIST_MO="${DIST_DIR}/templating/mo_${MUSTACHE_VERSION}"
 if [ -f "${DIST_MO}" ]; then
 	echo "[INFO] 'Mustache' (${MUSTACHE_VERSION}) is already available"
 else
-	find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'mo*' ! -name mo_${MUSTACHE_VERSION} -delete
+	find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'mo*' -delete
 	simple_check_and_download "Mustache" "templating/mo_${MUSTACHE_VERSION}" "https://raw.githubusercontent.com/tests-always-included/mo/${MUSTACHE_VERSION}/mo" "${MUSTACHE_VERSION}"
 	chmod +x "${DIST_DIR}/templating/mo_${MUSTACHE_VERSION}"
 	if [[ -n "$(command -v shfmt)" ]]; then
 		shfmt -l -w "${DIST_DIR}/templating/mo_${MUSTACHE_VERSION}" &>/dev/null
+	fi
+fi
+
+# Fixme: This should be made OS & system-architecture agnostic in the future. Build can only be conducted on MacOS.
+DIST_HBS_BASE="${DIST_DIR}/templating/hbs__${HBS_VERSION}"
+DIST_HBS="${DIST_HBS_BASE}_darwin"
+if [ -f "${DIST_HBS}" ]; then
+	echo "[INFO] 'Handlebars' (${HBS_VERSION}) is already available"
+else
+	if [[ -n "$(command -v rustup)" && "${IS_MAC}" == "true" ]]; then
+		echo "[INFO] Building 'Handlebars' (${HBS_VERSION})"
+		find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'hbs*' -delete
+		pushd "${SCRIPT_PATH}/../../dist/templating/handlebars_reports" &>/dev/null
+		rm -Rf target
+
+		# https://github.com/rust-lang/rust/issues/34282
+		rustup target add x86_64-apple-darwin
+		rustup target add x86_64-unknown-linux-gnu
+		brew tap --quiet SergioBenitez/osxct
+		brew install --quiet x86_64-unknown-linux-gnu
+		CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc cargo build --release --quiet --target=x86_64-unknown-linux-gnu
+		cargo build --release --quiet --target=x86_64-apple-darwin
+		cp target/x86_64-apple-darwin/release/handlebars_reports "${DIST_HBS}"
+		cp target/x86_64-unknown-linux-gnu/release/handlebars_reports "${DIST_HBS_BASE}_linux"
+		popd &>/dev/null
+	else
+		echo "[WARM] 'Handlebars' (${HBS_VERSION}) has not been built as it required rustup to be installed (https://www.rust-lang.org/tools/install). Will fallback to Mustache (slower)."
 	fi
 fi
 
@@ -827,7 +844,7 @@ simple_check_and_download "Script - github_release_api.sh" "../util/00__release/
 simple_check_and_download "Script - github_release_manager.sh" "../util/00__release/github_release_manager.sh" 'https://raw.githubusercontent.com/pgdurand/github-release-api/master/github_release_manager.sh' "latest"
 simple_check_and_download "Script - json-v2.sh" "../util/00__release/json-v2.sh" 'https://raw.githubusercontent.com/pgdurand/github-release-api/master/json-v2.sh' "latest"
 
-chmod +x "${SCRIPT_DIR}/../00__release/"*.sh
+chmod +x "${DIST_DIR}/../util/00__release/"*.sh
 
 # Remove dangling images
 if [ -n "$(${CONTAINER_ENGINE} images -f "dangling=true" -q --no-trunc)" ]; then

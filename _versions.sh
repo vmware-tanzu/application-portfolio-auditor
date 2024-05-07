@@ -7,7 +7,7 @@
 ##############################################################################################################
 
 # Current version of Application Portfolio Auditor
-export TOOL_VERSION='2.2.3'
+export TOOL_VERSION='2.2.4'
 
 # List of the versions for all tools in use.
 
@@ -36,14 +36,15 @@ export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
 export SYFT_VERSION='1.3.0'
-export GRYPE_VERSION='0.77.1'
-export TRIVY_VERSION='0.50.4'
+export GRYPE_VERSION='0.77.3'
+export TRIVY_VERSION='0.51.1'
 export OSV_VERSION='1.7.2'
 export BEARER_VERSION='1.43.2'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='241.15989.69'
+export FERNFLOWER_VERSION='241.15989.150'
 export MUSTACHE_VERSION='3.0.5'
+export HBS_VERSION='5.1.2'
 export NIST_MIRROR_VERSION='1.6.0'
 export D3_VERSION='7.9.0'
 export JQUERY_VERSION='3.7.1'

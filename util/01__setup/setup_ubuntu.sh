@@ -13,6 +13,8 @@ export TIMEZONE='Europe/Berlin'
 # --- Don't change
 CURRENT_USER="$(whoami)"
 
+echo "setup_ubuntu.sh"
+
 # Use 'vagrant' as current user if the user exists
 if id "vagrant" >/dev/null 2>&1; then
 	CURRENT_USER='vagrant'
