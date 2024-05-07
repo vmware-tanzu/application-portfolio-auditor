@@ -1,2 +1,3 @@
 auditor-centos ansible_ssh_host=192.168.11.100 ansible_ssh_user="vagrant" ansible_ssh_private_key_file="~/.vagrant.d/insecure_private_key"
 auditor-ubuntu ansible_ssh_host=192.168.11.101 ansible_ssh_user="vagrant" ansible_ssh_private_key_file="~/.vagrant.d/insecure_private_key"
+auditor-amazon_linnux ansible_ssh_host=192.168.11.102 ansible_ssh_user="vagrant" ansible_ssh_private_key_file="~/.vagrant.d/insecure_private_key"

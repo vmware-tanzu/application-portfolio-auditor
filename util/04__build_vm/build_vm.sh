@@ -17,7 +17,8 @@
 # --- To be changed
 
 ## Set the Operating System of the VM image you want to build
-TARGET_OS=Ubuntu
+TARGET_OS=Amazon
+#TARGET_OS=Ubuntu
 #TARGET_OS=CentOS
 
 ## Point to the latest local "Applicaton Portfolio Auditor" distribution - Please update!

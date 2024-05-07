@@ -1,0 +1,48 @@
+# Copyright 2019-2024 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+# Configuration for the Amazon Linux (x86)
+host_name = 'auditor-amazon-linux'
+
+# Amazon Linux 2023 - https://app.vagrantup.com/gbailey/boxes/al2023
+host_box_name = "gbailey/al2023"
+host_box_version = "20240419.0.0"
+
+host_cpu = 4
+host_ram = 4096
+host_disksize = '40GB'
+host_ip = '192.168.11.102'
+
+ansible_playbook_auditor_local_distribution_zip = ENV['DIST_ZIP']
+ansible_playbook = 'ansible-auditor-amazon-linux.yml'
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box_check_update = false
+  config.ssh.insert_key = false
+  config.ssh.forward_agent = true
+
+  config.vagrant.plugins = ['vagrant-vbguest']
+  config.vbguest.installer_options = { allow_kernel_upgrade: true }
+
+  config.vm.define 'auditor-amazon-linux', primary: false do |host|
+    host.vm.box = host_box_name
+    host.vm.box_version = host_box_version
+    host.disksize.size = host_disksize
+    host.vm.hostname = host_name
+    host.vm.network "private_network", ip: host_ip
+    
+    host.vm.provision "shell", inline: "sudo yum -y update; sudo dnf upgrade -y --releasever=2023.4.20240429; sudo yum -y update; sudo yum install -y python3"
+
+    host.vm.provision "ansible" do |ansible|
+      ansible.playbook = ansible_playbook
+      ansible.extra_vars = { auditor_local_zip: ansible_playbook_auditor_local_distribution_zip }
+    end
+  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = host_ram
+    v.cpus = host_cpu
+  end  
+
+end
