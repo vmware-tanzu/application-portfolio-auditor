@@ -139,18 +139,34 @@ function download_container_image() {
 check_container_engine
 
 ##############################################################################################################
-# 00 Mustache
+# 00 Templating: Mustache / Handlebars
 ##############################################################################################################
-MUSTACHE="../../templating/mo_${MUSTACHE_VERSION}"
 DIST_MO="${DIST_DIR}/templating/mo_${MUSTACHE_VERSION}"
 if [ -f "${DIST_MO}" ]; then
 	echo "[INFO] 'Mustache' (${MUSTACHE_VERSION}) is already available"
 else
-	find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'mo*' ! -name mo_${MUSTACHE_VERSION} -delete
+	find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'mo*' -delete
 	simple_check_and_download "Mustache" "templating/mo_${MUSTACHE_VERSION}" "https://raw.githubusercontent.com/tests-always-included/mo/${MUSTACHE_VERSION}/mo" "${MUSTACHE_VERSION}"
 	chmod +x "${DIST_DIR}/templating/mo_${MUSTACHE_VERSION}"
 	if [[ -n "$(command -v shfmt)" ]]; then
 		shfmt -l -w "${DIST_DIR}/templating/mo_${MUSTACHE_VERSION}" &>/dev/null
+	fi
+fi
+
+DIST_HBS="${DIST_DIR}/templating/hbs_${HBS_VERSION}"
+if [ -f "${DIST_HBS}" ]; then
+	echo "[INFO] 'Handlebars' (${HBS_VERSION}) is already available"
+else
+	if [[ -n "$(command -v cargo)" ]]; then
+		echo "[INFO] Building 'Handlebars' (${HBS_VERSION})"
+		find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'hbs*' -delete
+		pushd "${SCRIPT_PATH}/../../dist/templating/handlebars_reports" &>/dev/null
+		rm -Rf target
+		cargo build --release --quiet
+		cp target/release/handlebars_reports "${DIST_HBS}"
+		popd &>/dev/null
+	else
+		echo "[WARM] 'Handlebars' (${HBS_VERSION}) has not been built as it required Rust/Cargo to be installed. Will fallback to Mustache (slower)."
 	fi
 fi
 
