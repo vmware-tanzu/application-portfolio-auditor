@@ -4,16 +4,17 @@
   {{> header title='Security reports - Bearer'}}
 </head>
 <body>
-  {{#> tool_header}}
+  {{#> tool_header has_csv=true}}
     {{#*inline "page_title"}}Security reports{{/inline}}
     {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
-    {{#*inline "page_url"}}security.html{{/inline}}    
+    {{#*inline "page_url"}}security.html{{/inline}}
     {{#*inline "tool_name"}}Bearer{{/inline}}
     {{#*inline "tool_description"}}Discover, filter and prioritize security and privacy risks in your code.{{/inline}}
     {{#*inline "tool_url"}}https://github.com/Bearer/bearer{{/inline}}
     {{#*inline "tool_version"}}{{BEARER_VERSION}}{{/inline}}
     {{#*inline "tool_url_report"}}17__BEARER/{{/inline}}
     {{#*inline "tool_url_log"}}{{BEARER_LOG}}{{/inline}}
+    {{#*inline "tool_url_csv"}}./_results__security__bearer.csv{{/inline}}
     {{#*inline "tool_image"}}bearer.png{{/inline}}
   {{/tool_header}}
 

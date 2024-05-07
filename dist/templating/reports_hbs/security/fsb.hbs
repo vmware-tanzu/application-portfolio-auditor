@@ -1,65 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <title>Security Report</title>
-  <!-- Bootstrap core CSS -->
-  <link href="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="./../static/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
-  <link href="./../static/css/core.css" rel="stylesheet"/>
+  {{> header title='Security reports - Find Security Bugs'}}
 </head>
 
 <body>
-  {{#> tool_header}}
+  {{#> tool_header has_csv=true}}
     {{#*inline "page_title"}}Security reports{{/inline}}
     {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
-    {{#*inline "page_url"}}quality.html{{/inline}}    
-    {{#*inline "tool_name"}}Archeologist{{/inline}}
-    {{#*inline "tool_description"}}Find unsupported and unnecessary ancient libraries in your applications.{{/inline}}
-    {{#*inline "tool_url"}}https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh{{/inline}}
-    {{#*inline "tool_version"}}{{TOOL_VERSION}}{{/inline}}
-    {{#*inline "tool_url_report"}}16__ARCHEO{{/inline}}
-    {{#*inline "tool_url_log"}}{{ARCHEO_LOG}}{{/inline}}
-    {{#*inline "tool_image"}}archeo.png{{/inline}}
+    {{#*inline "page_url"}}security.html{{/inline}}
+    {{#*inline "tool_name"}}Find Security Bugs (FSB){{/inline}}
+    {{#*inline "tool_description"}}Audits security of Java applications.{{/inline}}
+    {{#*inline "tool_url"}}https://find-sec-bugs.github.io/{{/inline}}
+    {{#*inline "tool_version"}}{{FSB_VERSION}}{{/inline}}
+    {{#*inline "tool_url_report"}}09__FindSecBugs{{/inline}}
+    {{#*inline "tool_url_log"}}./09__FindSecBugs.log{{/inline}}
+    {{#*inline "tool_url_csv"}}./_results_extracted.csv{{/inline}}
+    {{#*inline "tool_image"}}fsb.png{{/inline}}
   {{/tool_header}}
-
-  {{> navbar}}
-
-  <!-- Masthead -->
-  <div class="bd-masthead py-1" id="content" role="main">
-    <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
-      <div>
-        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tools -->
-  <div class="bd-masthead py-3 mb-3" id="tools" role="main">
-    <div class="container">
-      <div class="d-flex">
-          <a href="./../09__FindSecBugs/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/fsb.png" height="50" width="50" alt="Find Security Bugs"></a>
-          <div>
-            <h5 class="mt-0 mb-1">Find Security Bugs (FSB) <a href="https://find-sec-bugs.github.io/" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{FSB_VERSION}}</a></h5>
-            Audits security of Java applications. (<a href="./.{{FSB_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{FSB_CSV}}" rel="noreferrer" target="_blank" class="report-link">csv</a> - <a href="./.{{FSB_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-          </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item">Find Security Bugs</li>
-        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
-      </ol>
-    </nav>
-  </div>
 
   <div class="container">
     <div class="row justify-content-center">

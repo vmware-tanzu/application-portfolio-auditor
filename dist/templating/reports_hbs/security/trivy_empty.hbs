@@ -1,73 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <title>Security Report</title>
-  <!-- Bootstrap core CSS -->
-  <link href="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="./../static/img/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
-  <link href="./../static/css/core.css" rel="stylesheet"/>
-  <style>
-    th { text-align:center }
-    tr:nth-child(1), td:nth-child(1) { width: 15%; }
-    tr:nth-child(2), td:nth-child(2) { width: 12%; }
-    tr:nth-child(3), td:nth-child(3) { width: 5%; }
-    tr:nth-child(4), td:nth-child(4) { width: 5%; }
-    tr:nth-child(5), td:nth-child(5) { width: 5%; }
-    tr:nth-child(6), td:nth-child(6) { width: 43%; word-break:break-word;}
-  </style>
-</head>
-
-<body>
-  {{> navbar}}
-
-  <!-- Masthead -->
-  <div class="bd-masthead py-1" id="content" role="main">
+  <head>
+    {{> header title='Security reports - Trivy'}}
+  </head>
+  <body>
+    {{#> tool_header}}
+      {{#*inline "page_title"}}Security reports{{/inline}}
+      {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
+      {{#*inline "page_url"}}security.html{{/inline}}
+      {{#*inline "tool_name"}}Trivy{{/inline}}
+      {{#*inline "tool_description"}}Find vulnerabilities, misconfigurations, secrets.{{/inline}}
+      {{#*inline "tool_url"}}https://github.com/aquasecurity/trivy{{/inline}}
+      {{#*inline "tool_version"}}{{TRIVY_VERSION}}{{/inline}}
+      {{#*inline "tool_url_report"}}14__TRIVY{{/inline}}
+      {{#*inline "tool_url_log"}}./14__TRIVY.log{{/inline}}
+      {{#*inline "tool_image"}}trivy.svg{{/inline}}
+    {{/tool_header}}
     <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
-      <div>
-        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
+      <div class="row">
+        <p></p>
+      </div>
+      <div class="row">
+        <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Trivy</span>.</p>
       </div>
     </div>
-  </div>
-
-  <!-- Tools -->
-  <div class="bd-masthead py-3 mb-3" id="tools" role="main">
-    <div class="container">
-      <div class="d-flex">
-          <a href="./../14__TRIVY/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/trivy.svg" height="50" width="50" alt="Trivy"></a>
-          <div>
-            <h5 class="mt-0 mb-1">Trivy <a href="https://github.com/aquasecurity/trivy" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{TRIVY_VERSION}}</a></h5>
-            Find vulnerabilities, misconfigurations, secrets. (<a href="{{TRIVY_REPORT_DIR}}/" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{TRIVY_REPORT_DIR}}/../14__TRIVY.log" rel="noreferrer" target="_blank" class="report-link">log</a>)
-          </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item">Trivy</li>
-        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
-      </ol>
-    </nav>
-  </div>
-
-  <div class="container">
-    <div class="row">
-      <p></p>
-    </div>
-    <div class="row">
-      <p>No vulnerability found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Trivy</span>.</p>
-    </div>
-  </div>
-  <!-- /.container -->
-
-  {{> footer}}
-
-</body>
+    {{> footer}}
+  </body>
 </html>

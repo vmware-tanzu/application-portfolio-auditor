@@ -12,21 +12,20 @@
   </style>
 </head>
 <body>
-  {{#> tool_header}}
+  {{#> tool_header has_csv=true}}
     {{#*inline "page_title"}}Quality reports{{/inline}}
     {{#*inline "page_description"}}Consolidated code quality findings.{{/inline}}
-    {{#*inline "page_url"}}quality.html{{/inline}}    
+    {{#*inline "page_url"}}quality.html{{/inline}}
     {{#*inline "tool_name"}}Archeologist{{/inline}}
     {{#*inline "tool_description"}}Find unsupported and unnecessary ancient libraries in your applications.{{/inline}}
     {{#*inline "tool_url"}}https://github.com/vmware-tanzu/application-portfolio-auditor/blob/main/16__archeo__extract.sh{{/inline}}
     {{#*inline "tool_version"}}{{TOOL_VERSION}}{{/inline}}
     {{#*inline "tool_url_report"}}16__ARCHEO{{/inline}}
     {{#*inline "tool_url_log"}}{{ARCHEO_LOG}}{{/inline}}
+    {{#*inline "tool_url_csv"}}./_results__quality__archeo.csv{{/inline}}
     {{#*inline "tool_image"}}archeo.png{{/inline}}
   {{/tool_header}}
-
   <div class="container">
-
     <div class="row justify-content-center">
       <div class="col-8">
         <div id="support_data_viz"></div>

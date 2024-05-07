@@ -4,41 +4,20 @@
   {{> header title='Security reports - OWASP Dependency-Check'}}
 </head>
 <body>
-  {{> navbar}}
-
-  <!-- Masthead -->
-  <div class="bd-masthead py-1" id="content" role="main">
-    <div class="container">
-      <h1 class="display-4 mt-4 mb-2">Security reports</h1>
-      <div>
-        <p class="lead mb-3 text-black-50">Consolidated application security findings.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tools -->
-  <div class="bd-masthead py-3 mb-3" id="tools" role="main">
-    <div class="container">
-      <div class="d-flex">
-          <a href="./../05__OWASP_DC/" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./../static/img/owasp.svg" height="50" width="50" alt="Open Web Application Security Project Dependency-Check"></a>
-          <div>
-            <h5 class="mt-0 mb-1">Open Web Application Security Project (OWASP) Dependency-Check <a href="https://www.owasp.org/index.php/OWASP_Dependency_Check" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{OWASP_DC_VERSION}}</a></h5>
-            Identifies well-known security vulnerabilities in embedded libraries. (<a href="./.{{ODC_URL}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="./.{{ODC_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
-          </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./../security.html">Security</a></li>
-        <li class="breadcrumb-item">OWASP Dependency-Check</li>
-        <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
-      </ol>
-    </nav>
-  </div>
-
+  {{#> tool_header has_csv=true has_short_name=true}}
+    {{#*inline "page_title"}}Security reports{{/inline}}
+    {{#*inline "page_description"}}Consolidated application security findings.{{/inline}}
+    {{#*inline "page_url"}}security.html{{/inline}}
+    {{#*inline "tool_name"}}Open Web Application Security Project (OWASP) Dependency-Check{{/inline}}
+    {{#*inline "tool_short_name"}}OWASP Dependency-Check{{/inline}}
+    {{#*inline "tool_description"}}Identifies well-known security vulnerabilities in embedded libraries.{{/inline}}
+    {{#*inline "tool_url"}}https://www.owasp.org/index.php/OWASP_Dependency_Check{{/inline}}
+    {{#*inline "tool_version"}}{{OWASP_DC_VERSION}}{{/inline}}
+    {{#*inline "tool_url_report"}}05__OWASP_DC{{/inline}}
+    {{#*inline "tool_url_log"}}./05__OWASP_DC.log{{/inline}}
+    {{#*inline "tool_url_csv"}}./_results_extracted.csv{{/inline}}
+    {{#*inline "tool_image"}}owasp.svg{{/inline}}
+  {{/tool_header}}
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-8">

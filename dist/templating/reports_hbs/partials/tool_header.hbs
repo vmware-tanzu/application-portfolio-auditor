@@ -17,7 +17,7 @@
             <a href="{{ROOT_DIR_NAV}}./{{> tool_url_report}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="{{ROOT_DIR_NAV}}./static/img/{{> tool_image}}" height="50" width="50" alt="{{> tool_name}}"></a>
             <div>
             <h5 class="mt-0 mb-1">{{> tool_name}} <a href="{{> tool_url}}" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{> tool_version}}</a></h5>
-            {{> tool_description}} (<a href="{{ROOT_DIR_NAV}}./{{> tool_url_report}}" rel="noreferrer" target="_blank" class="report-link">reports</a> - <a href="{{ROOT_DIR_NAV}}{{> tool_url_log}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            {{> tool_description}} (<a href="{{ROOT_DIR_NAV}}./{{> tool_url_report}}" rel="noreferrer" target="_blank" class="report-link">reports</a> -{{#if has_csv}} <a href="{{> tool_url_csv}}" rel="noreferrer" target="_blank" class="report-link">csv</a> -{{/if}} <a href="{{ROOT_DIR_NAV}}{{> tool_url_log}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ROOT_DIR_NAV}}./{{> page_url}}">{{> page_title}}</a></li>
-        <li class="breadcrumb-item">{{> tool_name}}</li>
+        <li class="breadcrumb-item">{{#if has_short_name}}{{> tool_short_name}}{{else}}{{> tool_name}}{{/if}}</li>
         <li class="breadcrumb-item"><span class="text-bold">{{APP}}</span></li>
         </ol>
     </nav>
