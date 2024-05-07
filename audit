@@ -27,6 +27,14 @@ export DIST_DIR=${CURRENT_DIR}/dist
 export INSTALL_DIR=${CURRENT_DIR}/bin
 export REPORTING_DIR=${CURRENT_DIR}/reports
 
+export IS_MAC="false"
+export IS_LINUX="false"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+	IS_MAC="true"
+else
+	IS_LINUX="true"
+fi
+
 # Import shared functions and tool version numbers
 # shellcheck disable=SC1091
 source "${CURRENT_DIR}/_shared_functions.sh"
@@ -189,14 +197,6 @@ if [[ -n "$(command -v ping)" ]]; then
 	fi
 fi
 set -e
-
-export IS_MAC="false"
-export IS_LINUX="false"
-if [[ "$(uname -s)" == "Darwin" ]]; then
-	IS_MAC="true"
-else
-	IS_LINUX="true"
-fi
 
 SHELL_USED=$(ps -p $$ | tail -1 | awk '{ print $4 }' | cut -d "-" -f 2 | tail -1)
 if [[ "${SHELL_USED}" != "bash" ]]; then

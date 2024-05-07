@@ -38,7 +38,13 @@ esac
 # Configuration of the templating engine
 export TEMPLATE_DIR="${DIST_DIR}/templating"
 export MUSTACHE="${TEMPLATE_DIR}/mo_${MUSTACHE_VERSION}"
-export HBS="${TEMPLATE_DIR}/hbs_${HBS_VERSION}"
+
+if [[ "${IS_MAC}" == "true" ]]; then
+	export HBS="${TEMPLATE_DIR}/hbs__${HBS_VERSION}_darwin"
+else
+	export HBS="${TEMPLATE_DIR}/hbs__${HBS_VERSION}_linux"
+fi
+
 export IS_TEMPLATE_ENGINE_HBS=FALSE
 if [[ -f "${HBS}" ]]; then
 	export IS_TEMPLATE_ENGINE_HBS=TRUE

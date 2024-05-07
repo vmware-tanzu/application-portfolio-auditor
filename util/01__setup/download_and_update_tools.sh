@@ -144,20 +144,30 @@ else
 	fi
 fi
 
-DIST_HBS="${DIST_DIR}/templating/hbs_${HBS_VERSION}"
+# Fixme: This should be made OS & system-architecture agnostic in the future. Build can only be conducted on MacOS.
+DIST_HBS_BASE="${DIST_DIR}/templating/hbs__${HBS_VERSION}"
+DIST_HBS="${DIST_HBS_BASE}_darwin"
 if [ -f "${DIST_HBS}" ]; then
 	echo "[INFO] 'Handlebars' (${HBS_VERSION}) is already available"
 else
-	if [[ -n "$(command -v cargo)" ]]; then
+	if [[ -n "$(command -v rustup)" && "${IS_MAC}" == "true" ]]; then
 		echo "[INFO] Building 'Handlebars' (${HBS_VERSION})"
 		find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'hbs*' -delete
 		pushd "${SCRIPT_PATH}/../../dist/templating/handlebars_reports" &>/dev/null
 		rm -Rf target
-		cargo build --release --quiet
-		cp target/release/handlebars_reports "${DIST_HBS}"
+
+		# https://github.com/rust-lang/rust/issues/34282
+		rustup target add x86_64-apple-darwin
+		rustup target add x86_64-unknown-linux-gnu
+		brew tap --quiet SergioBenitez/osxct
+		brew install --quiet x86_64-unknown-linux-gnu
+		CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc cargo build --release --quiet --target=x86_64-unknown-linux-gnu
+		cargo build --release --quiet --target=x86_64-apple-darwin
+		cp target/x86_64-apple-darwin/release/handlebars_reports "${DIST_HBS}"
+		cp target/x86_64-unknown-linux-gnu/release/handlebars_reports "${DIST_HBS_BASE}_linux"
 		popd &>/dev/null
 	else
-		echo "[WARM] 'Handlebars' (${HBS_VERSION}) has not been built as it required Rust/Cargo to be installed. Will fallback to Mustache (slower)."
+		echo "[WARM] 'Handlebars' (${HBS_VERSION}) has not been built as it required rustup to be installed (https://www.rust-lang.org/tools/install). Will fallback to Mustache (slower)."
 	fi
 fi
 
