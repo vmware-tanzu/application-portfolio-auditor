@@ -143,10 +143,10 @@ function run_short_scripts() {
 			SHORT_SCRIPTS+=('util/01__setup/setup_centos.sh' 'util/01__setup/download_and_update_tools.sh')
 		elif [[ $(command -v lsb_release) && $(lsb_release -d |grep -q 'Ubuntu') ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_ubuntu.sh' 'util/01__setup/download_and_update_tools.sh')
-		elif [[ -e "/etc/os-release" && $(grep -q 'NAME="Amazon Linux"' /etc/os-release) ]]; then
+		elif [[ -e "/etc/os-release" && $(grep 'NAME="Amazon Linux"' /etc/os-release) ]]; then
 			SHORT_SCRIPTS+=('util/01__setup/setup_amazon_linux.sh' 'util/01__setup/download_and_update_tools.sh')
 		else
-			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS"
+			log_console_error "Unsupported Operating System - Supported ones: MacOS, Ubuntu, RHEL, CentOS, Amazon Linux"
 			exit 1
 		fi
 		;;
