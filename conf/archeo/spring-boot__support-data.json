@@ -94,5 +94,13 @@
     "ossPolicyEnd": "2024-11-23",
     "commercialEnforcedEnd": "",
     "commercialPolicyEnd": "2026-02-23"
+  },
+  {
+    "branch": "3.3.x",
+    "initialDate": "2024-05-23",
+    "ossEnforcedEnd": "",
+    "ossPolicyEnd": "2025-05-23",
+    "commercialEnforcedEnd": "",
+    "commercialPolicyEnd": "2026-08-23"
   }
 ]
