@@ -7,6 +7,8 @@
 ##############################################################################################################
 
 # ----- Please adjust
+# Set to 'true' to update the Spring Support information files (json)
+UPDATE_SPRING_SUPPORT_INFO_FILES="false"
 
 # ------ Do not modify
 export VERSION=${TOOL_VERSION}
@@ -590,8 +592,10 @@ function download_spring_project_support_files() {
 
 function main() {
 	if [[ -d "${APP_DIR_OUT}" ]]; then
-		# Uncomment to update the Spring Support information files
-		#download_spring_project_support_files
+		if [[ "${UPDATE_SPRING_SUPPORT_INFO_FILES}" == "true" ]]; then
+			# Update the Spring Support information files
+			download_spring_project_support_files
+		fi
 		generate_csv
 	else
 		LOG_FILE=/dev/null
