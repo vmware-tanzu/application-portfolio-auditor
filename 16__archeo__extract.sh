@@ -577,6 +577,7 @@ function generate_csv() {
 # Download all latest JSON files containing Spring Support information
 function download_spring_project_support_files() {
 	mkdir -p "${CONF_DIR}"
+	rm -f "${CONF_DIR}/spring-"*
 	for KEY in "${!PROJECT_ID_MAP[@]}"; do
 		if [ "${KEY}" != "micrometer-io" ]; then
 			FILENAME="${CONF_DIR}/${KEY}__support-data.json"
