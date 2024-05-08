@@ -833,10 +833,12 @@ function generate_archeo_html() {
 		fi
 	done <"${APP_LIST}"
 
-	# Generate summary report
-	local ARCHEO_SUMMARY_REPORT="${ARCHEO_DIR}/__summary.html"
-	local ARCHEO_SUMMARY_STATS="${ARCHEO_DIR}/_results__quality__archeo.stats"
-	apply_template '1' "${ARCHEO_SUMMARY_STATS}" "quality/archeo_summary" >"${ARCHEO_SUMMARY_REPORT}"
+	if [[ "${IS_TEMPLATE_ENGINE_HBS}" == "TRUE" ]]; then
+		# Generate summary report
+		local ARCHEO_SUMMARY_REPORT="${ARCHEO_DIR}/__summary.html"
+		local ARCHEO_SUMMARY_STATS="${ARCHEO_DIR}/_results__quality__archeo.stats"
+		apply_template '1' "${ARCHEO_SUMMARY_STATS}" "quality/archeo_summary" >"${ARCHEO_SUMMARY_REPORT}"
+	fi
 }
 
 # Generate all pages
