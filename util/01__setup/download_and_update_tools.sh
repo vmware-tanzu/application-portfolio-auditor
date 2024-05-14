@@ -761,7 +761,6 @@ JS_DIR="${DIST_DIR}/templating/static/js"
 mkdir -p "${JS_DIR}"
 
 find "${SCRIPT_PATH}/../../dist/templating/static/js" -type f -iname 'd3.v*.min.js' ! -name d3.v4.min.js ! -name d3.v${D3_VERSION}.min.js -delete
-simple_check_and_download "JavaScript - D3.js" "templating/static/js/d3.v4.min.js" 'https://unpkg.com/d3@4.13.0/build/d3.min.js' "4.13.0"
 simple_check_and_download "JavaScript - D3.js" "templating/static/js/d3.v${D3_VERSION}.min.js" "https://unpkg.com/d3@${D3_VERSION}/dist/d3.min.js" "${D3_VERSION}"
 
 find "${SCRIPT_PATH}/../../dist/templating/static/js" -type f -iname 'jquery-*.min.js' ! -name jquery-${JQUERY_VERSION}.min.js -delete
