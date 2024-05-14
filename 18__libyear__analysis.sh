@@ -10,6 +10,8 @@
 
 # ----- Please adjust
 
+## If necessary, adjust the "cat <<EOF" section underneath to point to you maven repository in use
+
 # ------ Do not modify
 VERSION=${TOOL_VERSION}
 STEP=$(get_step)
@@ -20,6 +22,34 @@ APP_LIST="${REPORTS_DIR}/00__Weave/list__all_init_apps.txt"
 LIST_JAVA_BIN="${REPORTS_DIR}/00__Weave/list__java-bin.txt"
 RESULT_SUMMARY_LIBYEAR_CSV="${OUT_DIR_LIBYEAR}/_results__quality__libyear.csv"
 SEPARATOR=","
+
+function compute_libyears_behind() {
+	local MVN_LOG=${1}
+	local POM_XML=${2}
+	rm -f "${MVN_LOG}"
+	mvn -T 4 io.github.mfoo:libyear-maven-plugin:${LIBYEAR_VERSION}:analyze -f "${POM_XML}" -l "${MVN_LOG}"
+}
+
+function compute() {
+	local MVN_LOG=${1}
+	local POM_XML=${2}
+	local RETRY=${3}
+	local SLEEP_TIME=${4}
+	if [[ -f "${MVN_LOG}" ]]; then
+		ERROR_COUNT=$(grep -o '\[ERROR\] Failed to fetch release date for [^ ]*' "${MVN_LOG}" | sort | uniq | wc -l | tr -d ' \t')
+		if [[ ${ERROR_COUNT} -gt 0 ]]; then
+			if [[ "${RETRY}" == "last" ]]; then
+				log_console_error "${ERROR_COUNT} errors while fetching release dates."
+			else
+				log_console_warning "${ERROR_COUNT} errors while fetching release dates. Retrying ${RETRY}"
+				sleep "${SLEEP_TIME}"
+				compute_libyears_behind "${MVN_LOG}" "${POM_XML}"
+			fi
+		fi
+	else
+		compute_libyears_behind "${MVN_LOG}" "${POM_XML}"
+	fi
+}
 
 # Analyze all applications present in the ${APP_GROUP_DIR} directory.
 function analyze() {
@@ -67,6 +97,8 @@ function analyze() {
 					set +e
 					jq -r ' .packages[] | select(.externalRefs) .externalRefs[] | select(.referenceCategory == "PACKAGE-MANAGER") | .referenceLocator' "${RESULT_SYFT_JSON}" | grep "^pkg:maven/" | sort | uniq >"${LIBYEAR_TMP}"
 
+					log_console_info "$(count_lines ${LIBYEAR_TMP}) libraries found (Java)"
+
 					if [[ -s "${LIBYEAR_TMP}" ]]; then
 
 						# Generate pom.xml containing all detected libraries as dependencies
@@ -85,6 +117,36 @@ function analyze() {
 	<artifactId>libyear-scan</artifactId>
 	<version>0.0.1</version>
 	<name>Libyear Scan</name>
+
+    <repositories>
+        <!-- Repository 1: Maven Central -->
+        <repository>
+            <id>maven-central</id>
+			<name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+        </repository>
+
+        <!-- Repository 2: GCS Mirror (https://storage-download.googleapis.com/maven-central/index.html) -->
+		<repository>
+			<id>google-maven-central</id>
+			<name>GCS Maven Central mirror EU</name>
+			<url>https://maven-central-eu.storage-download.googleapis.com/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+        <!-- Add more repositories as needed -->
+    </repositories>
 	<dependencies>
 EOF
 							# Removing packages without version
@@ -96,11 +158,15 @@ EOF
 EOF
 						} >"${POM_XML}"
 
-						# Run Libyear Maven Plugin
-						rm -f "${MVN_LOG}"
-						mvn io.github.mfoo:libyear-maven-plugin:${LIBYEAR_VERSION}:analyze -f "${POM_XML}" -l "${MVN_LOG}"
+						compute "${MVN_LOG}" "${POM_XML}" '' ''
+						compute "${MVN_LOG}" "${POM_XML}" 'once' '10'
+						compute "${MVN_LOG}" "${POM_XML}" 'twice' '30'
+						compute "${MVN_LOG}" "${POM_XML}" 'thrice' '60'
+						compute "${MVN_LOG}" "${POM_XML}" 'last' ''
+
 						echo "Library${SEPARATOR}Libyears behind" >"${LIBYEAR_OUTPUT}"
 						awk '/The following dependencies in Dependencies have newer versions:/,/^$/' "${MVN_LOG}" | grep '\[INFO\]   ' | sed -e 's|\[INFO\][ ]*||g' | tr -s '\n' ';' | sed -e 's|\.[\.]*||g' | sed -e 's|libyears;|\n|g' | tr -s ',' '.' | sed -e 's|  |'"${SEPARATOR}"'|g' >>"${LIBYEAR_OUTPUT}"
+
 						# Extract results
 						LIBYEARS=$(grep "behind" "${MVN_LOG}" | awk -F "This module is | libyears behind" '{print $2}' | tr -s ',' '.')
 						set -e
