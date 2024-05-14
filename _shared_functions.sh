@@ -45,60 +45,46 @@ else
 	export HBS="${TEMPLATE_DIR}/hbs__${HBS_VERSION}_linux"
 fi
 
-export IS_TEMPLATE_ENGINE_HBS=FALSE
-if [[ -f "${HBS}" ]]; then
-	export IS_TEMPLATE_ENGINE_HBS=TRUE
-fi
-
 # Generate content from template file
 function apply_template() {
 	URL_DEPTH=${1}
 	PROPERTY_FILE=${2}
 	TEMPLATE_FILE=${3}
 
-	if [[ "${IS_TEMPLATE_ENGINE_HBS}" == "TRUE" ]]; then
-		local HBS_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_hbs/${TEMPLATE_FILE}.hbs"
-		local HBS_PROPERTY_FILE="/tmp/hbs.property"
+	local HBS_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_hbs/${TEMPLATE_FILE}.hbs"
+	local HBS_PROPERTY_FILE="/tmp/hbs.property"
 
-		if [[ "${URL_DEPTH}" == '1' ]]; then
-			export ROOT_DIR_NAV='./.'
-		fi
-
-		case "${TEMPLATE_FILE}" in
-		index*)
-			export IS_OVERVIEW_REPORT="TRUE"
-			;;
-		quality*)
-			export IS_QUALITY_REPORT="TRUE"
-			;;
-		info*)
-			export IS_INFO_REPORT="TRUE"
-			;;
-		cloud*)
-			export IS_CLOUD_REPORT="TRUE"
-			;;
-		security*)
-			export IS_SECURITY_REPORT="TRUE"
-			;;
-		languages*)
-			export IS_LANGUAGES_REPORT="TRUE"
-			;;
-		esac
-		{
-			[[ -f "${PROPERTY_FILE}" ]] && cat "${PROPERTY_FILE}"
-			env
-		} >"${HBS_PROPERTY_FILE}"
-		${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/"* "${HBS_PROPERTY_FILE}"
-		rm -f "${HBS_PROPERTY_FILE}"
-		unset IS_OVERVIEW_REPORT IS_QUALITY_REPORT IS_INFO_REPORT IS_CLOUD_REPORT IS_SECURITY_REPORT IS_LANGUAGES_REPORT ROOT_DIR_NAV
-	else
-		local MUSTACHE_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_mo/${TEMPLATE_FILE}.mo"
-		if [[ -f "${PROPERTY_FILE}" ]]; then
-			${MUSTACHE} -s="${PROPERTY_FILE}" "${MUSTACHE_TEMPLATE_FILE}"
-		else
-			${MUSTACHE} "${MUSTACHE_TEMPLATE_FILE}"
-		fi
+	if [[ "${URL_DEPTH}" == '1' ]]; then
+		export ROOT_DIR_NAV='./.'
 	fi
+
+	case "${TEMPLATE_FILE}" in
+	index*)
+		export IS_OVERVIEW_REPORT="TRUE"
+		;;
+	quality*)
+		export IS_QUALITY_REPORT="TRUE"
+		;;
+	info*)
+		export IS_INFO_REPORT="TRUE"
+		;;
+	cloud*)
+		export IS_CLOUD_REPORT="TRUE"
+		;;
+	security*)
+		export IS_SECURITY_REPORT="TRUE"
+		;;
+	languages*)
+		export IS_LANGUAGES_REPORT="TRUE"
+		;;
+	esac
+	{
+		[[ -f "${PROPERTY_FILE}" ]] && cat "${PROPERTY_FILE}"
+		env
+	} >"${HBS_PROPERTY_FILE}"
+	${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/"* "${HBS_PROPERTY_FILE}"
+	rm -f "${HBS_PROPERTY_FILE}"
+	unset IS_OVERVIEW_REPORT IS_QUALITY_REPORT IS_INFO_REPORT IS_CLOUD_REPORT IS_SECURITY_REPORT IS_LANGUAGES_REPORT ROOT_DIR_NAV
 }
 
 function log_tool_start() {
