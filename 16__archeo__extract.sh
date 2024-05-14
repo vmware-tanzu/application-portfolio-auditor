@@ -223,6 +223,8 @@ function generate_csv() {
 		APP_FINDINGS_CSV="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.csv"
 		APP_FINDINGS_STATS="${APP_DIR_OUT}/${APP_NAME}_archeo_findings.stats"
 
+		rm -f "${APP_FINDINGS_CSV}" "${APP_FINDINGS_STATS}"
+
 		if [[ -f "${ARCHEO_OUTPUT}" ]]; then
 			log_finding "${APP_FINDINGS_CSV}" "Library" "Version" "Category" "Severity" "Description"
 
