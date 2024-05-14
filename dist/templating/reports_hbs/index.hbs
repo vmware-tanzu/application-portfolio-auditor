@@ -246,6 +246,16 @@
           </div>
         </li>
 {{/if}}
+{{#if HAS_LIBYEAR_REPORT}}
+        <li class="d-flex">
+          <a href="{{LIBYEAR_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/libyear.png" height="50" width="50" alt="Libyear"></a>
+          <div>
+            <h5 class="mt-0 mb-1">Libyear <a href="https://libyear.com/" rel="noreferrer" target="_blank" class="badge bg-light text-dark">v.{{LIBYEAR_VERSION}}</a></h5>
+            Measure the freshness of your software dependencies. (<a href="{{LIBYEAR_URL}}" rel="noreferrer" target="_blank" class="report-link">report</a> - <a href="{{LIBYEAR_LOG}}" rel="noreferrer" target="_blank" class="report-link">log</a>)
+            <br/><br/>
+          </div>
+        </li>
+{{/if}}
 {{#if HAS_PMD_REPORT}}
         <li class="d-flex">
           <a href="{{PMD_URL}}" rel="noreferrer" target="_blank"><img class="mr-3 me-3" src="./static/img/pmd.png" width="50" alt="PMD Source Code Analyzer"></a>

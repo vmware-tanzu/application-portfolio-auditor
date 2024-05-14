@@ -29,6 +29,7 @@ export MAI_VERSION='1.9.22'
 export PMD_VERSION='7.1.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
+export LIBYEAR_VERSION='1.1.0'
 
 ## Security
 export OWASP_DC_VERSION='8.4.3'

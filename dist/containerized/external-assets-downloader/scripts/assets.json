@@ -12,6 +12,12 @@
         "targetDir": "img"
     },
     {
+        "description": "Logo - Libyear",
+        "url": "https://cdn-icons-png.flaticon.com/512/2027/2027580.png",
+        "targetName": "libyear.png",
+        "targetDir": "img"
+    },
+    {
         "description": "Logo - OSV",
         "url": "https://img.stackshare.io/service/47887/default_a2d28c0237a20e15bd37c42301dce372c1e20e2d.png",
         "targetName": "osv.png",

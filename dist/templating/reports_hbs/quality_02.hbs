@@ -7,6 +7,7 @@ function numberWithDots(x) {
 
 // Start > 0 to avoid black numbers
 var maxValueArcheo = 1
+var maxValueLibyear = 1
 var maxValuePMD = 1
 var maxValueCPDFragments = 1
 var maxValueCPDLines = 1
@@ -27,12 +28,14 @@ function computeMaxValues(data) {
   var indexScancode = 0
   var indexMAI = 0
   var indexArcheo = 0
+  var indexLibyear = 0
 
   for (i = 1; i < columns.length; ++i) {
     if(columns[i].startsWith('PMD rules')) { indexPMD=i; }
     if(columns[i].startsWith('ScanCode')) { indexScancode=i; }
     if(columns[i].startsWith('MAI')) { indexMAI=i; }
     if(columns[i].startsWith('Archeo')) { indexArcheo=i; }
+    if(columns[i].startsWith('Libyears behind')) { indexLibyear=i; }
   }
   if(indexPMD!=0) {
     maxValuePMD = maxValueSimpleColumn(data,'PMD violations');
@@ -50,6 +53,9 @@ function computeMaxValues(data) {
   if(indexArcheo!=0) {
     maxValueArcheo = maxValueSimpleColumn(data,'Archeo Findings');
   }
+  if(indexLibyear!=0) {
+    maxValueLibyear = maxValueSimpleColumn(data,'Libyears behind');
+  }
 
 }
 
@@ -58,6 +64,9 @@ function drawTable(data) {
   // Logarithmic color scale - https://bl.ocks.org/jonsadka/5054e6a53e25a7582d4d73d3958fbbf9
   const logScaleArcheo = d3.scaleSymlog().domain([0, maxValueArcheo])
   const colorScaleArcheo = d3.scaleSequential((c) => d3.interpolateGreens(logScaleArcheo(c)))
+
+  const logScaleLibyear = d3.scaleSymlog().domain([0, maxValueLibyear])
+  const colorScaleLibyear = d3.scaleSequential((c) => d3.interpolateGreens(logScaleLibyear(c)))
 
   const logScalePMD = d3.scaleSymlog().domain([0, maxValuePMD])
   const colorScalePMD = d3.scaleSequential((c) => d3.interpolateGreens(logScalePMD(c)))
@@ -157,6 +166,8 @@ function drawTable(data) {
       } else {
         if (d.name.startsWith("Archeo")) {
           return d ? colorScaleArcheo(d.value) : "";
+        } else if (d.name.startsWith("Libyears behind")) {
+          return d ? colorScaleLibyear(d.value) : "";
         } else if (d.name.startsWith("PMD")) {
           return d ? colorScalePMD(d.value) : "";
         } else if (d.name.startsWith("Copy-pasted fragments")) {
@@ -181,6 +192,8 @@ function drawTable(data) {
         return "#212529";
       } else if (d.name.startsWith("Archeo")) {
         return d ? ( logScaleArcheo(maxValueArcheo) > 1.5*logScaleArcheo(d.value) ? "#212529" : "white") : "#212529";
+      } else if (d.name.startsWith("Libyears behind")) {
+        return d ? ( logScaleLibyear(maxValueLibyear) > 1.5*logScaleLibyear(d.value) ? "#212529" : "white") : "#212529";
       } else if (d.name.startsWith("PMD")) {
         return d ? ( logScalePMD(maxValuePMD) > 1.5*logScalePMD(d.value) ? "#212529" : "white") : "#212529";
       } else if (d.name.startsWith("Copy-pasted fragments")) {
@@ -210,6 +223,8 @@ function drawTable(data) {
         return '';
       } else if (d.name.includes("Archeo")) {
         return "./16__ARCHEO/"+d.app+".html";
+      } else if (d.name.includes("Libyears behind")) {
+        return "./18__LIBYEAR/"+d.app+"_libyear_findings.stats";
       } else if (d.name.includes("PMD")) {
         return "./07__PMD/pmd/"+d.app+"_pmd.html";
       } else if (d.name.includes("Copy-pasted")) {

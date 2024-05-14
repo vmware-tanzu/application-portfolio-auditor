@@ -60,6 +60,7 @@ function versions() {
 	echo -e "-> Trivy v.${TRIVY_VERSION}"
 	echo -e "-> OSV v.${OSV_VERSION}"
 	echo -e "-> Bearer v.${BEARER_VERSION}"
+	echo -e "-> Libyear v.${LIBYEAR_VERSION}"
 	exit
 }
 
@@ -79,7 +80,7 @@ function usage() {
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
 	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [--archeo] [-x | --wamt] [-b | --bearer] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
-	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [--osv] [-l | --languages] [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
+	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [--osv] [-l | --languages] [--libyear]  [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
 	echo -e "    [-r | --reports] [-z | --zip] [-k | --k8] [--cf] [-t | --timestamp] [--debug] [-v | --version] [-h | --help]"
 	echo -e ""
 	echo -e "    ${B}Select applications${N}  ---------------------------------------------------------------------------------------------"
@@ -111,6 +112,7 @@ function usage() {
 	echo -e "        ${B}Quality${N}     ${B}-p${N}, ${B}--pmd${N}                      Decompile and run the PMD Code analysis"
 	echo -e "                    ${B}-m${N}, ${B}--mai${N}                      Decompile and run the Microsoft Application Inspector analysis"
 	echo -e "                    ${B}--archeo${N}                       Run the Archeo analysis"
+	echo -e "                    ${B}--libyear${N}                      Run the Libyear analysis"
 	echo -e ""
 	echo -e "    ${B}Configure generated reports${N}  -------------------------------------------------------------------------------------"
 	echo -e "        ${B}-z${N}, ${B}--zip${N}                      Zip the generated reports"
@@ -242,7 +244,7 @@ printf "${ORANGE}%s" ''
 if ! params="$(
 	"${GETOPT_COMMAND}" \
 		-o hbd:apwfnxog:reylsmivt:ckz \
-		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fsb,slscan,insider,grype,trivy,osv,bearer,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
+		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fsb,slscan,insider,grype,trivy,osv,bearer,libyear,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
 		--name "$(basename "${0}")" \
 		-- \
 		"${@}"
@@ -276,6 +278,7 @@ export PMD_ACTIVE="false"
 export MAI_ACTIVE="false"
 export ARCHEO_ACTIVE="false"
 export BEARER_ACTIVE="false"
+export LIBYEAR_ACTIVE="false"
 export VERSION_ACTIVE="false"
 export USAGE_ACTIVE="false"
 export PACKAGE_CF="false"
@@ -381,6 +384,7 @@ while true; do
 		TRIVY_ACTIVE="true"
 		OSV_ACTIVE="true"
 		BEARER_ACTIVE="true"
+		LIBYEAR_ACTIVE="true"
 		shift
 		;;
 	-r | --reports | --report)
@@ -419,6 +423,10 @@ while true; do
 		BEARER_ACTIVE="true"
 		UNPACK_SOURCE="true"
 		DECOMPILE_SOURCE="true"
+		shift
+		;;
+	--libyear)
+		LIBYEAR_ACTIVE="true"
 		shift
 		;;
 	-t)
@@ -492,6 +500,7 @@ if [[ "${REPORT_ACTIVE}" == "false" &&
 	"${TRIVY_ACTIVE}" == "false" &&
 	"${OSV_ACTIVE}" == "false" &&
 	"${BEARER_ACTIVE}" == "false" &&
+	"${LIBYEAR_ACTIVE}" == "false" &&
 	"${LANGUAGES_ACTIVE}" == "false" &&
 	"${SCANCODE_ACTIVE}" == "false" &&
 	"${PMD_ACTIVE}" == "false" &&
@@ -716,6 +725,12 @@ SCRIPTS=(
 [[ "${BEARER_ACTIVE}" == "true" ]] && {
 	log_console "-> Bearer v.${BEARER_VERSION}"
 	SCRIPTS+=(17__bearer__analysis.sh 17__bearer__extract.sh)
+}
+
+# Libyear analysis
+[[ "${LIBYEAR_ACTIVE}" == "true" ]] && {
+	log_console "-> Libyear v.${LIBYEAR_VERSION}"
+	SCRIPTS+=(18__libyear__analysis.sh)
 }
 
 # Generates and package summary report with links
