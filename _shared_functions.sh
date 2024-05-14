@@ -51,7 +51,7 @@ function apply_template() {
 	PROPERTY_FILE=${2}
 	TEMPLATE_FILE=${3}
 
-	local HBS_TEMPLATE_FILE="${TEMPLATE_DIR}/reports_hbs/${TEMPLATE_FILE}.hbs"
+	local HBS_TEMPLATE_FILE="${TEMPLATE_DIR}/reports/${TEMPLATE_FILE}.hbs"
 	local HBS_PROPERTY_FILE="/tmp/hbs.property"
 
 	if [[ "${URL_DEPTH}" == '1' ]]; then
@@ -82,7 +82,7 @@ function apply_template() {
 		[[ -f "${PROPERTY_FILE}" ]] && cat "${PROPERTY_FILE}"
 		env
 	} >"${HBS_PROPERTY_FILE}"
-	${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports_hbs/partials/"* "${HBS_PROPERTY_FILE}"
+	${HBS} "${HBS_TEMPLATE_FILE}" "${TEMPLATE_DIR}/reports/partials/"* "${HBS_PROPERTY_FILE}"
 	rm -f "${HBS_PROPERTY_FILE}"
 	unset IS_OVERVIEW_REPORT IS_QUALITY_REPORT IS_INFO_REPORT IS_CLOUD_REPORT IS_SECURITY_REPORT IS_LANGUAGES_REPORT ROOT_DIR_NAV
 }
