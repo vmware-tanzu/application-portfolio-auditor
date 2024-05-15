@@ -173,12 +173,12 @@
       <div class="row">
         <div class="collapse multi-collapse" id="multiCollapseInfo">
           <div class="card card-body">
-            <p>As columns, you will find respectively the ...</p>
+            <p>As columns, you will find respectively the following:</p>
             <ul>
               {{#if HAS_ARCHEO_REPORT}}<li>numbers of Archeo findings.</li>{{/if}}
               {{#if HAS_LIBYEAR_REPORT}}<li>lib-years of technical debt.</li>{{/if}}
-              {{#if HAS_PMD_REPORT}}<li>numbers of triggered PMD rules and violations.</li>{{/if}}
-              {{#if HAS_PMD_REPORT}}<li>numbers of copy-pasted source code fragments (several lines), lines (several tokens), and tokens (chars and operators).</li>{{/if}}
+              {{#if HAS_PMD_REPORT}}<li>numbers of found PMD violations.</li>{{/if}}
+              {{#if HAS_PMD_REPORT}}<li>numbers of copy-pasted source code fragments (several lines).</li>{{/if}}
               {{#if HAS_SCANCODE_REPORT}}<li>numbers of embedded licenses and copyrights detected by ScanCode.</li>{{/if}}
               {{#if HAS_MAI_REPORT}}<li>numbers of detected features types ('tags') by MAI.</li>{{/if}}
             </ul>
