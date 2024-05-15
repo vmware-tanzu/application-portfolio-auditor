@@ -18,9 +18,7 @@ export LOG_FILE=${APP_DIR_OUT}.log
 RESULT_FILE="${APP_DIR_OUT}/_results_extracted.csv"
 
 function extract() {
-	rm -f "${RESULT_FILE}"
-	touch "${RESULT_FILE}"
-
+	echo "Applications${SEPARATOR}ScanCode licenses${SEPARATOR}ScanCode copyrights" >"${RESULT_FILE}"
 	while read -r APP; do
 		APP_NAME=$(basename "${APP}")
 		log_extract_message "app '${APP_NAME}'"
@@ -35,17 +33,8 @@ function extract() {
 			COUNT_LICENSES=$(tail -c +6 "${OUTPUT_DATA_JS}" | jq '.[] | .license_detections | length ' | awk '{s+=$1} END {print s}')
 			COUNT_COPYRIGHTS=$(tail -c +6 "${OUTPUT_DATA_JS}" | jq '.[] | .copyrights | length ' | awk '{s+=$1} END {print s}')
 		fi
-
 		echo "${APP_NAME}${SEPARATOR}${COUNT_LICENSES}${SEPARATOR}${COUNT_COPYRIGHTS}" >>"${RESULT_FILE}"
-
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"
-
-	# Adding the header
-	{
-		echo "Applications${SEPARATOR}ScanCode licenses${SEPARATOR}ScanCode copyrights"
-		cat "${RESULT_FILE}"
-	} >"${RESULT_FILE}.tmp"
-	mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
 }
 
 function main() {
