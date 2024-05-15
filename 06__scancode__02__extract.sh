@@ -42,7 +42,7 @@ function extract() {
 
 	# Adding the header
 	{
-		echo "Applications${SEPARATOR}ScanCode Licenses${SEPARATOR}ScanCode Copyrights"
+		echo "Applications${SEPARATOR}ScanCode licenses${SEPARATOR}ScanCode copyrights"
 		cat "${RESULT_FILE}"
 	} >"${RESULT_FILE}.tmp"
 	mv "${RESULT_FILE}.tmp" "${RESULT_FILE}"
