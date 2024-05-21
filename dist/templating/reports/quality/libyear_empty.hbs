@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  {{> header title='Quality reports - Libyear'}}
+  </head>
+  <body>
+    {{#> tool_header has_csv=true has_summary=false}}
+      {{#*inline "page_title"}}Quality reports{{/inline}}
+      {{#*inline "page_description"}}Consolidated code quality findings.{{/inline}}
+      {{#*inline "page_url"}}quality.html{{/inline}}
+      {{#*inline "tool_name"}}Libyear{{/inline}}
+      {{#*inline "tool_description"}}Measure the freshness of your software dependencies.{{/inline}}
+      {{#*inline "tool_url"}}https://libyear.com/{{/inline}}
+      {{#*inline "tool_version"}}{{LIBYEAR_VERSION}}{{/inline}}
+      {{#*inline "tool_url_report"}}18__LIBYEAR{{/inline}}
+      {{#*inline "tool_url_log"}}{{LIBYEAR_LOG}}{{/inline}}
+      {{#*inline "tool_url_csv"}}./_results__quality__libyear.csv{{/inline}}
+      {{#*inline "tool_image"}}libyear.png{{/inline}}
+    {{/tool_header}}
+    <div class="container">
+      <div class="row">
+        <p></p>
+      </div>
+      <div class="row">
+        <p>Nothing found while analyzing <span class="text-bold">{{APP}}</span> with <span class="text-bold">Libyear</span>.</p>
+      </div>
+    </div>
+    {{> footer}}
+  </body>
+</html>

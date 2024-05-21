@@ -88,7 +88,8 @@ function analyze() {
 
 				if [[ -f "${RESULT_SYFT_JSON}" ]]; then
 
-					LIBYEAR_OUTPUT="${OUT_DIR_LIBYEAR}/${APP_NAME}_libyear_findings.stats"
+					LIBYEAR_OUTPUT="${OUT_DIR_LIBYEAR}/${APP_NAME}_libyear_findings.csv"
+					APP_FINDINGS_STATS="${OUT_DIR_LIBYEAR}/${APP_NAME}_libyear_findings.stats"
 					POM_XML="${OUT_DIR_LIBYEAR}/${APP_NAME}_libyear.pom.xml"
 					LIBYEAR_TMP="${OUT_DIR_LIBYEAR}/${APP_NAME}_libyear.tmp"
 					MVN_LOG="${OUT_DIR_LIBYEAR}/${APP_NAME}_mvn.log"
@@ -165,10 +166,28 @@ EOF
 						compute "${MVN_LOG}" "${POM_XML}" 'last' ''
 
 						echo "Library${SEPARATOR}Libyears behind" >"${LIBYEAR_OUTPUT}"
-						awk '/The following dependencies in Dependencies have newer versions:/,/^$/' "${MVN_LOG}" | grep '\[INFO\]   ' | sed -e 's|\[INFO\][ ]*||g' | tr -s '\n' ';' | sed -e 's|\.[\.]*||g' | sed -e 's|libyears;|\n|g' | tr -s ',' '.' | sed -e 's|  |'"${SEPARATOR}"'|g' >>"${LIBYEAR_OUTPUT}"
+						awk '/The following dependencies in Dependencies have newer versions:/,/^$/' "${MVN_LOG}" | grep '\[INFO\]   ' | sed -e 's|\[INFO\][ ]*||g' | tr -s '\n' ';' | sed -e 's|\.[\.]*||g' | sed -e 's|libyears;|\n|g' | tr -s ',' '.' | sed -e 's|  |'"${SEPARATOR}"'|g' | sed -e 's| ||g' | tr -s ';' "${SEPARATOR}" >>"${LIBYEAR_OUTPUT}"
 
 						# Extract results
 						LIBYEARS=$(grep "behind" "${MVN_LOG}" | awk -F "This module is | libyears behind" '{print $2}' | tr -s ',' '.')
+
+						LIBS_COUNT=$(count_lines "${LIBYEAR_TMP}")
+
+						if [[ ${LIBS_COUNT} -gt 0 && -n "${LIBYEARS}" && "${LIBYEARS}" != "0" ]]; then
+							if [[ -n "$(command -v bc)" ]]; then
+								AVG_LIBYEAR_PER_LIB=$(echo "scale=2; $LIBYEARS / $LIBS_COUNT" | bc -l | awk '{printf "%.2f\n", $0}')
+							else
+								AVG_LIBYEAR_PER_LIB="n/a"
+							fi
+						else
+							AVG_LIBYEAR_PER_LIB=0
+						fi
+						# Stats for single application HTML result file
+						{
+							echo "LIBYEAR__TOTAL=${LIBYEARS}"
+							echo "LIBYEAR__LIBS_COUNT=${LIBS_COUNT}"
+							echo "LIBYEAR__AVG_LIBYEAR_PER_LIB=${AVG_LIBYEAR_PER_LIB}"
+						} >"${APP_FINDINGS_STATS}"
 						set -e
 
 						if [[ -z "${LIBYEARS}" ]]; then

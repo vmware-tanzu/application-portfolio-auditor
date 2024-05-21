@@ -824,8 +824,7 @@ function generate_trivy_html() {
 # Generate the Archeo pages
 function generate_archeo_html() {
 
-	export APP ARCHEO_REPORT_DIR
-	ARCHEO_REPORT_DIR=./../16__ARCHEO
+	export APP
 
 	# Generate one report per application
 	local APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
@@ -852,6 +851,33 @@ function generate_archeo_html() {
 	local ARCHEO_SUMMARY_REPORT="${ARCHEO_DIR}/__summary.html"
 	local ARCHEO_SUMMARY_STATS="${ARCHEO_DIR}/_results__quality__archeo.stats"
 	apply_template '1' "${ARCHEO_SUMMARY_STATS}" "quality/archeo_summary" >"${ARCHEO_SUMMARY_REPORT}"
+}
+
+# Generate the Libyear pages
+function generate_libyear_html() {
+
+	export APP
+
+	# Generate one report per application
+	local APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	while read -r FILE; do
+		local APP="$(basename "${FILE}")"
+		local LIBYEAR_DIR="${REPORTS_DIR}/18__LIBYEAR"
+		local LIBYEAR_REPORT="${LIBYEAR_DIR}/${APP}.html"
+		local LIBYEAR_CSV="${LIBYEAR_DIR}/${APP}_libyear_findings.csv"
+		local LIBYEAR_STATS="${LIBYEAR_DIR}/${APP}_libyear_findings.stats"
+		if [ -f "${LIBYEAR_CSV}" ] && [ $(wc -l <(tail -n +2 "${LIBYEAR_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
+			{
+				apply_template '1' "${LIBYEAR_STATS}" "quality/libyear_01"
+				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
+				sed 's/\$/\\\$/g; s/\`/"/g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; ' "${LIBYEAR_CSV}"
+				apply_template '1' "${LIBYEAR_STATS}" "quality/libyear_02"
+			} >"${LIBYEAR_REPORT}"
+		else
+			# Empty result file
+			apply_template '1' '' 'quality/libyear_empty' >"${LIBYEAR_REPORT}"
+		fi
+	done <"${APP_LIST}"
 }
 
 # Generate all pages
@@ -959,6 +985,10 @@ function generate_reports() {
 
 		if [[ "${HAS_ARCHEO_REPORT}" == TRUE ]]; then
 			generate_archeo_html
+		fi
+
+		if [[ "${HAS_LIBYEAR_REPORT}" == TRUE ]]; then
+			generate_libyear_html
 		fi
 
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then

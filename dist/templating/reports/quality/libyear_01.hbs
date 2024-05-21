@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{> header title='Quality reports - Libyear'}}
+  <style>
+    th { text-align:center }
+    tr:nth-child(1), td:nth-child(1) { width: 36%; word-break:break-word;}
+    tr:nth-child(2), td:nth-child(2) { width: 7%; }
+    tr:nth-child(3), td:nth-child(3) { width: 7%; }
+    tr:nth-child(4), td:nth-child(4) { width: 7%; }
+    tr:nth-child(5), td:nth-child(5) { width: 40%; word-break:break-word;}
+  </style>
+</head>
+<body>
+  {{#> tool_header has_csv=true has_summary=false}}
+    {{#*inline "page_title"}}Quality reports{{/inline}}
+    {{#*inline "page_description"}}Consolidated code quality findings.{{/inline}}
+    {{#*inline "page_url"}}quality.html{{/inline}}
+    {{#*inline "tool_name"}}Libyear{{/inline}}
+    {{#*inline "tool_description"}}Measure the freshness of your software dependencies.{{/inline}}
+    {{#*inline "tool_url"}}https://libyear.com/{{/inline}}
+    {{#*inline "tool_version"}}{{LIBYEAR_VERSION}}{{/inline}}
+    {{#*inline "tool_url_report"}}18__LIBYEAR{{/inline}}
+    {{#*inline "tool_url_log"}}{{LIBYEAR_LOG}}{{/inline}}
+    {{#*inline "tool_url_csv"}}./_results__quality__libyear.csv{{/inline}}
+    {{#*inline "tool_image"}}libyear.png{{/inline}}
+  {{/tool_header}}
+  <div class="container">
+    <div class="row g-3 mb-3">
+      <div class="col-sm col-xl">
+        <div id="totalTechDebtCard" class="card text-white">
+          <div class="card-body d-flex justify-content-center">
+            <div>
+              <div class="fs-6 fw-normal">Total technical debt</div>
+              <span class="fs-3 fw-semibold">{{LIBYEAR__TOTAL}}&nbsp;</span><span class="fs-6 fw-normal">&nbsp;libyears</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm col-xl">
+        <div class="card text-white" style="background-color: #333;">
+          <div class="card-body d-flex justify-content-center">
+            <div>
+              <div class="fs-6 fw-normal">Number of libraries</div>
+              <span class="fs-3 fw-semibold">{{LIBYEAR__LIBS_COUNT}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm col-xl">
+        <div id="averageTechDebtCard" class="card text-white">
+          <div class="card-body d-flex justify-content-center">
+            <div>
+              <div class="fs-6 fw-normal">Average debt per library</div>
+              <span class="fs-3 fw-semibold">{{LIBYEAR__AVG_LIBYEAR_PER_LIB}}&nbsp;</span><span class="fs-6 fw-normal">&nbsp;libyears</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <p>The following table summarizes the findings of <span class="text-bold">Libyear</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+    </div>
+    <div class="flex-column">
+      <div id="page-wrap">
+      </div>
+    </div>
+    <div class="row">
+      <p></p>
+    </div>
+  </div>
+  <!-- /.container -->
+
+  {{> footer}}
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="./../static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
+  <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
+  <script>
+    const app_name="{{APP}}"
+    const longText = `\

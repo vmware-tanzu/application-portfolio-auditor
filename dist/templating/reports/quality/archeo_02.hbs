@@ -62,14 +62,6 @@
           }
         })
         .style("color", function(d) {
-          if (!d || !d.name || !d.name.startsWith("Severity")) return colorTextNormal;
-          switch (d.value) {
-            case "Critical": return colorTextWhite;
-            case "High": return colorTextWhite;
-            default: return colorTextNormal;
-          }
-        })
-        .style("color", function(d) {
           if (!d || !d.name || !d.name.startsWith("Severity")) return "";
           switch (d.value) {
             case "Critical": return colorTextWhite;

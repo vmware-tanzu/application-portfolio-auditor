@@ -1,0 +1,119 @@
+    const dataUri = "data:text/plain;base64," + btoa(unescape(encodeURIComponent(longText)));
+
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
+
+    // Function to get the color of the background for single libraries
+    function getSeverityColorByLibrary(averageTechDebt) {
+      let severityColor;
+      if(!averageTechDebt) {
+        return ""
+      }
+      if(averageTechDebt>=5) {
+        severityColor = colorFindingPurple;
+      } else if (averageTechDebt>=3) {
+        severityColor = colorFindingRed;
+      } else if (averageTechDebt>=1) {
+        severityColor = colorFindingOrange;
+      } else if (averageTechDebt>0) {
+        severityColor = colorFindingYellow;
+      } else {
+        severityColor = colorFindingGreen;
+      }
+      return severityColor
+    }
+
+    // Sorting function
+    function sortRows(a, b, de, sortAscending, isNumeric) {
+      if (isNumeric) {
+        return sortAscending 
+          ? d3.ascending(parseFloat(a[de]), parseFloat(b[de])) 
+          : d3.descending(parseFloat(a[de]), parseFloat(b[de]));
+      } else {
+        return sortAscending 
+          ? d3.ascending(a[de], b[de]) 
+          : d3.descending(a[de], b[de]);
+      }
+    }
+
+    // Draw table
+    function drawTable(data) {    
+      var sortAscending = true;
+      var table = d3.select('#page-wrap').append('table');
+      var titles = Object.keys(data[0]);
+      var headers = table.append('thead').append('tr')
+        .selectAll('th')
+        .data(titles).enter()
+        .append('th')
+        .text(function(d) {
+          return d
+        })
+      .on('click', function(d) {
+        headers.attr('class', 'header');
+        var de = d.srcElement.innerText;
+        var isNumeric = de && de.startsWith("Libyears behind");
+
+        rows.sort(function(a, b) {
+          return sortRows(a, b, de, sortAscending, isNumeric);
+        });
+
+        sortAscending = !sortAscending;
+        this.className = sortAscending ? 'des' : 'aes';
+      });
+
+      var rows = table.append('tbody').selectAll('tr').data(data).enter().append('tr');
+      rows.selectAll('td')
+        .data(function (d) {
+          return titles.map(function (k) {
+            return { 'value': d[k], 'name': k};
+          });
+        }).enter()
+        .append('td')
+        .style('text-align',function(d) {
+          if (!d || !d.name || !d.name.startsWith("Description") && !d.name.startsWith("Library") ) return 'center';
+          return 'left';
+        })
+        .style("background-color", function(d) {
+          if (!d || !d.name || !d.name.startsWith("Libyears behind")) return "";
+          return getSeverityColorByLibrary(d.value);
+        })
+        .style("color", function(d) {
+          if (!d || !d.name || !d.name.startsWith("Libyears behind")) return colorTextNormal;
+          return colorTextWhite;
+        })
+        .html(function (d) {
+          return d.value;
+        });
+    };
+    
+    d3.csv(dataUri)
+    .then(function(data){drawTable(data);})
+    .catch(function(error){throw error;})
+
+    const totalTechDebt={{LIBYEAR__TOTAL}};
+    let totalTechDebtCardColor;
+    if(totalTechDebt>=300) {
+      totalTechDebtCardColor = colorFindingPurple;
+    } else if (totalTechDebt>=250) {
+      totalTechDebtCardColor = colorFindingRed;
+    } else if (totalTechDebt>=100) {
+      totalTechDebtCardColor = colorFindingOrange;
+    } else if (totalTechDebt>=50) {
+      totalTechDebtCardColor = colorFindingYellow;
+    } else {
+      totalTechDebtCardColor = colorFindingGreen;
+    }
+    const totalTechDebtCard = document.getElementById('totalTechDebtCard');
+    totalTechDebtCard.style.backgroundColor=totalTechDebtCardColor;
+
+    const averageTechDebt={{LIBYEAR__AVG_LIBYEAR_PER_LIB}};
+    const averageTechDebtCard = document.getElementById('averageTechDebtCard');
+    averageTechDebtCard.style.backgroundColor=getSeverityColorByLibrary(averageTechDebt);
+  </script>
+</body>
+</html>
