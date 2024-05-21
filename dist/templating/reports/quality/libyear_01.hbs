@@ -28,21 +28,21 @@
   <div class="container">
     <div class="row g-3 mb-3">
       <div class="col-sm col-xl">
-        <div id="totalTechDebtCard" class="card text-white border border-0">
-          <div class="card-body d-flex justify-content-center">
-            <div>
-              <div class="fs-6 fw-normal">Total technical debt</div>
-              <span class="fs-3 fw-semibold">{{LIBYEAR__TOTAL}}&nbsp;</span><span class="fs-6 fw-normal">&nbsp;libyears</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm col-xl">
         <div class="card text-white border border-0" style="background-color: #333;">
           <div class="card-body d-flex justify-content-center">
             <div>
               <div class="fs-6 fw-normal">Number of libraries</div>
               <span class="fs-3 fw-semibold">{{LIBYEAR__LIBS_COUNT}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm col-xl">
+        <div id="totalTechDebtCard" class="card text-white border border-0">
+          <div class="card-body d-flex justify-content-center">
+            <div>
+              <div class="fs-6 fw-normal">Total technical debt</div>
+              <span class="fs-3 fw-semibold">{{LIBYEAR__TOTAL}}&nbsp;</span><span class="fs-6 fw-normal">&nbsp;libyears</span>
             </div>
           </div>
         </div>
@@ -58,8 +58,16 @@
         </div>
       </div>
     </div>
+    <div class="row" style="margin-left: 0px; margin-right: 0px;">
+      <div class="card" style="padding-right: 0px; padding-left: 0px;">
+        <div class="card-header"><span class="fs-6">Distribution of libraries by libyears behind</span></div>
+        <div class="card-body">
+          <div id="histogram"></div>
+        </div>
+      </div>
+    </div>
     <div class="row">
-      <p>The following table summarizes the findings of <span class="text-bold">Libyear</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+      <p><br/>The following table summarizes the findings of <span class="text-bold">Libyear</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
     </div>
     <div class="flex-column">
       <div id="page-wrap">
