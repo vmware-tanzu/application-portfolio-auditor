@@ -535,7 +535,7 @@ else
 	cd "linguist-${LINGUIST_VERSION}"
 	rm Dockerfile
 	wget -q -O "Dockerfile" https://raw.githubusercontent.com/crazy-max/docker-linguist/master/Dockerfile
-	sed -i '' -e "s/.*ARG LINGUIST_VERSION=.*/ARG LINGUIST_VERSION=\"${LINGUIST_VERSION}\"/" Dockerfile
+	stream_edit "s/.*ARG LINGUIST_VERSION=.*/ARG LINGUIST_VERSION=\"${LINGUIST_VERSION}\"/" Dockerfile
 	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_LINGUIST}" .
 	popd &>/dev/null
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_LINGUIST}" | gzip >"${DIST_DIR}/${LINGUIST_IMG}"
@@ -595,7 +595,7 @@ else
 		pushd "${TMP_FSB_DIR}" &>/dev/null
 		chmod +x findsecbugs.sh
 		# Remove spurious CR characters
-		sed -i '' -e 's/\r$//' findsecbugs.sh
+		stream_edit 's/\r$//' findsecbugs.sh
 		rm -f findsecbugs.bat
 		cd ..
 		mv "findsecbugs-cli-${FSB_VERSION}" "findsecbugs-cli"
