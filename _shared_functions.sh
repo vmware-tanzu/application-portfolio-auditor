@@ -214,3 +214,4 @@ function check_debug_mode() {
 
 # Export function for download_and_update_tools.sh
 export -f echo_console_tool_info
+export -f stream_edit
