@@ -40,7 +40,7 @@ export SYFT_VERSION='1.4.1'
 export GRYPE_VERSION='0.77.4'
 export TRIVY_VERSION='0.51.1'
 export OSV_VERSION='1.7.3'
-export BEARER_VERSION='1.43.3'
+export BEARER_VERSION='1.43.4'
 
 # Supporting frameworks
 export FERNFLOWER_VERSION='241.17011.2'
@@ -79,7 +79,7 @@ export CONTAINER_IMAGE_NAME_BEARER="bearer/bearer:v${BEARER_VERSION}"
 export CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER="external-assets-downloader:1.0"
 export CONTAINER_IMAGE_NAME_NGINX="nginx:${NGINX_VERSION}-alpine"
 ## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-export DONET_RUNTIME_VERSION='8.0.4-alpine3.19'
+export DONET_RUNTIME_VERSION='8.0.5-alpine3.19'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DONET_RUNTIME_VERSION}"
 export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
 export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"
