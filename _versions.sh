@@ -38,12 +38,12 @@ export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
 export SYFT_VERSION='1.4.1'
 export GRYPE_VERSION='0.77.4'
-export TRIVY_VERSION='0.51.1'
+export TRIVY_VERSION='0.51.2'
 export OSV_VERSION='1.7.3'
-export BEARER_VERSION='1.43.4'
+export BEARER_VERSION='1.43.6'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='241.17011.2'
+export FERNFLOWER_VERSION='242.10180.25'
 export MUSTACHE_VERSION='3.0.5'
 export HBS_VERSION='5.1.2'
 export NIST_MIRROR_VERSION='1.6.0'
@@ -77,6 +77,7 @@ export CONTAINER_IMAGE_NAME_BEARER="bearer/bearer:v${BEARER_VERSION}"
 
 # Supporting container images
 export CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER="external-assets-downloader:1.0"
+export CONTAINER_IMAGE_NAME_HBS_BUILDER="handlebars-reports-builder:1.0"
 export CONTAINER_IMAGE_NAME_NGINX="nginx:${NGINX_VERSION}-alpine"
 ## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
 export DONET_RUNTIME_VERSION='8.0.5-alpine3.19'
