@@ -154,6 +154,7 @@ else
 	pushd "${SCRIPT_PATH}/../../dist/containerized/handlebars_reports" &>/dev/null
 	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
 		--build-arg HBS_VERSION="${HBS_VERSION}" \
+		--build-arg RUST_VERSION="${RUST_VERSION}" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_HBS_BUILDER}" .
 	${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating:/out:delegated" --name Builder "${CONTAINER_IMAGE_NAME_HBS_BUILDER}"
 	popd &>/dev/null
