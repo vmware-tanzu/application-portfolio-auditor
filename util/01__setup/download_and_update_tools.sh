@@ -25,6 +25,7 @@ SCRIPT_PATH="$(
 ARCH="$(uname -m)"
 export CONTAINER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
 export CONTAINER_PLATFORM="linux/${CONTAINER_ARCH}"
+export CONTAINER_PLATFORM_x86="linux/amd64"
 
 if [[ "${CONTAINER_ARCH}" == "arm64" ]]; then
 	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${CONTAINER_ARCH}v8"
@@ -152,7 +153,7 @@ else
 	echo "[INFO] 'Handlebars' (${HBS_VERSION}) build started"
 	find "${DIST_DIR}" -type f -iname 'hbs__*' -delete
 	pushd "${SCRIPT_PATH}/../../dist/containerized/handlebars_reports" &>/dev/null
-	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" \
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM_x86}" \
 		--build-arg HBS_VERSION="${HBS_VERSION}" \
 		--build-arg RUST_VERSION="${RUST_VERSION}" \
 		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_HBS_BUILDER}" .

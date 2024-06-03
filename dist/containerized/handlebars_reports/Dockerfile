@@ -8,6 +8,7 @@ COPY . /handlebar
 WORKDIR /handlebar
 
 # Required for Darwin build - see: https://github.com/rust-lang/rust/issues/112501#issuecomment-1908527957
+RUN apt-get clean
 RUN apt-get update -yqq
 RUN apt-get install -yqq --no-install-recommends build-essential
 RUN apt-get install -yqq clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev cmake libxml2-dev libssl-dev zip unzip
