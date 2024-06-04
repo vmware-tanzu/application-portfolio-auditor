@@ -3,6 +3,7 @@ use handlebars::Handlebars;
 use std::collections::HashMap;
 use std::error::Error;
 use std::path::Path;
+use std::fs;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Get command line arguments
@@ -17,11 +18,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let variable_file = &args[args.len() - 1];
 
     let mut handlebars = Handlebars::new();
+
     // Load template file
     if Path::new(template_file).exists() {
         handlebars.register_template_file("main_template", template_file)?;
     } else {
-        eprintln!("Error - Template file does not exit: '{}'", template_file);
+        eprintln!("Error - Template file does not exist: '{}'", template_file);
         return Ok(());
     }
 
@@ -35,7 +37,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .unwrap_or_default();
             handlebars.register_template_file(partial_stem, partial)?;
         } else {
-            eprintln!("Error - Partial file does not exit: '{}'", partial);
+            eprintln!("Error - Partial file does not exist: '{}'", partial);
             return Ok(());
         }
     }
@@ -43,10 +45,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Load variables from property file
     let mut variables = HashMap::new();
     if Path::new(variable_file).exists() {
-        let variable_content = std::fs::read_to_string(variable_file)?;
+        let variable_content = fs::read_to_string(variable_file)?;
         for line in variable_content.lines() {
-            let mut parts = line.splitn(2, '=');
-            if let (Some(key), Some(value)) = (parts.next(), parts.next()) {
+            if let Some((key, value)) = line.split_once('=') {
                 variables.insert(key.trim().to_string(), value.trim().to_string());
             }
         }
