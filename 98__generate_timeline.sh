@@ -119,7 +119,7 @@ function generate_timeline_json() {
 	add_entry "${CAT_ANALYSIS}" "17__bearer__analysis.sh" "${BEARER_LOG}" "17__bearer"
 	add_entry "${CAT_EXTRACTION}" "17__bearer__extract.sh" "${BEARER_LOG}" "17__bearer"
 	add_entry "${CAT_ANALYSIS}" "18__libyear__analysis.sh" "${LIBYEAR_LOG}" "18__libyear"
-	add_entry "${CAT_PREPARATION}" "97__generate_reports.sh" "${RUN_LOG}" "98__generate_reports"
+	add_entry "${CAT_PREPARATION}" "97__generate_reports.sh" "${RUN_LOG}" "97__generate_reports"
 
 	rm -f "${TIMELINE_JSON_TMP}"
 }
