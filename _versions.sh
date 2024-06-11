@@ -38,7 +38,7 @@ export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
 export SYFT_VERSION='1.6.0'
 export GRYPE_VERSION='0.78.0'
-export TRIVY_VERSION='0.52.0'
+export TRIVY_VERSION='0.52.1'
 export OSV_VERSION='1.7.4'
 export BEARER_VERSION='1.43.7'
 
