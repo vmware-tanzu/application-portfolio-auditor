@@ -11,7 +11,7 @@
 # ----- Please adjust
 
 # Set to true to get update all local vulnerability databases updated
-UPDATE_VULN_DBS=false
+UPDATE_VULN_DBS=true
 
 # ------ Do not modify
 [[ "$DEBUG" == "true" ]] && set -x
@@ -396,22 +396,26 @@ else
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_OWASP_DC}" | gzip >"${ODC_IMG}"
 fi
 
-simple_check_and_download "Nist Data Mirror" "containerized/owasp-dependency-check/nist-data-mirror.jar" "https://github.com/stevespringett/nist-data-mirror/releases/download/nist-data-mirror-${NIST_MIRROR_VERSION}/nist-data-mirror.jar" "${NIST_MIRROR_VERSION}"
-
 if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	DATA_DIR="${DIST_DIR}/owasp_data"
-	mkdir -p "${DATA_DIR}/cache" "${DATA_DIR}/nvdcache"
+	mkdir -p "${DATA_DIR}/cache"
 
 	# Download and cache locally the NVD and RetireJS databases for the OWASP analysis
 	echo "[INFO] Updating local RetireJS cache ..."
+	rm -f "${DATA_DIR}/jsrepository.json" "${DATA_DIR}/jsrepository.json.lock"
 	wget -q -O "${DATA_DIR}/jsrepository.json" "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json"
 
-	# FIXME - Remove Java usage and bump to latest version
-	if [[ -n "$(command -v javac)" ]]; then
-		echo "[INFO] Updating local NVD cache ..."
-		set +e
-		java -jar "${DIST_DIR}/containerized/owasp-dependency-check/nist-data-mirror.jar" "${DATA_DIR}/nvdcache"
-		set -e
+	if [[ -n "${OWASP_DC_NVD_API_KEY}" ]]; then
+		# Updte the local NVD database
+		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
+			-e user=$USER \
+			-u $(id -u ${USER}):$(id -g ${USER}) \
+			--volume "${DATA_DIR}":/usr/share/dependency-check/data:delegated \
+			"${CONTAINER_IMAGE_NAME_OWASP_DC}" \
+			--nvdApiKey "${OWASP_DC_NVD_API_KEY}" \
+			--updateonly
+	else
+		echo_console_warning "[WARN] No NVD API key set. Request an NVD API key on https://nvd.nist.gov/developers/request-an-api-key and set it in '_shared_functions.sh' to update the local NVD database."
 	fi
 fi
 

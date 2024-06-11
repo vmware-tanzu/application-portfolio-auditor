@@ -6,6 +6,10 @@
 # Library consolidating heavily reused functions and variables across "Application Portfolio Auditor".
 ##############################################################################################################
 
+# With 9.0.0 dependency-check has moved from using the NVD data-feed to the NVD API.
+# Users of dependency-check are highly encouraged to obtain an NVD API Key; see https://nvd.nist.gov/developers/request-an-api-key
+export OWASP_DC_NVD_API_KEY=""
+
 # Container engine in use - choose between podman and docker
 export CONTAINER_ENGINE="docker"
 # Removing CLI hints for docker
@@ -200,5 +204,6 @@ function check_debug_mode() {
 
 # Export function for download_and_update_tools.sh
 export -f echo_console_tool_info
+export -f echo_console_warning
 export -f echo_console_error
 export -f stream_edit
