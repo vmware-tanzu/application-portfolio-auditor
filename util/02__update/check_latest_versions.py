@@ -23,7 +23,7 @@ class Color:
     NORMAL = '\033[0m'
 
 # Tool names used to retrieve versions from OS environment variables
-tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FERNFLOWER', 'FSB',
+tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DOTNET_RUNTIME', 'FERNFLOWER', 'FSB',
     'GRYPE', 'HBS', 'INSIDER', 'JQA', 'JQUERY', 'LIBYEAR', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
     'PMD', 'RUST', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
@@ -241,7 +241,7 @@ if __name__ == '__main__':
         (check_github_tag,'nginx/nginx', r'release-(.+)', 'Nginx', NGINX_VERSION, None),
         (check_github,'rust-lang/rust', r'.*tag/(.+)', 'Rust', RUST_VERSION, None),
         (check_github_tag,'vasturiano/timelines-chart', r'v(.+)', 'Timeline Chart', TIMELINES_CHART_VERSION, None),
-        (check_dotnet_runtime, '', r'', '.NET Runtime', DONET_RUNTIME_VERSION, None)
+        (check_dotnet_runtime, '', r'', '.NET Runtime', DOTNET_RUNTIME_VERSION, None)
     ]))
 
     for line_idx, result in sorted(results.items()):
