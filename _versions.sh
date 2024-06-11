@@ -18,7 +18,7 @@ export CSA_BAGGER_VERSION='1.0.3'
 export WAMT_VERSION='24.0.0.1'
 
 ## Languages
-export LINGUIST_VERSION='7.29.0'
+export LINGUIST_VERSION='7.30.0'
 export CLOC_VERSION='2.00'
 
 ## License & Authors
