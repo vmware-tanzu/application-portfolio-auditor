@@ -11,7 +11,7 @@
 # ----- Please adjust
 
 # Set to true to get update all local vulnerability databases updated
-UPDATE_VULN_DBS=false
+UPDATE_VULN_DBS=true
 
 # ------ Do not modify
 [[ "$DEBUG" == "true" ]] && set -x
@@ -25,6 +25,7 @@ SCRIPT_PATH="$(
 ARCH="$(uname -m)"
 export CONTAINER_ARCH="$([[ "${ARCH}" == "arm64" ]] && echo "arm64" || echo "amd64")"
 export CONTAINER_PLATFORM="linux/${CONTAINER_ARCH}"
+export CONTAINER_PLATFORM_x86="linux/amd64"
 
 if [[ "${CONTAINER_ARCH}" == "arm64" ]]; then
 	export DOTNET_RUNTIME="${IMG_DOTNET_RUNTIME}-${CONTAINER_ARCH}v8"
@@ -144,31 +145,20 @@ else
 	fi
 fi
 
-# Fixme: This should be made OS & system-architecture agnostic in the future. Build can only be conducted on MacOS.
 DIST_HBS_BASE="${DIST_DIR}/templating/hbs__${HBS_VERSION}"
 DIST_HBS="${DIST_HBS_BASE}_darwin"
 if [ -f "${DIST_HBS}" ]; then
 	echo "[INFO] 'Handlebars' (${HBS_VERSION}) is already available"
 else
-	if [[ -n "$(command -v rustup)" && "${IS_MAC}" == "true" ]]; then
-		echo "[INFO] Building 'Handlebars' (${HBS_VERSION})"
-		find "${SCRIPT_PATH}/../../dist/templating" -type f -mindepth 1 -maxdepth 1 -iname 'hbs*' -delete
-		pushd "${SCRIPT_PATH}/../../dist/templating/handlebars_reports" &>/dev/null
-		rm -Rf target
-
-		# https://github.com/rust-lang/rust/issues/34282
-		rustup target add x86_64-apple-darwin
-		rustup target add x86_64-unknown-linux-gnu
-		brew tap --quiet SergioBenitez/osxct
-		brew install --quiet x86_64-unknown-linux-gnu
-		CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc cargo build --release --quiet --target=x86_64-unknown-linux-gnu
-		cargo build --release --quiet --target=x86_64-apple-darwin
-		cp target/x86_64-apple-darwin/release/handlebars_reports "${DIST_HBS}"
-		cp target/x86_64-unknown-linux-gnu/release/handlebars_reports "${DIST_HBS_BASE}_linux"
-		popd &>/dev/null
-	else
-		echo "[WARM] 'Handlebars' (${HBS_VERSION}) has not been built as it required rustup to be installed (https://www.rust-lang.org/tools/install). Will fallback to Mustache (slower)."
-	fi
+	echo "[INFO] 'Handlebars' (${HBS_VERSION}) build started"
+	find "${DIST_DIR}" -type f -iname 'hbs__*' -delete
+	pushd "${SCRIPT_PATH}/../../dist/containerized/handlebars_reports" &>/dev/null
+	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM_x86}" \
+		--build-arg HBS_VERSION="${HBS_VERSION}" \
+		--build-arg RUST_VERSION="${RUST_VERSION}" \
+		-f "Dockerfile" -t "${CONTAINER_IMAGE_NAME_HBS_BUILDER}" .
+	${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm -v "${SCRIPT_PATH}/../../dist/templating:/out:delegated" --name Builder "${CONTAINER_IMAGE_NAME_HBS_BUILDER}"
+	popd &>/dev/null
 fi
 
 ##############################################################################################################
@@ -179,6 +169,8 @@ DIST_FERNFLOWER="${DIST_DIR}/oci__fernflower_${FERNFLOWER_VERSION}.img"
 if [ -f "${DIST_FERNFLOWER}" ]; then
 	echo "[INFO] 'Fernflower' (${FERNFLOWER_VERSION}) is already available"
 else
+	echo "[INFO] 'Fernflower' (${FERNFLOWER_VERSION}) build started"
+
 	mkdir -p "${DIST_DIR}/containerized/fernflower"
 
 	# Delete previous versions
@@ -404,22 +396,26 @@ else
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_OWASP_DC}" | gzip >"${ODC_IMG}"
 fi
 
-simple_check_and_download "Nist Data Mirror" "containerized/owasp-dependency-check/nist-data-mirror.jar" "https://github.com/stevespringett/nist-data-mirror/releases/download/nist-data-mirror-${NIST_MIRROR_VERSION}/nist-data-mirror.jar" "${NIST_MIRROR_VERSION}"
-
 if [[ "${UPDATE_VULN_DBS}" == "true" ]]; then
 	DATA_DIR="${DIST_DIR}/owasp_data"
-	mkdir -p "${DATA_DIR}/cache" "${DATA_DIR}/nvdcache"
+	mkdir -p "${DATA_DIR}/cache"
 
 	# Download and cache locally the NVD and RetireJS databases for the OWASP analysis
 	echo "[INFO] Updating local RetireJS cache ..."
+	rm -f "${DATA_DIR}/jsrepository.json" "${DATA_DIR}/jsrepository.json.lock"
 	wget -q -O "${DATA_DIR}/jsrepository.json" "https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json"
 
-	# FIXME - Remove Java usage and bump to latest version
-	if [[ -n "$(command -v javac)" ]]; then
-		echo "[INFO] Updating local NVD cache ..."
-		set +e
-		java -jar "${DIST_DIR}/containerized/owasp-dependency-check/nist-data-mirror.jar" "${DATA_DIR}/nvdcache"
-		set -e
+	if [[ -n "${OWASP_DC_NVD_API_KEY}" ]]; then
+		# Updte the local NVD database
+		${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
+			-e user=$USER \
+			-u $(id -u ${USER}):$(id -g ${USER}) \
+			--volume "${DATA_DIR}":/usr/share/dependency-check/data:delegated \
+			"${CONTAINER_IMAGE_NAME_OWASP_DC}" \
+			--nvdApiKey "${OWASP_DC_NVD_API_KEY}" \
+			--updateonly
+	else
+		echo_console_warning "[WARN] No NVD API key set. Request an NVD API key on https://nvd.nist.gov/developers/request-an-api-key and set it in '_shared_functions.sh' to update the local NVD database."
 	fi
 fi
 
@@ -535,7 +531,7 @@ else
 	cd "linguist-${LINGUIST_VERSION}"
 	rm Dockerfile
 	wget -q -O "Dockerfile" https://raw.githubusercontent.com/crazy-max/docker-linguist/master/Dockerfile
-	sed -i '' -e "s/.*ARG LINGUIST_VERSION=.*/ARG LINGUIST_VERSION=\"${LINGUIST_VERSION}\"/" Dockerfile
+	stream_edit "s/.*ARG LINGUIST_VERSION=.*/ARG LINGUIST_VERSION=\"${LINGUIST_VERSION}\"/" Dockerfile
 	${CONTAINER_ENGINE} buildx build --platform "${CONTAINER_PLATFORM}" -t "${CONTAINER_IMAGE_NAME_LINGUIST}" .
 	popd &>/dev/null
 	${CONTAINER_ENGINE} image save "${CONTAINER_IMAGE_NAME_LINGUIST}" | gzip >"${DIST_DIR}/${LINGUIST_IMG}"
@@ -595,7 +591,7 @@ else
 		pushd "${TMP_FSB_DIR}" &>/dev/null
 		chmod +x findsecbugs.sh
 		# Remove spurious CR characters
-		sed -i '' -e 's/\r$//' findsecbugs.sh
+		stream_edit 's/\r$//' findsecbugs.sh
 		rm -f findsecbugs.bat
 		cd ..
 		mv "findsecbugs-cli-${FSB_VERSION}" "findsecbugs-cli"

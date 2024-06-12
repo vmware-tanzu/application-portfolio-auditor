@@ -185,7 +185,7 @@ function check_support() {
 
 function generate_csv() {
 
-	echo "Applications${SEPARATOR}Archeo Findings" >"${RESULT_SUMMARY_HEATMAP_CSV}"
+	echo "Applications${SEPARATOR}Archeo findings" >"${RESULT_SUMMARY_HEATMAP_CSV}"
 
 	# Applications
 	SUMMARY_COUNT_APPS_ALL=0

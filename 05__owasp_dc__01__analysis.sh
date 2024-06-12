@@ -38,24 +38,18 @@ function analyze() {
 		APP_NAME=$(basename "${APP}")
 		APP_DIR=$(dirname "${APP}")
 
-		# OWASP DC arguments
+		# OWASP analysis arguments
 		ARGS=(
 			--project "[${APP_GROUP}] ${APP_NAME}"
 			-f ALL
 			--out /report
 			--scan "/apps/${APP_NAME}"
-			--disableBundleAudit
-			--disableRubygems
-			--disableCocoapodsAnalyzer
 		)
 		[[ "${ENABLE_VERBOSE_LOG}" == "true" ]] && ARGS+=(-l "${APP_DIR_OUT}__${APP_NAME}.log")
-		[[ "${DISABLE_CENTRAL_REPO}" == "true" ]] && ARGS+=(--disableCentral)
-		[[ "${ENABLE_PYTHON_SCANNING}" == "true" ]] && {
-			ARGS+=(--enableExperimental)
-			ARGS+=(--disablePyDist "false")
-			ARGS+=(--disablePyPkg "false")
-		}
-		[[ "${HAS_INTERNET_CONNECTION}" == "false" ]] && ARGS+=(--noupdate --disableOssIndex)
+		# Append arguments valid for all scans
+		ARGS+=("${ARGS_GLOBAL[@]}")
+
+		set -x
 		set +e
 		(
 			time ${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
@@ -68,6 +62,7 @@ function analyze() {
 				"${ARGS[@]}"
 		) >>"${LOG_FILE}" 2>&1
 		set -e
+		set +x
 
 		if [[ -f "${APP_DIR_OUT}/dependency-check-junit.xml" ]]; then
 			mv "${APP_DIR_OUT}/dependency-check-junit.xml" "${APP_DIR_OUT}/${APP_NAME}_dc_junit.xml"
@@ -89,10 +84,34 @@ function analyze() {
 
 function main() {
 	log_tool_info "OWASP DC (Open Web Application Security Project Dependency-Check) v${VERSION}"
+
+	# Creating cache directory for vulnerability database
 	if [ ! -d "${CACHE_DIR}" ]; then
 		echo "Initially creating persistent directory: ${CACHE_DIR}"
 		mkdir -p "${CACHE_DIR}"
 	fi
+
+	# Preparing arguments valid for all runs of OWASP dependency check
+	export ARGS_GLOBAL=(
+		--disableBundleAudit
+		--disableRubygems
+		--disableCocoapodsAnalyzer
+	)
+	[[ "${DISABLE_CENTRAL_REPO}" == "true" ]] && ARGS_GLOBAL+=(--disableCentral)
+	[[ "${ENABLE_PYTHON_SCANNING}" == "true" ]] && {
+		ARGS_GLOBAL+=(--enableExperimental)
+		ARGS_GLOBAL+=(--disablePyDist "false")
+		ARGS_GLOBAL+=(--disablePyPkg "false")
+	}
+	if [[ -n "${OWASP_DC_NVD_API_KEY}" ]]; then
+		ARGS_GLOBAL+=(--nvdApiKey "${OWASP_DC_NVD_API_KEY}")
+	elif [[ "${HAS_INTERNET_CONNECTION}" == "true" ]]; then
+		log_console_warning "Disabling updates of the vulnerability DB. Request an NVD API key on https://nvd.nist.gov/developers/request-an-api-key and set it in '_shared_functions.sh' for updates."
+		ARGS_GLOBAL+=(--noupdate)
+	fi
+	[[ "${HAS_INTERNET_CONNECTION}" == "false" ]] && ARGS_GLOBAL+=(--noupdate --disableOssIndex)
+
+	# Analyze the applications
 	analyze
 }
 

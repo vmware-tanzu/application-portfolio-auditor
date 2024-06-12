@@ -30,6 +30,7 @@ ADD owasp-dependency-check_${VERSION}.zip /
 RUN apk update                                                                                       && \
     apk add --no-cache --virtual .build-deps curl tar                                                && \
     apk add --no-cache git ruby ruby-rdoc npm                                                        && \
+    apk add --no-cache dotnet6-runtime                                                               && \
     gem install bundle-audit                                                                         && \
     bundle audit update                                                                              && \
     mkdir /opt/yarn                                                                                  && \

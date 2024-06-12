@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{> header title='Quality reports - Libyear'}}
+  <style>
+    th { text-align:center }
+    tr:nth-child(1), td:nth-child(1) { width: 36%; word-break:break-word;}
+    tr:nth-child(2), td:nth-child(2) { width: 7%; }
+    tr:nth-child(3), td:nth-child(3) { width: 7%; }
+    tr:nth-child(4), td:nth-child(4) { width: 7%; }
+    tr:nth-child(5), td:nth-child(5) { width: 40%; word-break:break-word;}
+  </style>
+</head>
+<body>
+  {{#> tool_header has_csv=true has_summary=false}}
+    {{#*inline "page_title"}}Quality reports{{/inline}}
+    {{#*inline "page_description"}}Consolidated code quality findings.{{/inline}}
+    {{#*inline "page_url"}}quality.html{{/inline}}
+    {{#*inline "tool_name"}}Libyear{{/inline}}
+    {{#*inline "tool_description"}}Measure the freshness of your software dependencies.{{/inline}}
+    {{#*inline "tool_url"}}https://libyear.com/{{/inline}}
+    {{#*inline "tool_version"}}{{LIBYEAR_VERSION}}{{/inline}}
+    {{#*inline "tool_url_report"}}18__LIBYEAR{{/inline}}
+    {{#*inline "tool_url_log"}}{{LIBYEAR_LOG}}{{/inline}}
+    {{#*inline "tool_url_csv"}}./_results__quality__libyear.csv{{/inline}}
+    {{#*inline "tool_image"}}libyear.png{{/inline}}
+  {{/tool_header}}
+  <div class="container">
+    <div class="row g-3 mb-3">
+      <div class="col-sm col-xl">
+        <div style="background-color: #333;" class="card text-white border border-0 shadow">
+          <div class="card-body d-flex justify-content-center">
+            <div class="col-sm-2 d-flex align-items-center">
+              <!-- https://www.svgrepo.com/svg/327322/library -->
+              <svg fill="#ffffff" viewBox="0 0 512 512" width="50px" height="50px" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><title>ionicons-v5-l</title><path d="M64,480H48a32,32,0,0,1-32-32V112A32,32,0,0,1,48,80H64a32,32,0,0,1,32,32V448A32,32,0,0,1,64,480Z"></path><path d="M240,176a32,32,0,0,0-32-32H144a32,32,0,0,0-32,32v28a4,4,0,0,0,4,4H236a4,4,0,0,0,4-4Z"></path><path d="M112,448a32,32,0,0,0,32,32h64a32,32,0,0,0,32-32V418a2,2,0,0,0-2-2H114a2,2,0,0,0-2,2Z"></path><rect x="112" y="240" width="128" height="144" rx="2" ry="2"></rect><path d="M320,480H288a32,32,0,0,1-32-32V64a32,32,0,0,1,32-32h32a32,32,0,0,1,32,32V448A32,32,0,0,1,320,480Z"></path><path d="M495.89,445.45l-32.23-340c-1.48-15.65-16.94-27-34.53-25.31l-31.85,3c-17.59,1.67-30.65,15.71-29.17,31.36l32.23,340c1.48,15.65,16.94,27,34.53,25.31l31.85-3C484.31,475.14,497.37,461.1,495.89,445.45Z"></path></g></svg>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-7">
+              <div class="fs-6 fw-normal">Number of libraries</div>
+              <span class="fs-3 fw-semibold">{{LIBYEAR__LIBS_COUNT}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm col-xl">
+        <div id="totalTechDebtCard" class="card text-white border border-0 shadow">
+          <div class="card-body d-flex justify-content-center">
+            <div class="col-sm-2 d-flex align-items-center">
+              <!-- https://www.svgrepo.com/svg/521539/calendar-time -->
+              <svg viewBox="0 0 24 24" width="50px" height="50px" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M7 1C6.44772 1 6 1.44772 6 2V3H5C3.34315 3 2 4.34315 2 6V20C2 21.6569 3.34315 23 5 23H13.101C12.5151 22.4259 12.0297 21.7496 11.6736 21H5C4.44772 21 4 20.5523 4 20V11H20V11.2899C20.7224 11.5049 21.396 11.8334 22 12.2547V6C22 4.34315 20.6569 3 19 3H18V2C18 1.44772 17.5523 1 17 1C16.4477 1 16 1.44772 16 2V3H8V2C8 1.44772 7.55228 1 7 1ZM16 6V5H8V6C8 6.55228 7.55228 7 7 7C6.44772 7 6 6.55228 6 6V5H5C4.44772 5 4 5.44772 4 6V9H20V6C20 5.44772 19.5523 5 19 5H18V6C18 6.55228 17.5523 7 17 7C16.4477 7 16 6.55228 16 6Z" fill="#ffffff"></path> <path d="M17 16C17 15.4477 17.4477 15 18 15C18.5523 15 19 15.4477 19 16V17.703L19.8801 18.583C20.2706 18.9736 20.2706 19.6067 19.8801 19.9973C19.4896 20.3878 18.8564 20.3878 18.4659 19.9973L17.2929 18.8243C17.0828 18.6142 16.9857 18.3338 17.0017 18.0588C17.0006 18.0393 17 18.0197 17 18V16Z" fill="#ffffff"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M24 18C24 21.3137 21.3137 24 18 24C14.6863 24 12 21.3137 12 18C12 14.6863 14.6863 12 18 12C21.3137 12 24 14.6863 24 18ZM13.9819 18C13.9819 20.2191 15.7809 22.0181 18 22.0181C20.2191 22.0181 22.0181 20.2191 22.0181 18C22.0181 15.7809 20.2191 13.9819 18 13.9819C15.7809 13.9819 13.9819 15.7809 13.9819 18Z" fill="#ffffff"></path> </g></svg>
+            </div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-7">
+              <div class="fs-6 fw-normal">Total technical debt</div>
+              <span class="fs-3 fw-semibold">{{LIBYEAR__TOTAL}}&nbsp;</span><span class="fs-6 fw-normal">libyears</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm col-xl">
+        <div id="averageTechDebtCard" class="card text-white border border-0 shadow">
+          <div class="card-body d-flex justify-content-center">
+            <div class="col-sm-2 col-xl-2 d-flex align-items-center">
+              <!-- https://www.svgrepo.com/svg/96102/time-metaphor -->
+              <svg fill="#ffffff" width="50px" height="50px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 352.096 352.096" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g id="Layer_5_99_"> <g> <path d="M324.499,174.893c0-2.311,0.928-7.688,9.513-7.688c0,0,8.442,0,14.679,0c6.349,0,1.873-5.32,1.873-5.32l-40.023-63.139 c-0.135-0.152-2.166-2.574-4.137,0.348l-39.543,62.541c0,0-4.961,5.57,1.841,5.57c6.28,0,14.849,0,14.849,0 c4.422,0,9.498,1.07,9.498,9.424c0,71.805-58.676,130.223-130.797,130.223c-72.127,0-130.808-58.678-130.808-130.805 c0-72.125,58.681-130.805,130.808-130.805c19.281,0,37.843,4.094,55.17,12.166c2.102,0.98,4.333,1.475,6.628,1.475 c6.093,0,11.694-3.566,14.267-9.086c3.658-7.859,0.246-17.232-7.612-20.893c-21.517-10.023-44.548-15.107-68.452-15.107 C72.787,13.797,0,86.582,0,176.047c0,89.467,72.787,162.252,162.253,162.252c89.11,0,161.893-72.496,162.24-161.608 C324.491,176.688,324.499,175.342,324.499,174.893z"></path> <path d="M170.571,184.203c-2.129,0-3.869-1.74-3.869-3.869v-65.646c0-2.129-1.742-3.869-3.869-3.869h-14.567 c-2.129,0-3.869,1.74-3.869,3.869l-0.005,87.955c0,2.127,1.742,3.867,3.869,3.867h86.189c2.128,0,3.87-1.74,3.87-3.867v-14.57 c0-2.129-1.742-3.869-3.87-3.869h-63.879V184.203z"></path> </g> </g> </g> </g></svg>
+            </div>
+            <div class="col-sm-1 col-xl-1"></div>
+            <div class="col-sm-7 col-xl-7">
+                <div class="fs-6 fw-normal">Avg. debt per library</div>
+                <span class="fs-3 fw-semibold">{{LIBYEAR__AVG_LIBYEAR_PER_LIB}}&nbsp;</span><span class="fs-6 fw-normal">libyears</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-left: 0px; margin-right: 0px;">
+      <div class="card" style="padding-right: 0px; padding-left: 0px;">
+        <div class="card-header"><span class="text-bold">Distribution of libraries by libyears behind</span></div>
+        <div class="card-body shadow">
+          <div id="histogram"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <p><br/>The following table summarizes the findings of <span class="text-bold">Libyear</span> while analyzing <span class="text-bold">{{APP}}</span>.</p>
+    </div>
+    <div class="flex-column">
+      <div id="page-wrap">
+      </div>
+    </div>
+    <div class="row">
+      <p></p>
+    </div>
+  </div>
+  <!-- /.container -->
+
+  {{> footer}}
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="./../static/js/jquery-{{JQUERY_VERSION}}.min.js"></script>
+  <script src="./../static/bootstrap-{{BOOTSTRAP_VERSION}}-dist/js/bootstrap.bundle.min.js"></script>
+  <script src="./../static/js/d3.v{{D3_VERSION}}.min.js"></script>
+  <script>
+    const app_name="{{APP}}"
+    const longText = `\

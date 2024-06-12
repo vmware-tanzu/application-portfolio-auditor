@@ -23,9 +23,9 @@ class Color:
     NORMAL = '\033[0m'
 
 # Tool names used to retrieve versions from OS environment variables
-tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DONET_RUNTIME', 'FERNFLOWER', 'FSB',
-     'GRYPE', 'HBS', 'INSIDER', 'JQA', 'JQUERY', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
-    'PMD', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
+tool_names = [ 'BEARER', 'BOOTSTRAP', 'BOOTSTRAP_ICONS', 'CLOC', 'CSA', 'D3', 'DOTNET_RUNTIME', 'FERNFLOWER', 'FSB',
+    'GRYPE', 'HBS', 'INSIDER', 'JQA', 'JQUERY', 'LIBYEAR', 'LINGUIST', 'MAI', 'MUSTACHE', 'NIST_MIRROR', 'NGINX', 'OSV', 'OWASP_DC',
+    'PMD', 'RUST', 'SCANCODE', 'SLSCAN', 'SYFT', 'TIMELINES_CHART', 'TRIVY', 'WAMT', 'WINDUP' ]
 
 results = {}
 
@@ -92,23 +92,41 @@ async def check_github(client, short_url, regex, name, version, unstable_version
 
 async def check_github_tag(client, short_url, regex, name, version, unstable_version, line_idx):
     """Check if the current used version is the latest released one foor a GitHub project based on the latest tag."""
-    url = f'https://api.github.com/repos/{short_url}/tags'
-    prog = re.compile(regex, re.IGNORECASE)
+    url = f'https://github.com/'+short_url+'/tags'
     try:
         html = await fetch_html(client, url)
-        response_data = json.loads(html)
-        versions = sorted(response_data, key=lambda x: version_key(x['name']), reverse=True)
-        project_tag = versions[0]['name']
-        # Extract version from tag name
-        match = prog.match(project_tag)
-        project_version = match.group(1)
-        project_href = f'https://github.com/{short_url}/releases/tag/{project_tag}'
-        if project_version != version:
-            await print_warn(f'{name} - New version available: {project_version} (current: {version}) - Download: {project_href}',line_idx, select_warn_color(project_version,unstable_version))
+        soup = BeautifulSoup(html, "html.parser")
+
+        # Locate the div with class "Box-body p-0"
+        div = soup.find('div', class_='Box-body p-0')
+
+        # Find the first <a> tag within this div with matching URL
+        link = None
+        if div:
+            a_tags = div.find_all('a')
+            for tag in a_tags:
+                href = tag.get('href')
+                if href and href.startswith('/'+short_url+'/releases/tag/'):
+                    link = href
+                    break  # Stop after finding the first matching link
+        if link:
+            short_link = link.split('/tag/')[1]
+            match = re.search(regex, short_link)
+            if match:
+                project_version = match.group(1)
+                if project_version != version:
+                    project_href = f'https://github.com'+link
+                    await print_warn(f'{name} - New version available: {project_version} (current: {version}) - Download: {project_href}',line_idx, select_warn_color(project_version,unstable_version))
+                else:
+                    await print_ok(f'{name} - Version up-to-date: {project_version}',line_idx)
+            else:
+                await print_error(f"{name} - Request ({url}) failed: No matching link found")
         else:
-            await print_ok(f'{name} - Version up-to-date: {project_version}',line_idx)
+            await print_error(f"{name} - Request ({url}) failed: No link found")
+
     except Exception as error:
-        await print_error(f'{name} - Request ({url}) failed: '+repr(error),line_idx)
+        print(traceback.format_exc())
+        await print_error(f"{name} - Request ({url}) failed: "+repr(error),line_idx)
 
 async def check_wamt(client, short_url, regex, name, version, unstable_version, line_idx):
     """Check if the current used WAMT version is the latest released one."""
@@ -189,13 +207,13 @@ if __name__ == '__main__':
         (print_bold_message, '', r'', 'Application Analysis Tools', '', None),
         (check_github, 'pmd/pmd', r'.*pmd_releases/(.+)', 'PMD', PMD_VERSION, None),
         ## OWASP DC 9.x requires major changes before updating
-        (check_github, 'jeremylong/DependencyCheck', r'.*/tag/v(.+)', 'OWASP DC', OWASP_DC_VERSION, '9.1.0'),
+        (check_github, 'jeremylong/DependencyCheck', r'.*/tag/v(.+)', 'OWASP DC', OWASP_DC_VERSION, '9.2.0'),
         ## Find Security Bugs' latest version does not provide a pre-built CLI binary yet
         (check_github, 'find-sec-bugs/find-sec-bugs', r'.*/tag/version-(.+)', 'Find Security Bugs', FSB_VERSION, '1.13.0'),
         (check_github, 'nexB/scancode-toolkit', r'.*/tag/v(.+)', 'ScanCode', SCANCODE_VERSION, None),
         (check_github, 'AlDanial/cloc', r'.*/tag/v(.+)', 'CLOC', CLOC_VERSION, None),
         ## Windup: Versions from 6.2.x do not allow multiple targets
-        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.7'),
+        (check_github, 'windup/windup-distribution', r'.*/tag/(.+).Final', 'Windup', WINDUP_VERSION, '6.3.8'),
         (check_github, 'vmware-tanzu/cloud-suitability-analyzer', r'.*/tag/v(.+)', 'CSA', CSA_VERSION, None),
         (check_github, 'microsoft/ApplicationInspector', r'.*/tag/v(.+)', 'MAI', MAI_VERSION, None),
         (check_github, 'github/linguist', r'.*/tag/v(.+)', 'Linguist', LINGUIST_VERSION, None),
@@ -221,8 +239,9 @@ if __name__ == '__main__':
         (check_github, 'twbs/bootstrap', r'.*tag/v(.+)','Bootstrap', BOOTSTRAP_VERSION, None),
         (check_github, 'twbs/icons', r'.*tag/v(.+)','Bootstrap Icons', BOOTSTRAP_ICONS_VERSION, None),
         (check_github_tag,'nginx/nginx', r'release-(.+)', 'Nginx', NGINX_VERSION, None),
+        (check_github,'rust-lang/rust', r'.*tag/(.+)', 'Rust', RUST_VERSION, None),
         (check_github_tag,'vasturiano/timelines-chart', r'v(.+)', 'Timeline Chart', TIMELINES_CHART_VERSION, None),
-        (check_dotnet_runtime, '', r'', '.NET Runtime', DONET_RUNTIME_VERSION, None)
+        (check_dotnet_runtime, '', r'', '.NET Runtime', DOTNET_RUNTIME_VERSION, None)
     ]))
 
     for line_idx, result in sorted(results.items()):

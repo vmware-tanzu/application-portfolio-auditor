@@ -25,7 +25,8 @@ function generate_csv() {
 		return
 	fi
 
-	echo "Applications${SEPARATOR}WAMT criticals${SEPARATOR}WAMT warns${SEPARATOR}WAMT total" >"${RESULT_FILE}"
+	#echo "Applications${SEPARATOR}WAMT criticals${SEPARATOR}WAMT warns${SEPARATOR}WAMT findings" >"${RESULT_FILE}"
+	echo "Applications${SEPARATOR}WAMT findings" >"${RESULT_FILE}"
 
 	while read -r FILE; do
 		APP="$(basename "${FILE}")"
@@ -83,13 +84,15 @@ function generate_csv() {
 				fi
 
 				TOTAL=$((CRITICALS + WARNINGS + INFOS))
-				echo "${APP}${SEPARATOR}${CRITICALS}${SEPARATOR}${WARNINGS}${SEPARATOR}${TOTAL}" >>"${RESULT_FILE}"
+				#echo "${APP}${SEPARATOR}${CRITICALS}${SEPARATOR}${WARNINGS}${SEPARATOR}${TOTAL}" >>"${RESULT_FILE}"
+				echo "${APP}${SEPARATOR}${TOTAL}" >>"${RESULT_FILE}"
 			else
-				echo "${APP}${SEPARATOR}0${SEPARATOR}0${SEPARATOR}0" >>"${RESULT_FILE}"
+				#echo "${APP}${SEPARATOR}0${SEPARATOR}0${SEPARATOR}0" >>"${RESULT_FILE}"
+				echo "${APP}${SEPARATOR}0" >>"${RESULT_FILE}"
 			fi
 			rm "${TEMP_TABLE_FILE}"
 		else
-			echo "${APP}${SEPARATOR}n/a${SEPARATOR}n/a${SEPARATOR}n/a" >>"${RESULT_FILE}"
+			echo "${APP}${SEPARATOR}n/a" >>"${RESULT_FILE}"
 		fi
 
 	done <"${REPORTS_DIR}/00__Weave/list__all_apps.txt"

@@ -38,7 +38,7 @@ REPORT_VARIABLES=(
 	"TOOLS_CLOUD_COUNT" "HAS_MULTIPLE_CLOUD_TOOLS" "HAS_WINDUP" "HAS_WINDUP_REPORT" "HAS_WINDUP_PACKAGES_REPORT" "HAS_WINDUP_OR_PACKAGES_REPORT" "WINDUP_URL" "WINDUP_PACKAGES" "WINDUP_CSV_ALL" "WINDUP_LOG" "WAMT_URL" "WAMT_LOG" "HAS_CSA_REPORT" "HAS_WAMT_REPORT" "HAS_CLOUD_REPORT" "HAS_INDEX_CLOUD_REPORT"
 
 	# Quality
-	"HAS_QUALITY_REPORT" "TOOLS_QUALITY_COUNT" "HAS_MULTIPLE_QUALITY_TOOLS" "HAS_PMD_REPORT" "PMD_URL" "PMD_LOG" "HAS_FSB_REPORT" "FSB_URL" "FSB_LOG" "HAS_MAI_REPORT" "MAI_URL" "MAI_LOG" "HAS_ARCHEO_REPORT" "ARCHEO_URL" "ARCHEO_LOG"
+	"HAS_QUALITY_REPORT" "TOOLS_QUALITY_COUNT" "HAS_MULTIPLE_QUALITY_TOOLS" "HAS_PMD_REPORT" "PMD_URL" "PMD_LOG" "HAS_FSB_REPORT" "FSB_URL" "FSB_LOG" "HAS_MAI_REPORT" "MAI_URL" "MAI_LOG" "HAS_ARCHEO_REPORT" "ARCHEO_URL" "ARCHEO_LOG" "HAS_LIBYEAR_REPORT" "LIBYEAR_URL" "LIBYEAR_LOG"
 
 	# Security
 	"HAS_SECURITY_REPORT" "TOOLS_SECURITY_COUNT" "HAS_SECURITY_REPORT_TABLE" "HAS_MULTIPLE_SECURITY_TOOLS" "SCANCODE_URL" "SCANCODE_LOG" "SLSCAN_URL" "SLSCAN_LOG" "INSIDER_URL" "INSIDER_LOG" "ODC_URL" "ODC_LOG" "GRYPE_URL" "GRYPE_LOG" "TRIVY_URL" "TRIVY_LOG" "HAS_SCANCODE_REPORT" "HAS_ODC_REPORT" "HAS_SLSCAN_REPORT" "HAS_INSIDER_REPORT" "HAS_GRYPE_REPORT" "HAS_TRIVY_REPORT" "HAS_OSV_REPORT" "OSV_URL" "OSV_LOG" "HAS_BEARER_REPORT" "BEARER_URL" "BEARER_LOG"
@@ -115,6 +115,9 @@ function export_vars() {
 
 	BEARER_URL="./17__BEARER/"
 	BEARER_LOG="./17__BEARER.log"
+
+	LIBYEAR_URL="./18__LIBYEAR/"
+	LIBYEAR_LOG="./18__LIBYEAR.log"
 
 	CSA_REPORT=$(find "${REPORTS_DIR}" -maxdepth 3 -mindepth 3 -type f -name 'csa.db' | grep -c 'CSA' || true)
 	if ((CSA_REPORT > 0)); then
@@ -292,6 +295,17 @@ function export_vars() {
 		TOOLS_QUALITY_COUNT=$((TOOLS_QUALITY_COUNT + 1))
 	else
 		export HAS_ARCHEO_REPORT=''
+	fi
+
+	LIBYEAR_REPORT=$(find "${REPORTS_DIR}" -maxdepth 2 -mindepth 2 -type f -name '_results__quality__libyear.csv' | grep -c 'LIBYEAR' || true)
+	if ((LIBYEAR_REPORT > 0)); then
+		export HAS_LIBYEAR_REPORT=TRUE
+		HAS_QUALITY_OR_LANGUAGE_REPORT=TRUE
+		HAS_QUALITY_REPORT=TRUE
+		TOOLS_COUNT=$((TOOLS_COUNT + 1))
+		TOOLS_QUALITY_COUNT=$((TOOLS_QUALITY_COUNT + 1))
+	else
+		export HAS_LIBYEAR_REPORT=''
 	fi
 
 	if ((TOOLS_CLOUD_COUNT > 1)); then
@@ -480,8 +494,9 @@ function generate_quality_csv() {
 	export PMD_CSV="${REPORTS_DIR}/07__PMD/_results_extracted.csv"
 	export SCANCODE_CSV="${REPORTS_DIR}/06__SCANCODE/_results_extracted.csv"
 	export MAI_CSV="${REPORTS_DIR}/10__MAI/_results_extracted.csv"
+	export LIBYEAR_CSV="${REPORTS_DIR}/18__LIBYEAR/_results__quality__libyear.csv"
 
-	CSV_FILES=("${ARCHEO_CSV}" "${PMD_CSV}" "${SCANCODE_CSV}" "${MAI_CSV}")
+	CSV_FILES=("${ARCHEO_CSV}" "${LIBYEAR_CSV}" "${PMD_CSV}" "${SCANCODE_CSV}" "${MAI_CSV}")
 
 	for CSV in "${CSV_FILES[@]}"; do
 		concatenate_csv "${CSV}" "${TMP_CSV}"
@@ -809,8 +824,7 @@ function generate_trivy_html() {
 # Generate the Archeo pages
 function generate_archeo_html() {
 
-	export APP ARCHEO_REPORT_DIR
-	ARCHEO_REPORT_DIR=./../16__ARCHEO
+	export APP
 
 	# Generate one report per application
 	local APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
@@ -833,12 +847,37 @@ function generate_archeo_html() {
 		fi
 	done <"${APP_LIST}"
 
-	if [[ "${IS_TEMPLATE_ENGINE_HBS}" == "TRUE" ]]; then
-		# Generate summary report
-		local ARCHEO_SUMMARY_REPORT="${ARCHEO_DIR}/__summary.html"
-		local ARCHEO_SUMMARY_STATS="${ARCHEO_DIR}/_results__quality__archeo.stats"
-		apply_template '1' "${ARCHEO_SUMMARY_STATS}" "quality/archeo_summary" >"${ARCHEO_SUMMARY_REPORT}"
-	fi
+	# Generate summary report
+	local ARCHEO_SUMMARY_REPORT="${ARCHEO_DIR}/__summary.html"
+	local ARCHEO_SUMMARY_STATS="${ARCHEO_DIR}/_results__quality__archeo.stats"
+	apply_template '1' "${ARCHEO_SUMMARY_STATS}" "quality/archeo_summary" >"${ARCHEO_SUMMARY_REPORT}"
+}
+
+# Generate the Libyear pages
+function generate_libyear_html() {
+
+	export APP
+
+	# Generate one report per application
+	local APP_LIST="${REPORTS_DIR}/00__Weave/list__all_apps.txt"
+	while read -r FILE; do
+		local APP="$(basename "${FILE}")"
+		local LIBYEAR_DIR="${REPORTS_DIR}/18__LIBYEAR"
+		local LIBYEAR_REPORT="${LIBYEAR_DIR}/${APP}.html"
+		local LIBYEAR_CSV="${LIBYEAR_DIR}/${APP}_libyear_findings.csv"
+		local LIBYEAR_STATS="${LIBYEAR_DIR}/${APP}_libyear_findings.stats"
+		if [ -f "${LIBYEAR_CSV}" ] && [ $(wc -l <(tail -n +2 "${LIBYEAR_CSV}") | tr -d ' ' | cut -d'/' -f 1) -ne 0 ]; then
+			{
+				apply_template '1' "${LIBYEAR_STATS}" "quality/libyear_01"
+				# Adding a backslash before "$" chars in the comments, replace '`' characters, close the longText const, and remove duplicated "
+				sed 's/\$/\\\$/g; s/\`/"/g; s/\[\]/-/g; $s/$/\`;/; s/^""/"/g; ' "${LIBYEAR_CSV}"
+				apply_template '1' "${LIBYEAR_STATS}" "quality/libyear_02"
+			} >"${LIBYEAR_REPORT}"
+		else
+			# Empty result file
+			apply_template '1' '' 'quality/libyear_empty' >"${LIBYEAR_REPORT}"
+		fi
+	done <"${APP_LIST}"
 }
 
 # Generate all pages
@@ -948,6 +987,10 @@ function generate_reports() {
 			generate_archeo_html
 		fi
 
+		if [[ "${HAS_LIBYEAR_REPORT}" == TRUE ]]; then
+			generate_libyear_html
+		fi
+
 		if [[ -f "${QUALITY_TMP_CSV}" ]]; then
 			# Generate quality HTML file
 			{
@@ -1051,7 +1094,6 @@ function main() {
 	generate_language_report
 
 	log_console_info "Results: ${SUMMARY_CSV}"
-
 }
 
 main

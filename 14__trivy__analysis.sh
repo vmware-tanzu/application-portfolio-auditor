@@ -47,7 +47,7 @@ function analyze() {
 				log_console_error "Invalid application: '${APP}'"
 			else
 				${CONTAINER_ENGINE} run ${CONTAINER_ENGINE_ARG} --rm \
-					-v "${OUT_DIR}:/out:delegated" -v "${APP_FOLDER}:/src:ro" -v "${DIST_DIR}/templating/reports_hbs/security:/tmpl:ro" \
+					-v "${OUT_DIR}:/out:delegated" -v "${APP_FOLDER}:/src:ro" -v "${DIST_DIR}/templating/reports/security:/tmpl:ro" \
 					"${CONTAINER_IMAGE_NAME_TRIVY}" "${PREFIX}" \
 					-f template --template "@/tmpl/trivy_csv.tpl" -o "/out/${APP_NAME_SHORT}_trivy.tmp" \
 					--no-progress --scanners "vuln,misconfig,secret,license" \

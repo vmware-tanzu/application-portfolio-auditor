@@ -1,0 +1,242 @@
+    const dataUri = "data:text/plain;base64," + btoa(unescape(encodeURIComponent(longText)));
+
+    const colorFindingPurple = getComputedStyle(document.documentElement).getPropertyValue('--findingPurple');
+    const colorFindingRed = getComputedStyle(document.documentElement).getPropertyValue('--findingRed');
+    const colorFindingOrange = getComputedStyle(document.documentElement).getPropertyValue('--findingOrange');
+    const colorFindingYellow = getComputedStyle(document.documentElement).getPropertyValue('--findingYellow');
+    const colorFindingGreen = getComputedStyle(document.documentElement).getPropertyValue('--findingGreen');
+    const colorTextNormal = getComputedStyle(document.documentElement).getPropertyValue('--bs-body-color');
+    const colorTextWhite = '#ffffff';
+
+    // Function to get the color of the background for single libraries
+    function getSeverityColorByLibrary(averageTechDebt) {
+      let severityColor;
+      if (!averageTechDebt) {
+        return colorFindingGreen;
+      }
+      if(averageTechDebt >= 5) {
+        severityColor = colorFindingPurple;
+      } else if (averageTechDebt >= 3) {
+        severityColor = colorFindingRed;
+      } else if (averageTechDebt >= 1) {
+        severityColor = colorFindingOrange;
+      } else if (averageTechDebt  >0) {
+        severityColor = colorFindingYellow;
+      } else {
+        severityColor = colorFindingGreen;
+      }
+      return severityColor
+    }
+
+    // Sorting function
+    function sortRows(a, b, de, sortAscending, isNumeric) {
+      if (isNumeric) {
+        return sortAscending 
+          ? d3.ascending(parseFloat(a[de]), parseFloat(b[de])) 
+          : d3.descending(parseFloat(a[de]), parseFloat(b[de]));
+      } else {
+        return sortAscending 
+          ? d3.ascending(a[de], b[de]) 
+          : d3.descending(a[de], b[de]);
+      }
+    }
+
+    // Draw table
+    function drawTable(data) {    
+      var sortAscending = true;
+      var table = d3.select('#page-wrap').append('table');
+      var titles = Object.keys(data[0]);
+      var headers = table.append('thead').append('tr')
+        .selectAll('th')
+        .data(titles).enter()
+        .append('th')
+        .text(function(d) {
+          return d
+        })
+      .on('click', function(d) {
+        headers.attr('class', 'header');
+        var de = d.srcElement.innerText;
+        var isNumeric = de && de.startsWith("Libyears behind");
+
+        rows.sort(function(a, b) {
+          return sortRows(a, b, de, sortAscending, isNumeric);
+        });
+
+        sortAscending = !sortAscending;
+        this.className = sortAscending ? 'des' : 'aes';
+      });
+
+      var rows = table.append('tbody').selectAll('tr').data(data).enter().append('tr');
+      rows.selectAll('td')
+        .data(function (d) {
+          return titles.map(function (k) {
+            return { 'value': d[k], 'name': k};
+          });
+        }).enter()
+        .append('td')
+        .style('text-align',function(d) {
+          if (!d || !d.name || !d.name.startsWith("Description") && !d.name.startsWith("Library") ) return 'center';
+          return 'left';
+        })
+        .style("background-color", function(d) {
+          if (!d || !d.name || !d.name.startsWith("Libyears behind")) return "";
+          return getSeverityColorByLibrary(d.value);
+        })
+        .style("color", function(d) {
+          if (!d || !d.name || !d.name.startsWith("Libyears behind")) return colorTextNormal;
+          return colorTextWhite;
+        })
+        .html(function (d) {
+          return d.value;
+        });
+    };
+    
+    // Draw table
+    function drawHistogram(data) {
+
+      // Set the dimensions and margins of the histogram
+      const margin = { top: 30, right: 30, bottom: 30, left: 30 },
+        width = 1200,
+        height = 300
+        ticks = 55;
+
+      const maxLibyears = Math.max(1, d3.max(data, function (d) { return parseFloat(d["Libyears behind"]);}));
+
+      // Declare the x (horizontal position) scale.
+      const x = d3
+        .scaleLinear()
+        .domain([0, maxLibyears*(1+1/ticks)])
+        .range([margin.left, width - margin.right]);
+
+      // Set the parameters for the histogram
+      const histogram = d3
+        .histogram()
+        .value(function (d) {
+          return parseFloat(d["Libyears behind"]);
+        }) // I need to give the vector of value
+        .domain(x.domain()) // then the domain of the graphic
+        .thresholds(x.ticks(ticks)); // then the numbers of bins
+
+      // And apply this function to data to get the bins
+      const bins = histogram(data);
+
+      // Declare the y (vertical position) scale.
+      const y = d3
+        .scaleLinear()
+        .domain([0, d3.max(bins, function (d) { return d.length;})]) // d3.hist has to be called before the Y axis obviously
+        .range([height - margin.bottom, margin.top]);
+
+      // Create the tooltip container
+      var tooltip = d3
+        .select("#content")
+        .append("span")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("position", "absolute")
+        .style("padding", "5px");
+
+      // Three function that change the tooltip when user hover / move / leave a cell
+      const mouseover = function (event, d) {
+        tooltip.style("opacity", 1);
+      };
+      var mousemove = function (event, d) {
+        d3.select(this).style("stroke", "black").style("opacity", 1);
+
+        let tooltiptext_library = d.length>1 ? ' libraries are' : ' library is';
+        tooltip
+          .html(d.length + tooltiptext_library+"<br/>" + d.x0 + " to " + d.x1 + " libyears behind")
+          .style("top", event.pageY - 50 + "px")
+          .style("left", event.pageX + 10 + "px");
+      };
+      var mouseleave = function (event, d) {
+        tooltip.style("opacity", 0);
+        d3.select(this).style("stroke", "none").style("opacity", 1);
+      };
+
+      // append the svg object to the body of the page
+      const svg = d3
+        .select("#histogram")
+          .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, width, height])
+            .attr("style", "max-width: 100%; height: auto;");
+
+      // Append the bar rectangles to the svg element
+      svg
+        .selectAll("rect")
+        .data(bins)
+        .join("rect")
+          .attr("x", (d) => x(d.x0) + 1)
+          .attr("width", (d) => x(d.x1) - x(d.x0) - 1)
+          .attr("y", (d) => y(d.length))
+          .attr("height", (d) => y(0) - y(d.length))
+          .style("fill", function (d) {
+            return getSeverityColorByLibrary(d.x0);
+          })
+          .on("mouseover", mouseover)
+          .on("mousemove", mousemove)
+          .on("mouseleave", mouseleave);
+
+      // X-axis and label
+      svg
+        .append("g")
+        .attr("transform", `translate(0, ${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(width / 80))
+        .call((g) =>
+          g
+            .append("text")
+            .attr("x", width - 20 )
+            .attr("y", margin.bottom - 5)
+            .attr("fill", "currentColor")
+            .attr("text-anchor", "end")
+            .text("Libyears behind →")
+        );
+
+      // Y-axis and label
+      svg
+        .append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y))
+        .call((g) => g.select(".domain").remove())
+        .call((g) =>
+          g.append("text")
+            .attr("x", -margin.left)
+            .attr("y", margin.top - 10)
+            .attr("fill", "currentColor")
+            .attr("text-anchor", "start")
+            .text("↑ Number of libraries")
+        );
+    }
+
+    d3.csv(dataUri)
+    .then(function(data){drawHistogram(data); drawTable(data);})
+    .catch(function(error){throw error;})
+
+    // Adjust the color of the total libyear indicator
+    const totalTechDebt={{LIBYEAR__TOTAL}};
+    let totalTechDebtCardColor;
+    if(totalTechDebt>=300) {
+      totalTechDebtCardColor = colorFindingPurple;
+    } else if (totalTechDebt>=250) {
+      totalTechDebtCardColor = colorFindingRed;
+    } else if (totalTechDebt>=100) {
+      totalTechDebtCardColor = colorFindingOrange;
+    } else if (totalTechDebt>=50) {
+      totalTechDebtCardColor = colorFindingYellow;
+    } else {
+      totalTechDebtCardColor = colorFindingGreen;
+    }
+    const totalTechDebtCard = document.getElementById('totalTechDebtCard');
+    totalTechDebtCard.style.backgroundColor=totalTechDebtCardColor;
+
+    const averageTechDebt={{LIBYEAR__AVG_LIBYEAR_PER_LIB}};
+    const averageTechDebtCard = document.getElementById('averageTechDebtCard');
+    averageTechDebtCard.style.backgroundColor=getSeverityColorByLibrary(averageTechDebt);
+  </script>
+</body>
+</html>
