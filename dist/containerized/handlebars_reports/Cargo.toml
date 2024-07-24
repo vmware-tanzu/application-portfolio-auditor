@@ -1,9 +1,15 @@
 [package]
 name = "handlebars_reports"
-version = "0.1.0"
+description = "Renders a file with handlebars using a template and property file."
+version = "0.1.1"
+license = "Apache-2.0"
+authors = [ "Marc Zottner" ]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[profile.release]
+strip = "none"
+
 [dependencies]
-handlebars = "5.1.2"
+handlebars = "6.0.0"

@@ -13,7 +13,7 @@ export TOOL_VERSION='2.2.6'
 
 ## Migration & cloud readiness
 export WINDUP_VERSION='6.1.11'
-export CSA_VERSION='4.1.15'
+export CSA_VERSION='4.1.17'
 export CSA_BAGGER_VERSION='1.0.3'
 export WAMT_VERSION='24.0.0.1'
 
@@ -22,11 +22,11 @@ export LINGUIST_VERSION='7.30.0'
 export CLOC_VERSION='2.00'
 
 ## License & Authors
-export SCANCODE_VERSION='32.1.0'
+export SCANCODE_VERSION='32.2.1'
 
 ## Code quality / bugs
 export MAI_VERSION='1.9.22'
-export PMD_VERSION='7.2.0'
+export PMD_VERSION='7.3.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
 export LIBYEAR_VERSION='1.1.0'
@@ -36,23 +36,23 @@ export OWASP_DC_VERSION='9.2.0'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='1.6.0'
-export GRYPE_VERSION='0.78.0'
-export TRIVY_VERSION='0.52.1'
-export OSV_VERSION='1.7.4'
-export BEARER_VERSION='1.43.7'
+export SYFT_VERSION='1.9.0'
+export GRYPE_VERSION='0.79.3'
+export TRIVY_VERSION='0.53.0'
+export OSV_VERSION='1.8.2'
+export BEARER_VERSION='1.45.2'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='242.12881.66'
+export FERNFLOWER_VERSION='242.20224.91'
 export MUSTACHE_VERSION='3.0.5'
-export HBS_VERSION='5.1.2'
+export HBS_VERSION='6.0.0'
 export D3_VERSION='7.9.0'
 export JQUERY_VERSION='3.7.1'
 export BOOTSTRAP_VERSION='5.3.3'
 export BOOTSTRAP_ICONS_VERSION='1.11.3'
 export TIMELINES_CHART_VERSION='2.12.1'
 export NGINX_VERSION='1.27.0'
-export RUST_VERSION='1.78.0'
+export RUST_VERSION='1.79.0'
 
 # Name of all container images
 export CONTAINER_IMAGE_NAME_FERNFLOWER="fernflower:${FERNFLOWER_VERSION}"
@@ -80,7 +80,7 @@ export CONTAINER_IMAGE_NAME_ASSET_DOWNLOADER="external-assets-downloader:1.0"
 export CONTAINER_IMAGE_NAME_HBS_BUILDER="handlebars-reports-builder:1.0"
 export CONTAINER_IMAGE_NAME_NGINX="nginx:${NGINX_VERSION}-alpine"
 ## .NET runtime image used to build MAI and OWASP DC container images (https://mcr.microsoft.com/v2/dotnet/runtime/tags/list)
-export DOTNET_RUNTIME_VERSION='8.0.6-alpine3.19'
+export DOTNET_RUNTIME_VERSION='8.0.7-alpine3.20'
 export IMG_DOTNET_RUNTIME="mcr.microsoft.com/dotnet/runtime:${DOTNET_RUNTIME_VERSION}"
 export IMG_ECLIPSE_TEMURIN_11="eclipse-temurin:11.0.22_7-jre"
 export IMG_ECLIPSE_TEMURIN_21="eclipse-temurin:21.0.2_13-jre"
