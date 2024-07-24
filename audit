@@ -79,7 +79,7 @@ function usage() {
 	printf "    %s run <options>      Run application analysis with following available options:\n\n" "$(basename "$0")"
 
 	printf "${B}Options:${N} %s run [-d | --import-dir <dir>] [-g | --app-group <name>] [-a | --all] [-c | --csa] [-w | --windup]\n" "$(basename "$0")"
-	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [--archeo] [-x | --wamt] [-b | --bearer] [-o | --owasp] [-f | --fsb] [-n | --slscan] [-m | --mai]"
+	echo -e "    [--include-packages <file>] [--exclude-packages <file>] [--archeo] [-x | --wamt] [-b | --bearer] [-o | --owasp] [-f | --fsb] [--fast] [-n | --slscan] [-m | --mai]"
 	echo -e "    [-i | --insider] [-e | --grype] [-y | --trivy] [--osv] [-l | --languages] [--libyear]  [-s | --scancode] [-p | --pmd] [--package-discovery] [--pre-analysis]"
 	echo -e "    [-r | --reports] [-z | --zip] [-k | --k8] [--cf] [-t | --timestamp] [--debug] [-v | --version] [-h | --help]"
 	echo -e ""
@@ -88,7 +88,8 @@ function usage() {
 	echo -e "        ${B}-g${N}, ${B}--app-group${N} <name>         Analyze only the apps in the group <name> (sub-folder of 'apps')"
 	echo -e ""
 	echo -e "    ${B}Choose tools to use${N}  ---------------------------------------------------------------------------------------------"
-	echo -e "        ${B}General${N}     ${B}-a${N}, ${B}--all${N}                      Run all available tools (${B}-pxwoflsm${N})"
+	echo -e "        ${B}General${N}     ${B}-a${N}, ${B}--all${N}                      Run all available tools"
+	echo -e "                    ${B}--fast${N}                         Run all available fast analysis tools (${B}-ey --osv --archeo --libyear${N})"
 	echo -e ""
 	echo -e "        ${B}Cloud${N}       ${B}-c${N}, ${B}--csa${N}                      Decompile and run the CSA analysis"
 	echo -e "                    ${B}-w${N}, ${B}--windup${N}                   Run the Windup analysis"
@@ -244,7 +245,7 @@ printf "${ORANGE}%s" ''
 if ! params="$(
 	"${GETOPT_COMMAND}" \
 		-o hbd:apwfnxog:reylsmivt:ckz \
-		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fsb,slscan,insider,grype,trivy,osv,bearer,libyear,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
+		-l setup,help,debug,pre-analysis,package-discovery,archeo,windup,wamt,fast,fsb,slscan,insider,grype,trivy,osv,bearer,libyear,owasp,csa,all,app-group:,include-packages:,exclude-packages:,languages,scancode,pmd,mai,reports,report,version,zip,cf,k8,import-dir: \
 		--name "$(basename "${0}")" \
 		-- \
 		"${@}"
@@ -330,6 +331,16 @@ while true; do
 		;;
 	-x | --wamt)
 		WAMT_ACTIVE="true"
+		shift
+		;;
+	--fast)
+		GRYPE_ACTIVE="true"
+		TRIVY_ACTIVE="true"
+		LIBYEAR_ACTIVE="true"
+		OSV_ACTIVE="true"
+		OWASP_ACTIVE="false"
+		ARCHEO_ACTIVE="true"
+		LIBYEAR_ACTIVE="true"
 		shift
 		;;
 	-f | --fsb)
