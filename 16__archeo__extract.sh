@@ -601,7 +601,7 @@ function main() {
 		generate_csv
 	else
 		LOG_FILE=/dev/null
-		log_console_error "OSV result directory does not exist: ${APP_DIR_OUT}"
+		log_console_error "Archeo result directory does not exist: ${APP_DIR_OUT}"
 	fi
 }
 
