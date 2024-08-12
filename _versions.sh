@@ -19,7 +19,7 @@ export WAMT_VERSION='24.0.0.1'
 
 ## Languages
 export LINGUIST_VERSION='7.30.0'
-export CLOC_VERSION='2.00'
+export CLOC_VERSION='2.02'
 
 ## License & Authors
 export SCANCODE_VERSION='32.2.1'
@@ -36,14 +36,14 @@ export OWASP_DC_VERSION='9.2.0'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='1.10.0'
-export GRYPE_VERSION='0.79.4'
+export SYFT_VERSION='1.11.0'
+export GRYPE_VERSION='0.79.5'
 export TRIVY_VERSION='0.54.1'
-export OSV_VERSION='1.8.2'
+export OSV_VERSION='1.8.3'
 export BEARER_VERSION='1.46.0'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='242.20224.159'
+export FERNFLOWER_VERSION='242.20224.300'
 export MUSTACHE_VERSION='3.0.5'
 export HBS_VERSION='6.0.0'
 export D3_VERSION='7.9.0'
