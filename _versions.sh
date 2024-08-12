@@ -26,7 +26,7 @@ export SCANCODE_VERSION='32.2.1'
 
 ## Code quality / bugs
 export MAI_VERSION='1.9.22'
-export PMD_VERSION='7.3.0'
+export PMD_VERSION='7.4.0'
 export JQA_VERSION='1.8.0'
 export SCC_VERSION='2.12.0'
 export LIBYEAR_VERSION='1.1.0'
@@ -36,14 +36,14 @@ export OWASP_DC_VERSION='9.2.0'
 export FSB_VERSION='1.12.0'
 export SLSCAN_VERSION='2.1.1'
 export INSIDER_VERSION='3.0.0'
-export SYFT_VERSION='1.9.0'
-export GRYPE_VERSION='0.79.3'
-export TRIVY_VERSION='0.53.0'
+export SYFT_VERSION='1.10.0'
+export GRYPE_VERSION='0.79.4'
+export TRIVY_VERSION='0.54.1'
 export OSV_VERSION='1.8.2'
-export BEARER_VERSION='1.45.2'
+export BEARER_VERSION='1.46.0'
 
 # Supporting frameworks
-export FERNFLOWER_VERSION='242.20224.91'
+export FERNFLOWER_VERSION='242.20224.159'
 export MUSTACHE_VERSION='3.0.5'
 export HBS_VERSION='6.0.0'
 export D3_VERSION='7.9.0'
@@ -52,7 +52,7 @@ export BOOTSTRAP_VERSION='5.3.3'
 export BOOTSTRAP_ICONS_VERSION='1.11.3'
 export TIMELINES_CHART_VERSION='2.12.1'
 export NGINX_VERSION='1.27.0'
-export RUST_VERSION='1.79.0'
+export RUST_VERSION='1.80.0'
 
 # Name of all container images
 export CONTAINER_IMAGE_NAME_FERNFLOWER="fernflower:${FERNFLOWER_VERSION}"
